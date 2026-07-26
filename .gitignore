@@ -1,0 +1,64 @@
+# prerequisites
+*.d
+
+# object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# linker output
+*.ilk
+*.map
+*.exp
+
+# precompiled headers
+*.gch
+*.pch
+
+# libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# shared objects
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# code composer studio files
+# https://software-dl.ti.com/ccs/esd/documents/users_guide/ccs_project-management2.html#files-to-check-in
+Debug
+Debug/
+Release
+.xdchelp
+.config/
+.launches/
+targetConfigs/
+.ccsproject
+.clangd
+.clang-format
+.clang-tidy
+.cproject
+.project
+.settings/
+
+# draw.io tmp files
+*.bkp
+*.dtmp
