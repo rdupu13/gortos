@@ -1,9 +1,38 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * i2c driver
+ * 
+ * created by rdupu13
+ * 
+ * @file i2c.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <msp430fr2153.h>
 #include <stdint.h>
-#include "i2c.h"
+
+#include "drivers/i2c.h"
+
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
+ * @brief initialize i2c
  * 
+ * @param none
+ * @return none
  */
 void i2c_init()
 {
@@ -18,7 +47,7 @@ void i2c_init()
     UCB1CTLW0 &= ~UCSLA10;      // slave addressing mode = 7-bit
     UCB1CTLW0 &= ~UCSWRST;      // take peripheral out of software reset
 
-    // enable interrupts
+    // setup interrupts
     UCB1IE |= UCNACKIE; // enable no acknowledge interrupt
     UCB1IFG &= ~UCNACKIFG; // clear no acknowledge interrupt flag
     UCB1IFG &= ~UCTXIFG0; // clear tx complete interrupt flag
@@ -32,7 +61,14 @@ void i2c_init()
 }
 
 /**
+ * @brief write an array to an i2c slave
  * 
+ * @param slave_addr    slave address
+ * @param reg_addr      slave register address to start writing at
+ * @param len           length in bytes of array to be written
+ * @param arr           pointer to array to be written
+ * 
+ * @return none
  */
 void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint8_t len, uint8_t *arr)
 {
@@ -64,7 +100,13 @@ void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint8_t len, uint8_t *arr)
 }
 
 /**
+ * @brief read an array from an i2c slave
  * 
+ * @param slave_addr    slave address
+ * @param reg_addr      slave register address to start reading from
+ * @param len           length in bytes of array to be read
+ * 
+ * @return pointer to receive buffer
  */
 uint8_t *i2c_read(uint16_t slave_addr, uint8_t reg_addr, uint8_t len)
 {
@@ -91,10 +133,15 @@ uint8_t *i2c_read(uint16_t slave_addr, uint8_t reg_addr, uint8_t len)
     return i2c_rx_buf;
 }
 
+
+//-----------------------------------------------------------------------------
+//  INTERRUPT SERVICE ROUTINES
+//-----------------------------------------------------------------------------
+
 #pragma vector = EUSCI_B1_VECTOR
-__interrupt void eusci_b1_isr(void)
+__interrupt void isr_eusci_b1(void)
 {
-    switch(__even_in_range(UCB1IV,0x1E))
+    switch(__even_in_range(UCB1IV, 0x1E))
     {
         case 0x00: break; // no interrupts
         case 0x02: break; // ALIFG (arbitration lost)
@@ -169,3 +216,6 @@ __interrupt void eusci_b1_isr(void)
         default: break;
     }
 }
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

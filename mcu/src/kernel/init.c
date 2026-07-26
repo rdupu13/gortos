@@ -1,27 +1,49 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * gort system initialization sequence
+ * 
+ * created by rdupu13
+ * 
+ * @file init.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <msp430fr2153.h>
 
-#include "led.h"
-#include "switch.h"
-#include "timer.h"
-#include "uart.h"
-#include "i2c.h"
-#include "rtc.h"
-#include "gio.h"
+#include "kernel/init.h"
+
+// drivers
+#include "drivers/timer.h"
+#include "drivers/uart.h"
+#include "drivers/i2c.h"
+#include "drivers/led.h"
+#include "drivers/switch.h"
+#include "drivers/rtc.h"
+
+// kernel
+#include "kernel/gio.h"
+#include "kernel/gsys.h"
+
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
- * sleep for delay ms
- */
-void eep(int delay)
-{
-    volatile int i;
-    volatile int j;
-    for (i = 0; i < delay; i++) {
-        for (j = 0; j < 103; j++) {} // ~1 ms delay loop
-    }
-}
-
-/*
- * initialize gort system
+ * @brief initialize gort system
+ * 
+ * @param none
+ * @return none
  */
 void init()
 {
@@ -46,7 +68,7 @@ void init()
     i2c_init();
     // --------------------------------
     
-    eep(2000); // epp for a lil to let clockies warm up
+    eep(INIT_EEP_PERIOD_MS); // epp for a lil to let clockies warm up
     
     __enable_interrupt(); // globally enable interrupts
 
@@ -54,7 +76,9 @@ void init()
     // led config ---------------------
     led_init();
     // switch config ------------------
-    switch_init();
+    //switch_init();
+    // --------------------------------
+
     // rtc config ---------------------
     rtc_init();
     // --------------------------------
@@ -62,3 +86,6 @@ void init()
     // TODO: make GOUT and GIN variable, set GOUT = 0, GIN = 0
     glear(); // clear GOUT
 }
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

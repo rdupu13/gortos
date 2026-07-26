@@ -1,74 +1,42 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * array manipulation
+ * array manipulation library
  * 
  * created by rdupu13
  * 
- * @file gstr.c
+ * @file gstr.h
  *
 ----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  HEADER DEFINITION
+//-----------------------------------------------------------------------------
+
+#ifndef GSTR_H
+#define GSTR_H
+
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "kernel/gstr.h"
-
 
 //-----------------------------------------------------------------------------
-//  GLOBAL VARIABLES
+//  MACROS
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
-//  FUNCTIONS
+//  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-/**
- * @brief copy array to another array
- * 
- * @param dst   destination array
- * @param src   source array
- * @param n     number of bytes to copy
- * 
- * @return none
- */
-void gopy(char *dst, char *src, int n)
-{
-    int i;
-    for (i = 0; i < n; i++)
-    {
-        *dst++ = *src++;        
-    }
-}
+void gopy(char *src, char *dst, int n); // copy array to another array
+int girth(char *arr);                   // get the length of an array
+//void gsplits(char *arr, char delim);
 
-/**
- * @brief get the length of an array
- * 
- * @param arr array to get the length of
- * 
- * @return length of given array
- */
-int girth(char *arr)
-{
-    int i;
-    for (i = 0; arr[i] != '\0'; i++) {}
-    return i;
-}
 
-/**
- * 
- *
-void gsplits(char *arr, char delim)
-{
-    int i;
-    while ((arr[i] != delim) )
-    {
-        i++;
-    }
-
-}*/
+#endif
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

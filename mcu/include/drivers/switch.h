@@ -1,74 +1,58 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * array manipulation
+ * switch driver library
  * 
  * created by rdupu13
  * 
- * @file gstr.c
+ * @file switch.h
  *
 ----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  HEADER DEFINITION
+//-----------------------------------------------------------------------------
+
+#ifndef SWITCH_H
+#define SWITCH_H
+
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "kernel/gstr.h"
+#include <msp430fr2153.h>
 
 
 //-----------------------------------------------------------------------------
-//  GLOBAL VARIABLES
+//  MACROS
 //-----------------------------------------------------------------------------
 
+#define SWITCH0_DIR     P5DIR
+#define SWITCH0_REN     P5REN
+#define SWITCH0_OUT     P5OUT
+#define SWITCH0_IES     P5IES
+#define SWITCH0_IE      P5IE
+#define SWITCH0_IFG     P5IFG
+#define SWITCH0_PIN     BIT1
+
+#define SWITCH1_DIR     P5DIR
+#define SWITCH1_REN     P5REN
+#define SWITCH1_OUT     P5OUT
+#define SWITCH1_IES     P5IES
+#define SWITCH1_IE      P5IE
+#define SWITCH1_IFG     P5IFG
+#define SWITCH1_PIN     BIT0
+
 
 //-----------------------------------------------------------------------------
-//  FUNCTIONS
+//  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-/**
- * @brief copy array to another array
- * 
- * @param dst   destination array
- * @param src   source array
- * @param n     number of bytes to copy
- * 
- * @return none
- */
-void gopy(char *dst, char *src, int n)
-{
-    int i;
-    for (i = 0; i < n; i++)
-    {
-        *dst++ = *src++;        
-    }
-}
+void switch_init();
 
-/**
- * @brief get the length of an array
- * 
- * @param arr array to get the length of
- * 
- * @return length of given array
- */
-int girth(char *arr)
-{
-    int i;
-    for (i = 0; arr[i] != '\0'; i++) {}
-    return i;
-}
 
-/**
- * 
- *
-void gsplits(char *arr, char delim)
-{
-    int i;
-    while ((arr[i] != delim) )
-    {
-        i++;
-    }
-
-}*/
+#endif
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

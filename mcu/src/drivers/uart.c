@@ -1,8 +1,38 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * uart driver
+ * 
+ * created by rdupu13
+ * 
+ * @file uart.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <msp430fr2153.h>
-#include "uart.h"
+#include <stdint.h>
+
+#include "drivers/uart.h"
+
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
- * initialize uart
+ * @brief initialize uart
+ * 
+ * @param none
+ * @return none
  */
 void uart_init()
 {
@@ -42,16 +72,20 @@ void uart_init()
 }
 
 /**
- * transmit an array of data over uart
+ * @brief transmit a null-terminated array over uart
+ * 
+ * @param arr pointer to array to be transmitted
+ * 
+ * @return none
  */
-void uart_tx(uint8_t *data)
+void uart_tx(uint8_t *arr)
 {
     if (!uart_tx_done) {
         return;
     }
 
     uart_tx_done = 0; // clear done condition
-    uart_tx_buf_ptr = data; // point to tx data
+    uart_tx_buf_ptr = arr; // point to tx data
     
     UCA1IE |= UCTXCPTIE; // enable tx complete interrupts
     UCA1IFG &= ~UCTXCPTIFG; // clear tx complete interrupt flag
@@ -62,7 +96,12 @@ void uart_tx(uint8_t *data)
 }
 
 /**
- * receive n bytes over uart, if n = 0, until stop
+ * @brief receive an array over uart
+ * 
+ * @param n     number of bytes to read (> 0)
+ * @param stop  if n = 0, read until this character received
+ * 
+ * @return pointer to receive buffer
  */
 uint8_t *uart_rx(uint8_t n, uint8_t stop)
 {
@@ -84,11 +123,13 @@ uint8_t *uart_rx(uint8_t n, uint8_t stop)
     return uart_rx_buf; // return pointer to start of buffer
 }
 
-/**
- * interrupt service routines
- */
+
+//-----------------------------------------------------------------------------
+//  INTERRUPT SERVICE ROUTINES
+//-----------------------------------------------------------------------------
+
 #pragma vector = EUSCI_A1_VECTOR
-__interrupt void eusci_a1_isr(void)
+__interrupt void isr_eusci_a1(void)
 {
     switch(__even_in_range(UCA1IV, 18))
     {
@@ -128,3 +169,6 @@ __interrupt void eusci_a1_isr(void)
         default: break;
     }
 }
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

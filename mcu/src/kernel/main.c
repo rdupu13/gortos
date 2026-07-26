@@ -1,15 +1,49 @@
-#include <msp430fr2153.h>
-#include "led.h"
-#include "timer.h"
-#include "uart.h"
-#include "i2c.h"
-#include "rtc.h"
-#include "gio.h"
-#include "gstr.h"
-#include "init.h"
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * gort kernel
+ * 
+ * created by rdupu13
+ * 
+ * @file main.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
+// drivers
+#include "drivers/timer.h"
+#include "drivers/uart.h"
+#include "drivers/i2c.h"
+#include "drivers/led.h"
+#include "drivers/switch.h"
+#include "drivers/rtc.h"
+
+// kernel
+#include "kernel/gio.h"
+#include "kernel/gstr.h"
+#include "kernel/gsys.h"
+#include "kernel/init.h"
+
+// applications
+#include "apps/gsh.h"
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
- * gort kernel routine!
+ * @brief gort kernel!
+ * 
+ * @param none
+ * @return never returns
  */
 int main(void)
 {
@@ -17,28 +51,9 @@ int main(void)
 
     int gsh = main_gsh();
 
-    int i = 0;
-    while (1)
-    {
-        /*
-        char *date;
-        date = rtc_get_str();
-        helloworld(date);
-        helloworld("\n");
-        */
-        
-        /*
-        i++;
-        if (i > 5) {
-            i = 0;
-        }
-        ledbar_sel(i);
-        */
-
-        //helloworld("print\n");
-
-        eep(696);
-
-    } // loop forever
+    while (1) {} // loop forever
     return 0;
 }
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

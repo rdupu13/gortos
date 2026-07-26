@@ -1,8 +1,33 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * led driver library
+ * 
+ * created by rdupu13
+ * 
+ * @file led.h
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  HEADER DEFINITION
+//-----------------------------------------------------------------------------
+
 #ifndef LED_H
 #define LED_H
 
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <msp430fr2153.h>
 #include <stdint.h>
+
+
+//-----------------------------------------------------------------------------
+//  MACROS
+//-----------------------------------------------------------------------------
 
 // NOTE: init.c sets all ports + pins to outputs by default
 
@@ -52,6 +77,11 @@
 #define LEDBAR_FILLR8       0x03FE
 #define LEDBAR_FILLR9       0x03FF
 
+
+//-----------------------------------------------------------------------------
+//  FUNCTION PROTOTYPES
+//-----------------------------------------------------------------------------
+
 uint16_t ledbar_pattern0;
 uint16_t ledbar_pattern1;
 uint16_t ledbar_inout[LEDBAR_INOUT_LEN];
@@ -66,10 +96,14 @@ uint16_t ledbar_pattern5;
 
 uint16_t *ledbar_cur_pattern;
 
-void led_init();
-void led_heartbeat_update(int qcnt);
-void ledbar_setpins();
-void ledbar_update();
-void ledbar_sel(int sel);
+void led_init();                        // initialize leds
+void led_heartbeat_update(int qcnt);    // update heartbeat led based on quarter-second counter
+void ledbar_sel(int sel);               // select ledbar pattern
+void ledbar_setpins();                  // set ledbar pins based on current pattern
+void ledbar_update(int qcnt);           // update ledbar patterns based on quarter-second counter
+
 
 #endif
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

@@ -1,74 +1,46 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * array manipulation
+ * input output library
  * 
  * created by rdupu13
  * 
- * @file gstr.c
+ * @file gio.h
  *
 ----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  HEADER DEFINITION
+//-----------------------------------------------------------------------------
+
+#ifndef GIO_H
+#define GIO_H
+
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "kernel/gstr.h"
+
+//-----------------------------------------------------------------------------
+//  MACROS
+//-----------------------------------------------------------------------------
+
+#define GOUT    0
+#define GIN     0
+
+#define PUTTY_CLEAR_SEQ     "\033[H\033[2J"
 
 
 //-----------------------------------------------------------------------------
-//  GLOBAL VARIABLES
+//  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+int helloworld(char *arr); // write an array to gout
+char *hellogort(int n, char stop); // read n chars from gin, if n = 0, until stop
 
-//-----------------------------------------------------------------------------
-//  FUNCTIONS
-//-----------------------------------------------------------------------------
 
-/**
- * @brief copy array to another array
- * 
- * @param dst   destination array
- * @param src   source array
- * @param n     number of bytes to copy
- * 
- * @return none
- */
-void gopy(char *dst, char *src, int n)
-{
-    int i;
-    for (i = 0; i < n; i++)
-    {
-        *dst++ = *src++;        
-    }
-}
-
-/**
- * @brief get the length of an array
- * 
- * @param arr array to get the length of
- * 
- * @return length of given array
- */
-int girth(char *arr)
-{
-    int i;
-    for (i = 0; arr[i] != '\0'; i++) {}
-    return i;
-}
-
-/**
- * 
- *
-void gsplits(char *arr, char delim)
-{
-    int i;
-    while ((arr[i] != delim) )
-    {
-        i++;
-    }
-
-}*/
+#endif
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

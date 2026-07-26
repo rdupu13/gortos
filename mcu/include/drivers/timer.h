@@ -1,74 +1,51 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * array manipulation
+ * timer driver library
  * 
  * created by rdupu13
  * 
- * @file gstr.c
+ * @file timer.h
  *
 ----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  HEADER DEFINITION
+//-----------------------------------------------------------------------------
+
+#ifndef TIMER_H
+#define TIMER_H
+
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "kernel/gstr.h"
+#include <msp430fr2153.h>
 
 
 //-----------------------------------------------------------------------------
-//  GLOBAL VARIABLES
+//  MACROS
 //-----------------------------------------------------------------------------
 
+#define TIMER_B0_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
+#define TIMER_B0_DIV    ID__1           // divide by 1
+#define TIMER_B0_LEN    CNTL_0          // 16-bit
+#define TIMER_B0_MODE   MC__UP          // up mode
+#define TIMER_B0_INT    1               // ccr0 interrupts
+#define TIMER_B0_CCR0   8192            // ccr0 = 8192 (4 Hz)
+
 
 //-----------------------------------------------------------------------------
-//  FUNCTIONS
+//  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-/**
- * @brief copy array to another array
- * 
- * @param dst   destination array
- * @param src   source array
- * @param n     number of bytes to copy
- * 
- * @return none
- */
-void gopy(char *dst, char *src, int n)
-{
-    int i;
-    for (i = 0; i < n; i++)
-    {
-        *dst++ = *src++;        
-    }
-}
+volatile unsigned int timer_qcnt;
 
-/**
- * @brief get the length of an array
- * 
- * @param arr array to get the length of
- * 
- * @return length of given array
- */
-int girth(char *arr)
-{
-    int i;
-    for (i = 0; arr[i] != '\0'; i++) {}
-    return i;
-}
+void timer_init(); // initialize timer
 
-/**
- * 
- *
-void gsplits(char *arr, char delim)
-{
-    int i;
-    while ((arr[i] != delim) )
-    {
-        i++;
-    }
 
-}*/
+#endif
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

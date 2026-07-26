@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
- * GORTOS APPLICATION
- * The Gort Shell
+ * GORTOS
+ * gort system
  * 
  * created by rdupu13
  * 
- * @file gsh.c
+ * @file gsys.c
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,24 +13,12 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "apps/gsh.h"
-
-// drivers
-// TODO: create kernel interface
-#include "drivers/led.h"
-#include "drivers/rtc.h"
-
-// kernel
-#include "kernel/gio.h"
-#include "kernel/gstr.h"
+#include "kernel/gsys.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
-
-volatile char *gsh_cmd;
-volatile char prompt[] = "gsh@/";
 
 
 //-----------------------------------------------------------------------------
@@ -38,40 +26,22 @@ volatile char prompt[] = "gsh@/";
 //-----------------------------------------------------------------------------
 
 /**
- * @brief The Gort Shell
+ * @brief take a gort nap
  * 
- * @param none
+ * @param delay
  * 
- * @return process status
+ * @return none
  */
-int main_gsh()
+void eep(int delay)
 {
-    int sel = 0;
-    while(1)
-    {
-        helloworld(prompt);
-        gsh_cmd = hellogort(0, '\r');
-        helloworld("\n");
-        // ----------------------------------------------------
-        
-        // print rtc time
-        char *dt;
-        dt = rtc_getstr();
-        helloworld(dt);
-        
-        // switch ledbar selection
-        sel++;
-        if (sel > 5) {
-            sel = 0;
-        }
-        ledbar_sel(sel);
-        
-        // ----------------------------------------------------
-        helloworld("\n");
+    volatile int i;
+    volatile int j;
+    for (i = 0; i < delay; i++) {
+        for (j = 0; j < 103; j++) {} // ~1 ms delay loop
     }
-    
-    return 0;
 }
+
+
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

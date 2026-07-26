@@ -1,15 +1,42 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * rtc driver
+ * 
+ * created by rdupu13
+ * 
+ * @file rtc.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <stdint.h>
 
-#include "rtc.h"
-#include "i2c.h"
+#include "drivers/rtc.h"
+
+#include "drivers/i2c.h"
+
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
- * initialize rtc
+ * @brief initialize rtc
+ * 
+ * @param none
+ * @return none
  */
 void rtc_init()
 {
-    rtc_stop();
-
     rtc_second = 0x00;
     rtc_minute = 0x23;
     rtc_hour = 0x12;
@@ -44,7 +71,11 @@ void rtc_init()
 }
 
 /**
- * start rtc
+ * @brief start rtc
+ * 
+ * @param none
+ * 
+ * @return none
  */
 void rtc_start()
 {
@@ -55,7 +86,11 @@ void rtc_start()
 }
 
 /**
- * stop rtc
+ * @brief stop rtc
+ * 
+ * @param none
+ * 
+ * @return none
  */
 void rtc_stop()
 {
@@ -66,7 +101,11 @@ void rtc_stop()
 }
 
 /**
- * get current date + time
+ * @brief get current rtc date and time
+ * 
+ * @param none
+ * 
+ * @return none
  */
 void rtc_get()
 {
@@ -82,9 +121,38 @@ void rtc_get()
 }
 
 /**
+ * @brief set current rtc date and time
  * 
+ * @param none
+ * 
+ * @return none
  */
-char *rtc_get_str()
+void rtc_set()
+{
+    rtc_stop();
+
+    uint8_t dt[7];
+    dt[0] = rtc_second;
+    dt[1] = rtc_minute;
+    dt[2] = rtc_hour;
+    dt[3] = rtc_weekday;
+    dt[4] = rtc_date;
+    dt[5] = rtc_month;
+    dt[6] = rtc_year;
+
+    i2c_write(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
+
+    rtc_start();
+}
+
+/**
+ * @brief get current rtc date and time and convert to string
+ * 
+ * @param none
+ * 
+ * @return pointer to string representation of current rtc date and time
+ */
+char *rtc_getstr()
 {
     rtc_get();
     
@@ -106,26 +174,8 @@ char *rtc_get_str()
 
 /**
  * 
- */
-void rtc_set()
-{
-    uint8_t dt[7];
-
-    dt[0] = rtc_second;
-    dt[1] = rtc_minute;
-    dt[2] = rtc_hour;
-    dt[3] = rtc_weekday;
-    dt[4] = rtc_date;
-    dt[5] = rtc_month;
-    dt[6] = rtc_year;
-
-    i2c_write(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
-}
-
-/**
- * 
- */
-void rtc_set_date(int date, int month, int year)
+ *
+void rtc_setdate(int date, int month, int year)
 {
     // TODO: bin to bcd
 
@@ -134,8 +184,8 @@ void rtc_set_date(int date, int month, int year)
 
 /**
  * 
- */
-void rtc_set_time(int date, int month, int year)
+ *
+void rtc_settime(int date, int month, int year)
 {
     // TODO: bin to bcd
 
@@ -170,3 +220,6 @@ void int_to_str(int n, char *str)
     i++;
     str[i] = '\0';
 }*/
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

@@ -1,10 +1,38 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * led driver
+ * 
+ * created by rdupu13
+ * 
+ * @file led.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <msp430fr2153.h>
 #include <stdint.h>
 
-#include "led.h"
+#include "drivers/led.h"
+
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
+ * @brief initialize leds
  * 
+ * @param none
+ * @return none
  */
 void led_init()
 {
@@ -46,7 +74,11 @@ void led_init()
 }
 
 /**
+ * @brief update heartbeat led based on quarter-second counter
  * 
+ * @param qcnt timer quarter-second counter
+ * 
+ * @return none
  */
 void led_heartbeat_update(int qcnt)
 {
@@ -56,7 +88,11 @@ void led_heartbeat_update(int qcnt)
 }
 
 /**
+ * @brief select ledbar pattern
  * 
+ * @param sel pattern select (0-5)
+ * 
+ * @return none
  */
 void ledbar_sel(int sel)
 {
@@ -77,7 +113,11 @@ void ledbar_sel(int sel)
 }
 
 /**
+ * @brief set ledbar pins based on current pattern
  * 
+ * @param none
+ * 
+ * @return none
  */
 void ledbar_setpins()
 {
@@ -97,7 +137,11 @@ void ledbar_setpins()
 }
 
 /**
+ * @brief update ledbar patterns based on quarter-second counter
  * 
+ * @param qcnt timer quarter-second counter
+ * 
+ * @return none
  */
 void ledbar_update(int qcnt)
 {
@@ -163,3 +207,6 @@ void ledbar_update(int qcnt)
 
     ledbar_setpins();
 }
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------

@@ -1,21 +1,54 @@
+/** ---------------------------------------------------------------------------
+ * 
+ * GORTOS
+ * input output
+ * 
+ * created by rdupu13
+ * 
+ * @file gio.c
+ *
+----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  LIBRARIES
+//-----------------------------------------------------------------------------
+
 #include <stdint.h>
-#include "gio.h"
-#include "uart.h"
-#include "i2c.h"
+
+#include "kernel/gio.h"
+
+#include "drivers/uart.h"
+#include "drivers/i2c.h"
+
+
+//-----------------------------------------------------------------------------
+//  GLOBAL VARIABLES
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
 /**
- * write an array to gout
+ * @brief write an array to gout
+ * 
+ * @param arr array to be written
+ * 
+ * @return status of write
  */
 int helloworld(char *arr)
 {
-    int ret = 0;
+    int stat = 0;
     switch(GOUT)
     {
-        case 0: // uart
+        case 0:
+            // uart
             uart_tx((uint8_t *) arr);
             break;
         
-        case 1: // i2c
+        case 1:
+            // i2c
             i2c_write(
                 0x0068,
                 0x00,
@@ -25,25 +58,33 @@ int helloworld(char *arr)
             break;
         
         default:
-            ret = 1; // raise error
+            stat = 1; // raise error
             break;
     }
-    return ret;
+    return stat;
 }
 
 /**
- * read in n chars from gin, if n = 0, go until stop
+ * @brief read an array from gin
+ * 
+ * @param n     number of bytes to read (> 0)
+ * @param stop  if n = 0, read until this character received
+ * 
+ * @return pointer to received array, null if unsuccessful
  */
 char *hellogort(int n, char stop)
 {
     char *ret = 0;
     switch(GIN)
     {
-        case 0: // uart
+        case 0:
+            // uart
             ret = (char *) uart_rx((uint8_t) n, (uint8_t) stop);
             break;
         
-        case 1: // i2c
+        case 1:
+            // i2c
+            // TODO: check n
             ret = (char *) i2c_read(
                 0x0068, 
                 0x00, 
@@ -57,10 +98,17 @@ char *hellogort(int n, char stop)
 }
 
 /**
+ * @brief write clear sequence to gout
  * 
+ * @param none
+ * 
+ * @return none
  */
 void glear()
 {
-    char seq[] = "\033[H\033[2J";
+    char seq[] = PUTTY_CLEAR_SEQ;
     helloworld(seq);
 }
+//-----------------------------------------------------------------------------
+//  END OF CODE
+//-----------------------------------------------------------------------------
