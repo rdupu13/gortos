@@ -13,6 +13,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// drivers
+#include "drivers/rtc.h"
+
+// kernel
 #include "kernel/gsys.h"
 
 
@@ -37,11 +41,20 @@ void eep(int delay)
     volatile int i;
     volatile int j;
     for (i = 0; i < delay; i++) {
-        for (j = 0; j < 103; j++) {} // ~1 ms delay loop
+        for (j = 0; j < DELAY_LOOP_MS; j++) {} // ~1 ms delay loop
     }
 }
 
-
+/**
+ * @brief write gort system time to gout
+ *
+void print_systime()
+{
+    char *systime;
+    systime = rtc_getstr();
+    helloworld(systime);
+}
+*/
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

@@ -58,7 +58,7 @@ int girth(char *arr)
 }
 
 /**
- * 
+ * @brief 
  *
 void gsplits(char *arr, char delim)
 {
@@ -68,7 +68,64 @@ void gsplits(char *arr, char delim)
         i++;
     }
 
-}*/
+}
+*/
+
+/**
+ * @brief convert an unsigned integer to binary-coded decimal
+ *
+char *uint_to_bcd(int num)
+{
+    // 16-bit unsigned int -> 5 x 4-bit BCD (char[3])
+    // 8-bit unsigned int -> 3 x 4-bit BCD (char[2])
+}
+*/
+
+/**
+ * @brief convert binary-coded decimal to string representation
+ *
+char *bcd_to_str(char *bcd)
+{
+    // 5 x 4-bit BCD (char[3]) -> char[5]
+}
+*/
+
+/**
+ * @brief convert unsigned integer to string representation
+ *
+char *uint_to_str(int num)
+{
+
+}
+*/
+
+/**
+ * @brief convert string representation to binary-coded decimal
+ *
+char *str_to_bcd(char *str)
+{
+    // char[5] -> 5 x 4-bit BCD (char[3])
+}
+*/
+
+/**
+ * @brief convert binary-coded decimal to an unsigned integer
+ *
+int bcd_to_uint(char *bcd)
+{
+    // 5 x 4-bit BCD (char[3]) -> 16-bit unsigned int
+    // 3 x 4-bit BCD (char[2]) -> 8-bit unsigned int
+}
+*/
+
+/**
+ * @brief convert string representation to unsigned integer
+ *
+int str_to_uint(char *str)
+{
+
+}
+*/
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

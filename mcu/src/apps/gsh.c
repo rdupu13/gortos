@@ -16,7 +16,7 @@
 #include "apps/gsh.h"
 
 // drivers
-// TODO: create kernel interface
+// TODO: create kernel interface, apps should not have direct access to drivers
 #include "drivers/led.h"
 #include "drivers/rtc.h"
 
@@ -30,7 +30,9 @@
 //-----------------------------------------------------------------------------
 
 volatile char *gsh_cmd;
-volatile char prompt[] = "gsh@/";
+
+volatile char cur_user[] = "gort";
+volatile char cur_path[] = "/home/gort";
 
 
 //-----------------------------------------------------------------------------
@@ -49,15 +51,19 @@ int main_gsh()
     int sel = 0;
     while(1)
     {
-        helloworld(prompt);
+        helloworld(cur_user);
+        helloworld("@");
+        helloworld(cur_path);
+        helloworld("$ ");
+
         gsh_cmd = hellogort(0, '\r');
-        helloworld("\n");
         // ----------------------------------------------------
         
         // print rtc time
         char *dt;
         dt = rtc_getstr();
         helloworld(dt);
+        helloworld("\n");
         
         // switch ledbar selection
         sel++;

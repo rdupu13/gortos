@@ -60,28 +60,18 @@ void init()
     LED_HEARTBEAT_PORT |= LED_HEARTBEAT_PIN; // show signs of life
 
     // initialize core gort system drivers
-    // timer config -------------------
     timer_init();
-    // uart config --------------------
     uart_init();
-    // i2c config ---------------------
     i2c_init();
-    // --------------------------------
     
     eep(INIT_EEP_PERIOD_MS); // epp for a lil to let clockies warm up
     
     __enable_interrupt(); // globally enable interrupts
 
     // intialize more gort system drivers
-    // led config ---------------------
     led_init();
-    // switch config ------------------
     //switch_init();
-    // --------------------------------
-
-    // rtc config ---------------------
     rtc_init();
-    // --------------------------------
 
     // TODO: make GOUT and GIN variable, set GOUT = 0, GIN = 0
     glear(); // clear GOUT

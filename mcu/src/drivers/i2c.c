@@ -38,6 +38,7 @@ void i2c_init()
 {
     I2C_SEL0 |= I2C_PINS; // configure pins
     
+    // setup peripheral
     UCB1CTLW0 |= UCSWRST;       // put peripheral into software reset
     UCB1CTLW0 |= UCSSEL__SMCLK; // clock source = smclk (1 MHz)
     UCB1BRW = 10;               // divide clock by 10 (100 kHz)
@@ -48,10 +49,10 @@ void i2c_init()
     UCB1CTLW0 &= ~UCSWRST;      // take peripheral out of software reset
 
     // setup interrupts
-    UCB1IE |= UCNACKIE; // enable no acknowledge interrupt
-    UCB1IFG &= ~UCNACKIFG; // clear no acknowledge interrupt flag
-    UCB1IFG &= ~UCTXIFG0; // clear tx complete interrupt flag
-    UCB1IFG &= ~UCRXIFG0; // clear rx buffer full interrupt flag
+    UCB1IE |= UCNACKIE;                 // enable no acknowledge interrupt
+    UCB1IFG &= ~UCNACKIFG;              // clear no acknowledge interrupt flag
+    UCB1IE &= ~(UCTXIE0 | UCRXIE0);     // disable tx/rx interrupts
+    UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0);  // clear tx/rx interrupt flags
 
     // initialize variables
     i2c_len = 0;
@@ -147,8 +148,8 @@ __interrupt void isr_eusci_b1(void)
         case 0x02: break; // ALIFG (arbitration lost)
         case 0x04:
             // NACKIFG (no acknowledge received)
-            UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable interrupts
-            UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0); // clear interrupt flags
+            UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
+            UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0); // clear tx/rx interrupt flags
             UCB1CTLW0 |= UCTXSTP; // send stop condition
             i2c_busy = 0; // not busy
             I2C_BUSY_PORT &= ~I2C_BUSY_PIN;

@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * array manipulation library
+ * spi driver library
  * 
  * created by rdupu13
  * 
- * @file gstr.h
+ * @file spi.h
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,35 +13,43 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef GSTR_H
-#define GSTR_H
+#ifndef SPI_H
+#define SPI_H
 
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+#include <msp430fr2153.h>
+#include <stdint.h>
+
 
 //-----------------------------------------------------------------------------
 //  MACROS
 //-----------------------------------------------------------------------------
+
+#define SPI_SEL0        P1SEL0
+#define SPI_PINS        BIT4 | BIT5 | BIT6 | BIT7
+
+#define SPI_BUF_SIZE    255
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void gopy(char *src, char *dst, int n); // copy array to another array
-int girth(char *arr);                   // get the length of an array
-//void gsplits(char *arr, char delim);
+volatile uint8_t spi_tx_buf[SPI_BUF_SIZE];
+volatile uint8_t spi_rx_buf[SPI_BUF_SIZE];
+volatile uint8_t *spi_tx_buf_ptr;
+volatile uint8_t *spi_rx_buf_ptr;
 
-//char *uint_to_bcd(int num);
-//char *bcd_to_str(char *bcd);
-//char *uint_to_str(int num);
+volatile uint8_t spi_len;
 
-//char *str_to_bcd(char *str);
-//int bcd_to_uint(char *bcd);
-//int str_to_uint(char *str);
+void spi_init();                                                    // initialize spi
+//void spi_write(uint8_t reg_addr, uint8_t len, uint8_t *data);  // write an array to a spi slave
+//uint8_t *spi_read(uint8_t reg_addr, uint8_t len);              // read an array from a spi slave
+
 
 #endif
 //-----------------------------------------------------------------------------

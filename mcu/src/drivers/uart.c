@@ -36,8 +36,9 @@
  */
 void uart_init()
 {
-    UART_SEL0 |= UART_PINS; // set pins
+    UART_SEL0 |= UART_PINS; // configure pins
 
+    // setup peripheral
     UCA1CTLW0 |= UCSWRST; // put peripheral into software reset
     switch(UART_BAUD)
     {
@@ -59,6 +60,10 @@ void uart_init()
     }
     UCA1CTLW0 &= ~UCSWRST; // take peripheral out of software reset
     
+    // setup interrupts
+    UCA1IE &= ~(UCTXCPTIE | UCRXIFG);   // disable tx/rx interrupts
+    UCA1IFG &= ~(UCTXCPTIFG | UCRXIFG); // clear tx/rx interrupt flags
+
     // initialize variables
     uart_tx_buf_ptr = 0;
     uart_rx_buf_ptr = uart_rx_buf;
@@ -67,8 +72,6 @@ void uart_init()
     uart_rx_done = 1;
     uart_n = 0;
     uart_cnt = 1;
-
-    //__delay_cycles(100); // maybe delay?
 }
 
 /**

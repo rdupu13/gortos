@@ -17,6 +17,7 @@
 
 #include "kernel/gio.h"
 
+// drivers
 #include "drivers/uart.h"
 #include "drivers/i2c.h"
 
@@ -25,6 +26,7 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
+// TODO: make GOUT and GIN variable
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS

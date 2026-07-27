@@ -13,18 +13,7 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// drivers
-#include "drivers/timer.h"
-#include "drivers/uart.h"
-#include "drivers/i2c.h"
-#include "drivers/led.h"
-#include "drivers/switch.h"
-#include "drivers/rtc.h"
-
 // kernel
-#include "kernel/gio.h"
-#include "kernel/gstr.h"
-#include "kernel/gsys.h"
 #include "kernel/init.h"
 
 // applications
@@ -49,7 +38,7 @@ int main(void)
 {
     init(); // initialize gort system
 
-    int gsh = main_gsh();
+    int gsh = main_gsh(); // launch gort shell
 
     while (1) {} // loop forever
     return 0;
