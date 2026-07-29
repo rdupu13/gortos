@@ -56,27 +56,6 @@ int helloworld(char *arr)
             uart_tx(girth(arr), (uint8_t *) arr);
             break;
         
-        case 1:
-            /* i2c
-            i2c_write(
-                0x0068,
-                0x00,
-                (uint8_t) girth(arr),
-                (uint8_t *) arr
-            );
-            */
-            break;
-
-        case 2:
-            /* spi
-            spi_write(
-                0x1E,
-                (uint16_t) girth(arr),
-                (uint8_t *) arr
-            );
-            */
-            break;
-        
         default:
             stat = 1; // raise error
             break;
@@ -87,10 +66,11 @@ int helloworld(char *arr)
 /**
  * @brief read an array from gin
  * 
+ * @param arr   pointer to where received array will be stored
  * @param n     number of bytes to read (> 0)
  * @param stop  if n = 0, read until this character received
  * 
- * @return pointer to received array, null if unsuccessful
+ * @return status of read
  */
 int hellogort(char *arr, int n, char stop)
 {
@@ -100,15 +80,6 @@ int hellogort(char *arr, int n, char stop)
         case 0:
             // uart
             uart_rx((uint16_t) n, (uint8_t *) arr, (uint8_t) stop);
-            break;
-        
-        case 1:
-            /* i2c
-            ret = (char *) i2c_read(
-                0x0068, 
-                0x00, 
-                (uint8_t) n
-            );*/
             break;
         
         default: break;

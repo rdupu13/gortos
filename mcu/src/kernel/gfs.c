@@ -1,51 +1,43 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * input output library
+ * gort file system
  * 
  * created by rdupu13
  * 
- * @file gio.h
+ * @file gfs.c
  *
 ----------------------------------------------------------------------------- */
-
-//-----------------------------------------------------------------------------
-//  HEADER DEFINITION
-//-----------------------------------------------------------------------------
-
-#ifndef GIO_H
-#define GIO_H
-
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+#include <stdint.h>
+
+#include "kernel/gfs.h"
+
+// kernel
+
+
+// drivers
+#include "drivers/spi.h"
+
 
 //-----------------------------------------------------------------------------
-//  MACROS
+//  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-#define PUTTY_CLEAR_SEQ     "\033[H\033[2J"
+
 
 
 //-----------------------------------------------------------------------------
-//  FUNCTION PROTOTYPES
+//  FUNCTIONS
 //-----------------------------------------------------------------------------
 
-// TODO: make these files:
-volatile int gin;
-volatile int gout;
-
-int helloworld(char *arr);                  // write an array to gout
-int hellogort(char *arr, int n, char stop); // read n chars from gin, if n = 0: read until stop char
-
-void glear(); // clear screen (write PuTTY clear sequence to gout)
-
-void blinky(unsigned int delay); // blink the TEST0 LED for delay ms
 
 
-#endif
+
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------
