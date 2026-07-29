@@ -24,6 +24,7 @@
 // drivers
 #include "drivers/uart.h"
 #include "drivers/i2c.h"
+#include "drivers/spi.h"
 #include "drivers/led.h"
 
 
@@ -31,7 +32,7 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile char gin_buf[GIN_BUF_SIZE];
+
 
 
 //-----------------------------------------------------------------------------
@@ -56,22 +57,24 @@ int helloworld(char *arr)
             break;
         
         case 1:
-            // i2c
+            /* i2c
             i2c_write(
                 0x0068,
                 0x00,
                 (uint8_t) girth(arr),
                 (uint8_t *) arr
             );
+            */
             break;
 
         case 2:
-            // spi
+            /* spi
             spi_write(
                 0x1E,
                 (uint16_t) girth(arr),
                 (uint8_t *) arr
             );
+            */
             break;
         
         default:
@@ -96,7 +99,7 @@ int hellogort(char *arr, int n, char stop)
     {
         case 0:
             // uart
-            uart_rx((uint16_t) n, (uint8_t *) gin_buf, (uint8_t) stop);
+            uart_rx((uint16_t) n, (uint8_t *) arr, (uint8_t) stop);
             break;
         
         case 1:
@@ -127,7 +130,7 @@ void glear()
 }
 
 /**
- * blink the TEST1 LED for delay ms
+ * blink the TEST0 LED for delay ms
  */
 void blinky(unsigned int delay)
 {

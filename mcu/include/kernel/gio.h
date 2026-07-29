@@ -26,8 +26,6 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define GIN_BUF_SIZE        256
-
 #define PUTTY_CLEAR_SEQ     "\033[H\033[2J"
 
 
@@ -35,6 +33,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+// TODO: make these files
 volatile int gin;
 volatile int gout;
 
@@ -43,7 +42,7 @@ int hellogort(char *arr, int n, char stop); // read n chars from gin, if n = 0: 
 
 void glear(); // clear screen (write PuTTY clear sequence to gout)
 
-void blinky(unsigned int delay); // blink the TEST1 LED for delay ms
+void blinky(unsigned int delay); // blink the TEST0 LED for delay ms
 
 
 #endif
