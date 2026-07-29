@@ -28,6 +28,7 @@
 // kernel
 #include "kernel/pfc.h"
 #include "kernel/gsys.h"
+#include "kernel/gfs.h"
 #include "kernel/gio.h"
 
 
@@ -60,12 +61,13 @@ void init()
 
     LED_HEARTBEAT_PORT |= LED_HEARTBEAT_PIN; // show signs of life
 
-    // DRIVERS ----------------------------------------------------------------
+    // DRIVERS --------------------------------------------
     // initialize core gort system drivers
     timer_init();
     uart_init();
     i2c_init();
     spi_init();
+    adc_init();
     
     eep(INIT_EEP_PERIOD_MS); // epp for a lil to let clockies warm up
     
@@ -76,18 +78,24 @@ void init()
     led_init();
     switch_init();
     rtc_init();
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------
 
+    // KERNEL ---------------------------------------------
     gsys_init();
+    gfs_init();
 
     // gin & gout = uart
     gin = 0;
     gout = 0;
+    // ----------------------------------------------------
 
     // print start message
     glear();
     helloworld("~~~ Gort OS ~~~\n");
     helloworld("(c) rdupu13 2026\n\n");
+    helloworld("Current time: ");
+    print_systime();
+    helloworld("\n");
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

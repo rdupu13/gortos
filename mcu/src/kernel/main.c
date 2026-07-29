@@ -47,6 +47,7 @@ int main(void)
 
     while (1) {
         rtc_get();
+        
         eep(333);
     } // loop forever
     return 0;

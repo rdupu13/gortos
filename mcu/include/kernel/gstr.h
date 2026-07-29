@@ -36,12 +36,13 @@ int girth(char *arr);                   // get the length of an array
 //void gsplits(char *arr, char delim);
 
 //char *uint_to_bcd(int num);
-//char *bcd_to_str(char *bcd);
+void bcd_to_str(char *str, char *bcd);
 //char *uint_to_str(int num);
 
 //char *str_to_bcd(char *str);
 //int bcd_to_uint(char *bcd);
 //int str_to_uint(char *str);
+
 
 #endif
 //-----------------------------------------------------------------------------

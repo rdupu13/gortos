@@ -33,13 +33,16 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void gsys_init();
+void gsys_init();               // initialize gort system
 
-void eep(unsigned int delay); // take a gort nap
-//void print_systime(); // write gort system time to gout
+void eep(unsigned int delay);   // take a gort nap
+void print_systime();           // write current gort system time to gout
 
-// interrupt service routines (for drivers):
+// interrupt service routines (for drivers only): -----------------------------
+// timer
 void qcnt_update(unsigned int qcnt);
+void fcnt_update(unsigned int fcnt);
+// switch
 void switch_0_pressed();
 void switch_1_pressed();
 

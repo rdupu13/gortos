@@ -83,12 +83,20 @@ char *uint_to_bcd(int num)
 
 /**
  * @brief convert binary-coded decimal to string representation
- *
-char *bcd_to_str(char *bcd)
+ */
+void bcd_to_str(char *str, char *bcd)
 {
     // 5 x 4-bit BCD (char[3]) -> char[5]
+    unsigned int i;
+    unsigned int j = 0;
+    for (i = 0; bcd[i] != '\0'; i++)
+    {
+        str[j] = ((bcd[i] >> 4) & 0x0F) + '0';
+        str[j + 1] = (bcd[i] & 0x0F) + '0';
+        j += 2;
+    }
 }
-*/
+
 
 /**
  * @brief convert unsigned integer to string representation

@@ -33,7 +33,7 @@ volatile unsigned int timer_fcnt; // 256 Hz
 //-----------------------------------------------------------------------------
 
 /**
- * @brief initialize timer
+ * @brief initialize timers
  * 
  * @param none
  * @return none
@@ -101,6 +101,7 @@ void timer_init()
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
+// TIMER B0 -------------------------------------------------------------------
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void isr_tb0_ccr0(void)
 {
@@ -121,7 +122,9 @@ __interrupt void isr_tb0_iv(void)
     }
 }
 */
+// ----------------------------------------------------------------------------
 
+#if TIMER_B1_TOGGLE // --------------------------------------------------------
 #pragma vector = TIMER1_B0_VECTOR
 __interrupt void isr_tb1_ccr0(void)
 {
@@ -142,7 +145,9 @@ __interrupt void isr_tb1_iv(void)
     }
 }
 */
+#endif // ---------------------------------------------------------------------
 
+#if TIMER_B2_TOGGLE // --------------------------------------------------------
 /*
 #pragma vector = TIMER2_B0_VECTOR
 __interrupt void isr_tb2_ccr0(void)
@@ -164,6 +169,9 @@ __interrupt void isr_tb2_iv(void)
         default: break;
     }
 }
+#endif // ---------------------------------------------------------------------
+
+
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

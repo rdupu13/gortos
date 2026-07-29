@@ -29,6 +29,13 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
+#define ADC_INIT_CH     0
+
+// channel 0 = A2
+#define ADC_CH0_SEL0    P1SEL0
+#define ADC_CH0_SEL1    P1SEL1
+#define ADC_CH0_PIN     BIT2
+#define ADC_CH0_INCH    ADCINCH_2
 
 
 
@@ -36,7 +43,8 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void adc_init();                        // initialize adc
+void adc_init();                            // initialize adc
+unsigned int adc_read(unsigned char ch);    // read the value from an adc channel
 
 
 #endif

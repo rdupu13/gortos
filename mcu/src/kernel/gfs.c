@@ -13,31 +13,70 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <stdint.h>
-
 #include "kernel/gfs.h"
+
+// drivers
+#include "drivers/uart.h"
+#include "drivers/spi.h"
 
 // kernel
 
-
-// drivers
-#include "drivers/spi.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
+gfile_t uart;
 
+gfile_t cur_file;
+char cur_file_data0[FILE_LEN];
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
+/**
+ * 
+ */
+void gfs_init()
+{
+    //uart = {"ttyUART", 0b00011011, 0, 0};
+    
+}
 
+/**
+ * 
+ */
+gfile_t *file_open()
+{
+    return &cur_file;
+}
 
+/**
+ * 
+ */
+int file_write(gfile_t *fp, char *arr)
+{
+    return 0;
+}
 
+/**
+ * 
+ */
+int file_read(gfile_t *fp, char *arr, int n, char stop)
+{
+    return 0;
+}
+
+/**
+ * 
+ */
+void file_close(gfile_t *fp)
+{
+
+}
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

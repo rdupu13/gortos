@@ -26,14 +26,14 @@ GPIO
     P3.3 - 
     P3.4 - 
     P3.5 - 
-    P3.6 - 
-    P3.7 - 
+    P3.6 - SWITCH1
+    P3.7 - SWITCH0
     P4.0 - LEDBAR_BIT8
     P4.1 - LEDBAR_BIT9
     P4.4 - LED_TEST2
     P4.5 - LED_TEST1
-    P5.0 - SWITCH0
-    P5.1 - SWITCH1
+    P5.0 - 
+    P5.1 - 
 UART
     P4.2 - UCA1RXD
     P4.3 - UCA1TXD
@@ -45,8 +45,6 @@ SPI
     P1.5 - UCA0MOSI
     P1.6 - UCA0CLK
     P1.7 - UCA0STE
-ADC
-    ?
 ---------------------------------------
 
 Embedded System:
@@ -54,9 +52,8 @@ Embedded System:
 - LED bar (10)
 - Real-Time Clock
     - 3.3 V battery
-- 32KB RAM (?)
+- 1 Mbit RAM ?
 - LCD Display
-
 
 
 ===============================================================================
@@ -75,31 +72,39 @@ i2c.h - I2C serial interface
 
 spi.h - SPI serial interface
     spi_init
+    spi_write
+    spi_read
+
+adc.h - ADC driver
+    adc_init
 
 led.h - LED configuration (w)
     led_init
+    led_heartbeat_update
+    ledbar_setpins
+    ledbar_sel
 
 switch.h - Switch configuration (r)
     switch_init
+    switch_poll
     
-rtc.h - Real-Time Clock (rw)
+rtc.h - Real-Time Clock (i2c) (rw)
     rtc_init
     rtc_start
     rtc_stop
     rtc_get
+    rtc_set
     rtc_get_str
-    rtc_get_strtime
-    rtc_get_strdate
-    
+    rtc_settime
+    rtc_setdate
     ~ Format: "07-24-2026 21:22:05" ~
-    
 
-mem.h - Cyprus 32KB RAM (rw)
-    mem_init
-    mem_write
-    mem_read
+mmm.h - 1 Mbit RAM (spi) (rw)
+    mmm_init
+    mmm_write
+    mmm_read
 
-lcd.h - LCD Display (rw)
+lcd.h - LCD Display (i2c) (rw)
     lcd_init
 
 dial.h - Dial Type (r)
@@ -107,21 +112,29 @@ dial.h - Dial Type (r)
     
 ---------------------------------------
 
-sys.h - System
+gsys.h - System
+    eep
     get_cur_time
+    ~ ISRs ~
+    qcnt_update
+    fcnt_update
+    switch_0_pressed
+    switch_1_pressed
 
 gfs.h - Gort Filesystem
-    make_file
-    del_file
-
+    file_open
+    file_write
+    file_read
+    file_close
+    
 gio.h - Gort I/O
-    GIN
-    GOUT
     helloworld
     hellogort
+    glear
+    blinky
 
 init.h - System initialization --------
-    init 
+    init
     
 ---------------------------------------
 
@@ -160,9 +173,28 @@ File Format ---------------------------
 	Mode Bits (1 B)
 		00 - Normal
 		01 - Directory
-		10 - Stream
-		11 - 
-		000 - Read, Write, Execute
+		10 - Stream0?
+		11 - Stream1?
+        Read, Write, Execute
+		000
+        Interface0 (if Stream0)
+        000 - UART
+        001 - LCD
+        010 - 
+        011 - 
+        100 - 
+        101 - 
+        110 - 
+        111 - 
+        Interface1 (if Stream1)
+        000 - 
+        001 - 
+        010 - 
+        011 - 
+        100 - 
+        101 - 
+        110 - 
+        111 - 
 	
 	Size in bytes (1 B)
 	N: Data

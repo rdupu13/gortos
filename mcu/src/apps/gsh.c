@@ -17,11 +17,12 @@
 
 // drivers
 // TODO: create kernel interface, apps should not have direct access to drivers
-#include "drivers/rtc.h"
+
 
 // kernel
 #include "kernel/gio.h"
 #include "kernel/gstr.h"
+#include "kernel/gsys.h"
 
 
 //-----------------------------------------------------------------------------
@@ -59,10 +60,7 @@ int main_gsh()
         // ----------------------------------------------------
         
         // print rtc time
-        char *dt;
-        dt = rtc_getstr();
-        helloworld(dt);
-        helloworld("\n");
+        print_systime();
 
         // ----------------------------------------------------
         helloworld("\n");

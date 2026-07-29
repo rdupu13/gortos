@@ -13,10 +13,6 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// drivers
-#include "drivers/rtc.h"
-
-// kernel
 #include "kernel/gsys.h"
 
 // drivers
@@ -25,6 +21,9 @@
 #include "drivers/patterns.h"
 #include "drivers/rtc.h"
 
+// kernel
+#include "kernel/gio.h"
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
@@ -32,21 +31,20 @@
 
 unsigned char ledbar_cursel;
 
-unsigned char switch_hist[2];
-
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
 /**
+ * @brief initialize gort system
  * 
+ * @param none
+ * @return none
  */
 void gsys_init()
 {
     ledbar_cursel = 1;
-    switch_hist[0] = 0;
-    switch_hist[1] = 0;
 }
 
 /**
@@ -66,15 +64,18 @@ void eep(unsigned int delay)
 }
 
 /**
- * @brief write gort system time to gout
- *
+ * @brief write current gort system time to gout
+ * 
+ * @param none
+ * @return none
+ */
 void print_systime()
 {
     char *systime;
     systime = rtc_getstr();
     helloworld(systime);
+    helloworld("\n");
 }
-*/
 
 //-----------------------------------------------------------------------------
 //  INTERRUPT SERVICE ROUTINES
@@ -91,8 +92,8 @@ void qcnt_update(unsigned int qcnt)
     led_heartbeat_update(qcnt);
     
     // LED patterns
-    patterns_update(qcnt);
-    ledbar_sel(ledbar_cursel);
+    patterns_update(qcnt); // advance patterns
+    ledbar_sel(ledbar_cursel); // update ledbar
 }
 
 /**
@@ -102,13 +103,7 @@ void qcnt_update(unsigned int qcnt)
  */
 void fcnt_update(unsigned int fcnt)
 {
-    /*
-    switch_hist[0] = (switch_hist[0] << 1) | switch_poll(0);
-    if (switch_hist[0] == 0xFF) { switch_0_pressed(); }
     
-    switch_hist[1] = (switch_hist[1] << 1) | switch_poll(1);
-    if (switch_hist[1] == 0xFF) { switch_1_pressed(); }
-    */
 }
 
 /**
@@ -119,23 +114,17 @@ void fcnt_update(unsigned int fcnt)
  */
 void switch_0_pressed()
 {
-    switch(ledbar_cursel)
+    if (ledbar_cursel == 1)
     {
-        case 1:
-            ledbar_cursel = 2;
-            LED_TEST0_PORT |= LED_TEST0_PIN;
-            patterns_sel(0);
-            break;
-        
-        case 2:
-            ledbar_cursel = 1;
-            LED_TEST0_PORT &= ~LED_TEST0_PIN;
-            rtc_display_sel(0);
-            break;
-
-        default:
-            ledbar_cursel = 1;
-            break;
+        ledbar_cursel = 2;
+        LED_TEST0_PORT |= LED_TEST0_PIN;
+        rtc_display_sel(0);
+    }
+    else
+    {
+        ledbar_cursel = 1;
+        LED_TEST0_PORT &= ~LED_TEST0_PIN;
+        patterns_sel(0);
     }
 }
 

@@ -27,21 +27,29 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-
+#define FILE_NAME_LEN   16
+#define FILE_LEN        256
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-// typedef gfile
+typedef struct
+{
+    char name[FILE_NAME_LEN];
+    unsigned char mode;
+    unsigned int size;
+    char *data;
+}
+gfile_t;
 
+void gfs_init();
 
-
-//int file_open(char *path);
-//int file_write(gfile *fp, char *arr);
-//int file_read(gfile *fp, char *arr, int n, char stop);
-//int file_close(gfile *fp);
+gfile_t *file_open(char *path);
+int file_write(gfile_t *fp, char *arr);
+int file_read(gfile_t *fp, char *arr, int n, char stop);
+void file_close(gfile_t *fp);
 
 
 #endif

@@ -90,6 +90,8 @@ void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr
     if (i2c_busy) { return; }
     i2c_busy = 1; I2C_BUSY_PORT |= I2C_BUSY_PIN; // busy
 
+    // TODO: perhaps disable timer interrupts
+
     UCB1I2CSA = slave_addr;
     i2c_reg_addr = reg_addr;
     i2c_cnt = len + 1;
@@ -122,6 +124,8 @@ void i2c_read(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr)
 
     if (i2c_busy) { return; }
     i2c_busy = 1; I2C_BUSY_PORT |= I2C_BUSY_PIN; // busy
+
+    // TODO: perhaps disable timer interrupts
 
     UCB1I2CSA = slave_addr;
     i2c_reg_addr = reg_addr;
