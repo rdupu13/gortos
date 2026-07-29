@@ -19,6 +19,11 @@
 // applications
 #include "apps/gsh.h"
 
+// testing
+#include "kernel/gsys.h"
+#include "drivers/rtc.h"
+
+
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
@@ -32,15 +37,18 @@
  * @brief gort kernel!
  * 
  * @param none
- * @return never returns
+ * @return never returns!
  */
 int main(void)
 {
     init(); // initialize gort system
 
-    int gsh = main_gsh(); // launch gort shell
+    //int gsh = main_gsh(); // launch gort shell
 
-    while (1) {} // loop forever
+    while (1) {
+        rtc_get();
+        eep(333);
+    } // loop forever
     return 0;
 }
 //-----------------------------------------------------------------------------

@@ -17,7 +17,6 @@
 
 // drivers
 // TODO: create kernel interface, apps should not have direct access to drivers
-#include "drivers/led.h"
 #include "drivers/rtc.h"
 
 // kernel
@@ -29,7 +28,7 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile char *gsh_cmd;
+volatile char gsh_cmd[64];
 
 volatile char cur_user[] = "gort";
 volatile char cur_path[] = "/home/gort";
@@ -56,7 +55,7 @@ int main_gsh()
         helloworld(cur_path);
         helloworld("$ ");
 
-        gsh_cmd = hellogort(0, '\r');
+        hellogort(gsh_cmd, 0, '\r');
         // ----------------------------------------------------
         
         // print rtc time
@@ -64,14 +63,7 @@ int main_gsh()
         dt = rtc_getstr();
         helloworld(dt);
         helloworld("\n");
-        
-        // switch ledbar selection
-        sel++;
-        if (sel > 5) {
-            sel = 0;
-        }
-        ledbar_sel(sel);
-        
+
         // ----------------------------------------------------
         helloworld("\n");
     }

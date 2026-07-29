@@ -18,7 +18,8 @@
 
 #include "drivers/switch.h"
 
-#include "drivers/led.h"
+// kernel
+#include "kernel/gsys.h"
 
 
 //-----------------------------------------------------------------------------
@@ -42,31 +43,62 @@ void switch_init()
     SWITCH0_DIR &= ~SWITCH0_PIN; // set as input
     SWITCH0_REN |=  SWITCH0_PIN; // enable resistor
     SWITCH0_OUT |=  SWITCH0_PIN; // pull-up resistor
-    SWITCH0_IES |=  SWITCH0_PIN; // falling-edge interrupts
-    SWITCH0_IE  |=  SWITCH0_PIN; // enable interrupts
-    SWITCH0_IFG &= ~SWITCH0_PIN; // clear interrupt flag
+    if (SWITCH_INT_EN) {
+        SWITCH0_IES |=  SWITCH0_PIN; // falling-edge interrupts
+        SWITCH0_IE  |=  SWITCH0_PIN; // enable interrupts
+        SWITCH0_IFG &= ~SWITCH0_PIN; // clear interrupt flag
+    }
 
     // initialize switch 1
     SWITCH1_DIR &= ~SWITCH1_PIN; // set as input
     SWITCH1_REN |=  SWITCH1_PIN; // enable resistor
     SWITCH1_OUT |=  SWITCH1_PIN; // pull-up resistor
-    SWITCH1_IES |=  SWITCH1_PIN; // falling-edge interrupts
-    SWITCH1_IE  |=  SWITCH1_PIN; // enable interrupts
-    SWITCH1_IFG &= ~SWITCH1_PIN; // clear interrupt flag
+    if (SWITCH_INT_EN) {
+        SWITCH1_IES |=  SWITCH1_PIN; // falling-edge interrupts
+        SWITCH1_IE  |=  SWITCH1_PIN; // enable interrupts
+        SWITCH1_IFG &= ~SWITCH1_PIN; // clear interrupt flag
+    }
 }
 
+/**
+ * 
+ */
+unsigned char switch_poll(unsigned char n)
+{
+    unsigned char res;
+    switch(n)
+    {
+        case 0: res = (SWITCH0_IN & SWITCH0_PIN) ? 0 : 1; break;
+        case 1: res = (SWITCH1_IN & SWITCH1_PIN) ? 0 : 1; break;
+        default: res = 0; break; 
+    }
+    return res;
+}
 
 //-----------------------------------------------------------------------------
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
-#pragma vector = PORT5_VECTOR
-__interrupt void port5_isr(void)
+#pragma vector = SWITCH_PORT_VECTOR
+__interrupt void port_isr(void)
 {
-    LED_TEST0_PORT ^= LED_TEST0_PIN;
+    switch(SWITCH_IV)
+    {
+        case SWITCH0_IV_VAL: switch_0_pressed(); break;
+        case SWITCH1_IV_VAL: switch_1_pressed(); break;
+        
+        /* TODO: attempt to alleviate stupid switch debounce
+        case SWITCH0_IV_VAL:
+            SWITCH0_IE  &=  ~SWITCH0_PIN; // enable interrupts
+            break;
+        
+        case SWITCH1_IV_VAL:
+            SWITCH0_IE  &=  ~SWITCH0_PIN; // enable interrupts
+            break;
+        */
 
-    SWITCH0_IFG &= ~SWITCH0_PIN;
-    SWITCH1_IFG &= ~SWITCH1_PIN;
+        default: break;
+    }
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * rtc driver library
+ * pwm driver library
  * 
  * created by rdupu13
  * 
- * @file rtc.h
+ * @file ppwm.h
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,47 +13,30 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef RTC_H
-#define RTC_H
+#ifndef PWM_H
+#define PWM_H
 
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <stdint.h>
+
 
 
 //-----------------------------------------------------------------------------
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define RTC_SLAVE_ADDR 0x0068
 
-#define RTC_REG_SEC 0x00
-#define RTC_REG_CTL 0x0E
-
-#define RTC_STRLEN 19
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-volatile unsigned char *rtc_display; // register currently being displayed
 
-void rtc_init();    // initialize rtc
-void rtc_start();   // start rtc
-void rtc_stop();    // stop rtc
-void rtc_get();     // get current rtc date and time
-void rtc_set();     // set current date and time
 
-char *rtc_getstr(); // get current rtc date and time and convert to string
-//void rtc_setdate(int month, int day, int year);
-//void rtc_settime(int hour, int minute, int second);
-
-void rtc_display_sel(unsigned int sel);
-void rtc_display_next();
 
 #endif
 //-----------------------------------------------------------------------------

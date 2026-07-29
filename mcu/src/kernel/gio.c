@@ -17,16 +17,22 @@
 
 #include "kernel/gio.h"
 
+// kernel
+#include "kernel/gsys.h"
+#include "kernel/gstr.h"
+
 // drivers
 #include "drivers/uart.h"
 #include "drivers/i2c.h"
+#include "drivers/led.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-// TODO: make GOUT and GIN variable
+volatile char gin_buf[GIN_BUF_SIZE];
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -42,11 +48,11 @@
 int helloworld(char *arr)
 {
     int stat = 0;
-    switch(GOUT)
+    switch(gout)
     {
         case 0:
             // uart
-            uart_tx((uint8_t *) arr);
+            uart_tx(girth(arr), (uint8_t *) arr);
             break;
         
         case 1:
@@ -55,6 +61,15 @@ int helloworld(char *arr)
                 0x0068,
                 0x00,
                 (uint8_t) girth(arr),
+                (uint8_t *) arr
+            );
+            break;
+
+        case 2:
+            // spi
+            spi_write(
+                0x1E,
+                (uint16_t) girth(arr),
                 (uint8_t *) arr
             );
             break;
@@ -74,24 +89,23 @@ int helloworld(char *arr)
  * 
  * @return pointer to received array, null if unsuccessful
  */
-char *hellogort(int n, char stop)
+int hellogort(char *arr, int n, char stop)
 {
-    char *ret = 0;
-    switch(GIN)
+    int ret = 0;
+    switch(gin)
     {
         case 0:
             // uart
-            ret = (char *) uart_rx((uint8_t) n, (uint8_t) stop);
+            uart_rx((uint16_t) n, (uint8_t *) gin_buf, (uint8_t) stop);
             break;
         
         case 1:
-            // i2c
-            // TODO: check n
+            /* i2c
             ret = (char *) i2c_read(
                 0x0068, 
                 0x00, 
                 (uint8_t) n
-            );
+            );*/
             break;
         
         default: break;
@@ -111,6 +125,17 @@ void glear()
     char seq[] = PUTTY_CLEAR_SEQ;
     helloworld(seq);
 }
+
+/**
+ * blink the TEST1 LED for delay ms
+ */
+void blinky(unsigned int delay)
+{
+    LED_TEST0_PORT |= LED_TEST0_PIN;
+    eep(delay);
+    LED_TEST0_PORT &= ~LED_TEST0_PIN;
+}
+
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

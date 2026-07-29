@@ -23,6 +23,15 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
+volatile uint8_t *i2c_tx_buf_ptr;
+volatile uint8_t *i2c_rx_buf_ptr;
+volatile uint16_t i2c_cnt;
+volatile uint8_t i2c_busy;
+
+volatile uint16_t i2c_len;
+volatile uint8_t i2c_reg_addr;
+volatile uint8_t i2c_mode;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -55,10 +64,13 @@ void i2c_init()
     UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0);  // clear tx/rx interrupt flags
 
     // initialize variables
+    i2c_tx_buf_ptr = 0;
+    i2c_rx_buf_ptr = 0;
+    i2c_cnt = 0;
+    i2c_busy = 0; I2C_BUSY_PORT &= ~I2C_BUSY_PIN;
     i2c_len = 0;
+    i2c_reg_addr = 0;
     i2c_mode = 0;
-    i2c_busy = 0;
-    I2C_BUSY_PORT &= ~I2C_BUSY_PIN;
 }
 
 /**
@@ -71,32 +83,26 @@ void i2c_init()
  * 
  * @return none
  */
-void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint8_t len, uint8_t *arr)
+void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr)
 {
-    if (i2c_busy) { return; } // do nothing if i2c busy
-    i2c_busy = 1;
-    I2C_BUSY_PORT |= I2C_BUSY_PIN;
+    if (len == 0) { return; }
 
-    // TODO: make len an int
-    // TODO: check len
+    if (i2c_busy) { return; }
+    i2c_busy = 1; I2C_BUSY_PORT |= I2C_BUSY_PIN; // busy
 
     UCB1I2CSA = slave_addr;
-    i2c_tx_buf[0] = reg_addr;
-    i2c_len = len + 1;
+    i2c_reg_addr = reg_addr;
+    i2c_cnt = len + 1;
+    i2c_tx_buf_ptr = arr;
     
-    // copy array of data into i2c_tx_buf after reg_addr
-    uint8_t i;
-    for (i = 0; i < len; i++)
-    {
-        i2c_tx_buf[i + 1] = arr[i];
-    }
-
-    i2c_tx_buf_ptr = i2c_tx_buf;
+    i2c_len = len;
     i2c_mode = 0; // write mode
+
     UCB1CTLW0 |= UCTR; // put peripheral into tx mode
     UCB1IE |= UCTXIE0; // enable tx complete interrupts
     UCB1CTLW0 |= UCTXSTT; // send start + send slave addr
 
+    // TODO: add timeout (tx didn't work for some reason)
     while (i2c_busy) {} // wait until tx done
 }
 
@@ -106,32 +112,31 @@ void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint8_t len, uint8_t *arr)
  * @param slave_addr    slave address
  * @param reg_addr      slave register address to start reading from
  * @param len           length in bytes of array to be read
+ * @param arr           pointer to array to store received data
  * 
- * @return pointer to receive buffer
+ * @return none
  */
-uint8_t *i2c_read(uint16_t slave_addr, uint8_t reg_addr, uint8_t len)
+void i2c_read(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr)
 {
-    if (i2c_busy) { return (uint8_t *) 0; } // do nothing if i2c busy
-    i2c_busy = 1;
-    I2C_BUSY_PORT |= I2C_BUSY_PIN;
+    if (len == 0) { return; }
 
-    // TODO: make len an int
-    // TODO: check len
+    if (i2c_busy) { return; }
+    i2c_busy = 1; I2C_BUSY_PORT |= I2C_BUSY_PIN; // busy
 
     UCB1I2CSA = slave_addr;
-    i2c_tx_buf[0] = reg_addr;
-    i2c_len = len;
+    i2c_reg_addr = reg_addr;
+    i2c_cnt = len + 1;
+    i2c_rx_buf_ptr = arr;
 
-    i2c_tx_buf_ptr = i2c_tx_buf;
-    i2c_rx_buf_ptr = i2c_rx_buf;
+    i2c_len = len;
     i2c_mode = 1; // read mode
+
     UCB1CTLW0 |= UCTR; // put peripheral into tx mode
     UCB1IE |= UCTXIE0; // enable tx complete interrupts
     UCB1CTLW0 |= UCTXSTT; // send start + slave addr
 
-    while (i2c_busy) {} // wait until done receiving
-
-    return i2c_rx_buf;
+    // TODO: add timeout
+    while (i2c_busy) {} // wait until rx done
 }
 
 
@@ -151,8 +156,7 @@ __interrupt void isr_eusci_b1(void)
             UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
             UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0); // clear tx/rx interrupt flags
             UCB1CTLW0 |= UCTXSTP; // send stop condition
-            i2c_busy = 0; // not busy
-            I2C_BUSY_PORT &= ~I2C_BUSY_PIN;
+            i2c_busy = 0; I2C_BUSY_PORT &= ~I2C_BUSY_PIN; // not busy
             break;
         
         case 0x06: break; // STTIFG
@@ -160,15 +164,16 @@ __interrupt void isr_eusci_b1(void)
         case 0x16:
             // RXIFG0 (rx buffer full)
             *i2c_rx_buf_ptr++ = UCB1RXBUF; // store received byte
-            if (i2c_len > 1 && (i2c_rx_buf_ptr == (i2c_rx_buf + i2c_len - 1)))
+            i2c_cnt--; // decrement counter
+
+            if (i2c_cnt == 1)
             {
                 UCB1CTLW0 |= UCTXSTP; // send stop condition after last byte
             }
-            else if (i2c_rx_buf_ptr == (i2c_rx_buf + i2c_len))
+            else if (i2c_cnt == 0)
             {
                 UCB1IE &= ~UCRXIE0; // disable rx buffer full interrupts
-                i2c_busy = 0; // not busy
-                I2C_BUSY_PORT &= ~I2C_BUSY_PIN;
+                i2c_busy = 0; I2C_BUSY_PORT &= ~I2C_BUSY_PIN; // not busy
             }
             break;
 
@@ -177,9 +182,10 @@ __interrupt void isr_eusci_b1(void)
             if (i2c_mode)
             {
                 // read mode
-                if (i2c_tx_buf_ptr == i2c_tx_buf)
+                if (i2c_cnt > i2c_len)
                 {
-                    UCB1TXBUF = *i2c_tx_buf_ptr++; // send register address
+                    UCB1TXBUF = i2c_reg_addr; // send register address
+                    i2c_cnt--; // decrement counter
                 }
                 else
                 {
@@ -187,6 +193,7 @@ __interrupt void isr_eusci_b1(void)
                     UCB1CTLW0 &= ~UCTR; // put peripheral into rx mode
                     UCB1IE &= ~UCTXIE0; // disable tx complete interrupts
                     UCB1IE |= UCRXIE0; // enable rx buffer full interrupts
+                    UCB1IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
                     UCB1CTLW0 |= UCTXSTT; // send repeated start + slave addr
                     
                     // stupid fucking special case for 1-byte reads
@@ -200,16 +207,21 @@ __interrupt void isr_eusci_b1(void)
             else
             {
                 // write mode
-                if (i2c_tx_buf_ptr == (i2c_tx_buf + i2c_len))
+                if (i2c_cnt == 0)
                 {
                     UCB1IE &= ~UCTXIE0; // disable tx complete interrupts
                     UCB1CTLW0 |= UCTXSTP; // send stop condition
-                    i2c_busy = 0; // not busy
-                    I2C_BUSY_PORT &= ~I2C_BUSY_PIN;
+                    i2c_busy = 0; I2C_BUSY_PORT &= ~I2C_BUSY_PIN; // not busy
+                }
+                else if (i2c_cnt > i2c_len)
+                {
+                    UCB1TXBUF = i2c_reg_addr; // send register address
+                    i2c_cnt--; // decrement counter
                 }
                 else
                 {
                     UCB1TXBUF = *i2c_tx_buf_ptr++; // send next byte
+                    i2c_cnt--; // decrement counter
                 }
             }
             break;

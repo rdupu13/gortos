@@ -26,8 +26,7 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define GOUT    0
-#define GIN     0
+#define GIN_BUF_SIZE        256
 
 #define PUTTY_CLEAR_SEQ     "\033[H\033[2J"
 
@@ -36,8 +35,15 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-int helloworld(char *arr); // write an array to gout
-char *hellogort(int n, char stop); // read n chars from gin, if n = 0, until stop
+volatile int gin;
+volatile int gout;
+
+int helloworld(char *arr);                  // write an array to gout
+int hellogort(char *arr, int n, char stop); // read n chars from gin, if n = 0: read until stop char
+
+void glear(); // clear screen (write PuTTY clear sequence to gout)
+
+void blinky(unsigned int delay); // blink the TEST1 LED for delay ms
 
 
 #endif

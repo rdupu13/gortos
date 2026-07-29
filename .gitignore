@@ -59,6 +59,9 @@ targetConfigs/
 .project
 .settings/
 
+# vscode files
+.vscode/
+
 # draw.io tmp files
 *.bkp
 *.dtmp

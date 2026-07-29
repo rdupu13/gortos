@@ -23,6 +23,14 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
+volatile uint8_t *uart_tx_buf_ptr;
+volatile uint8_t *uart_rx_buf_ptr;
+volatile uint16_t uart_cnt;
+volatile uint8_t uart_busy;
+
+volatile uint8_t uart_rxmode;
+volatile uint8_t uart_stop;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -53,6 +61,7 @@ void uart_init()
             UCA1MCTLW |= 0xD600;        // modulation = 0xD608 (115200 baud)
             break;
         default:
+            // TODO: return error
             UCA1CTLW0 |= UCSSEL__SMCLK; // clock source = smclk (1 MHz)
             UCA1BRW = 8;                // divide brclk by 8
             UCA1MCTLW |= 0xD600;        // modulation = 0xD608 (115200 baud)
@@ -66,64 +75,65 @@ void uart_init()
 
     // initialize variables
     uart_tx_buf_ptr = 0;
-    uart_rx_buf_ptr = uart_rx_buf;
+    uart_rx_buf_ptr = 0;
+    uart_cnt = 0;
+    uart_busy = 0;
+    uart_rxmode = 0;
     uart_stop = '\r';
-    uart_tx_done = 1;
-    uart_rx_done = 1;
-    uart_n = 0;
-    uart_cnt = 1;
 }
 
 /**
- * @brief transmit a null-terminated array over uart
+ * @brief transmit an array over uart
  * 
+ * @param len length in bytes of array to be transmitted
  * @param arr pointer to array to be transmitted
  * 
  * @return none
  */
-void uart_tx(uint8_t *arr)
+void uart_tx(uint16_t len, uint8_t *arr)
 {
-    if (!uart_tx_done) {
-        return;
-    }
+    if (len == 0) { return; }
 
-    uart_tx_done = 0; // clear done condition
-    uart_tx_buf_ptr = arr; // point to tx data
+    if (uart_busy) { return; }
+    uart_busy = 1; // busy
+
+    uart_cnt = len - 1;
+    uart_tx_buf_ptr = arr;
     
     UCA1IE |= UCTXCPTIE; // enable tx complete interrupts
     UCA1IFG &= ~UCTXCPTIFG; // clear tx complete interrupt flag
     
     UCA1TXBUF = *uart_tx_buf_ptr++; // tx first byte, triggering TXCPTIFG
 
-    while(!uart_tx_done) {} // wait until tx done
+    // TODO: add timeout (tx didn't work for some reason)
+    while(uart_busy) {} // wait until tx done
 }
 
 /**
  * @brief receive an array over uart
  * 
- * @param n     number of bytes to read (> 0)
- * @param stop  if n = 0, read until this character received
+ * @param len   number of bytes to read (> 0)
+ * @param arr   pointer to array to store received data
+ * @param stop  if len = 0, read until this character received
  * 
- * @return pointer to receive buffer
+ * @return none
  */
-uint8_t *uart_rx(uint8_t n, uint8_t stop)
+void uart_rx(uint16_t len, uint8_t *arr, uint8_t stop)
 {
-    if (!uart_rx_done) {
-        return 0;
-    }
+    if (uart_busy) { return 0; }
+    uart_busy = 1; // busy
 
-    uart_n = n;
-    uart_cnt = n;
+    uart_cnt = len;
+    uart_rx_buf_ptr = arr;
+
+    uart_rxmode = (len == 0) ? 1 : 0;
     uart_stop = stop;
-
-    uart_rx_done = 0; // clear done condition
-    uart_rx_buf_ptr = uart_rx_buf; // reset buffer pointer
     
-    UCA1IE |= UCRXIFG; // enable rx interrupts
-    UCA1IFG &= ~UCRXIFG; // clear rx interrupt flag
-    while(!uart_rx_done) {} // wait until stop condition
+    UCA1IE |= UCRXIFG; // enable rx buffer full interrupts
+    UCA1IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
 
-    return uart_rx_buf; // return pointer to start of buffer
+    // TODO: add timeout
+    while(uart_busy) {} // wait until rx done
 }
 
 
@@ -138,34 +148,41 @@ __interrupt void isr_eusci_a1(void)
     {
         case 0x00: break; // no interrupts
         case 0x02:
-            // UCRXIFG (received byte)
+            // UCRXIFG (rx buffer full)
             *uart_rx_buf_ptr = UCA1RXBUF; // store received byte
-
-            if (UART_ECHO) { UCA1TXBUF = *uart_rx_buf_ptr; } // echo char if enabled
-            if (uart_n != 0) { uart_cnt--; } // decrement counter
             
-            // stop condition
-            if (((uart_n != 0) && (uart_cnt == 0))
-                || ((uart_n == 0) && (*uart_rx_buf_ptr == uart_stop)))
+            // echo char if enabled
+            if (UART_ECHO)
             {
-                UCA1IE &= ~UCRXIFG;
-                uart_rx_done = 1;
+                UCA1TXBUF = *uart_rx_buf_ptr;
             }
+            
+            uart_cnt--; // decrement counter
+
+            // stop condition
+            if ((!uart_rxmode && (uart_cnt == 0))
+                || (uart_rxmode && (*uart_rx_buf_ptr == uart_stop)))
+            {
+                UCA1IE &= ~UCRXIE; // disable rx buffer full interrupts
+                uart_busy = 0; // not busy
+            }
+            
             uart_rx_buf_ptr++; // increment pointer
             break;
         
         case 0x04: break; // UCTXIFG (transmit??)
         case 0x06: break; // UCSTTIFG (start condition)
         case 0x08:
-            // UCTXCPTIFG (transmit complete)
-            if (*uart_tx_buf_ptr == '\0')
+            // UCTXCPTIFG (tx complete)
+            if (uart_cnt == 0)
             {
-                UCA1IE &= ~UCTXCPTIE; // disable transmit complete interrupts
-                uart_tx_done = 1; // set done condition
+                UCA1IE &= ~UCTXCPTIE; // disable tx complete interrupts
+                uart_busy = 0; // not busy
             }
             else
             {
-                UCA1TXBUF = *uart_tx_buf_ptr++; // tx next byte
+                UCA1TXBUF = *uart_tx_buf_ptr++; // send next byte
+                uart_cnt--;
             }
             break;
         

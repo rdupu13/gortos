@@ -23,6 +23,11 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
+volatile uint8_t *spi_tx_buf_ptr;
+volatile uint8_t *spi_rx_buf_ptr;
+volatile uint16_t spi_cnt;
+volatile uint8_t spi_busy;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -53,7 +58,10 @@ void spi_init()
     UCA0IFG &= ~(UCTXIFG | UCRXIFG);    // clear tx/rx interrupt flags
 
     // initialize variables
-    
+    spi_tx_buf_ptr = 0;
+    spi_rx_buf_ptr = 0;
+    spi_cnt = 0;
+    spi_busy = 0;
 }
 
 /**
@@ -64,26 +72,56 @@ void spi_init()
  * @param arr           pointer to array to be written
  * 
  * @return none
- *
-void spi_write(uint8_t reg_addr, uint8_t len, uint8_t *arr)
+ */
+void spi_write(uint8_t reg_addr, uint16_t len, uint8_t *arr)
 {
+    if (len == 0) { return; }
+
+    if (spi_busy) { return; }
+    spi_busy = 1; // busy
+
+    // TODO: handle reg_addr
+
+    spi_tx_buf_ptr = arr;
+    spi_cnt = len - 1;
+
+    UCA0IE |= UCTXIE; // enable tx complete interrupts
+    UCA0IFG &= ~UCTXIFG; // clear tx complete interrupt flag
     
+    UCA0TXBUF = *spi_tx_buf_ptr++; // tx first byte, triggering TXIFG
+
+    // TODO: add timeout (tx didn't work for some reason)
+    while(spi_busy) {} // wait until tx done
 }
-*/
+
 
 /**
  * @brief read an array from a spi slave
  * 
  * @param reg_addr      slave register address to start reading from
  * @param len           length in bytes of array to be read
+ * @param arr           pointer to array to store received data
  * 
  * @return pointer to receive buffer
- *
-uint8_t *spi_read(uint8_t reg_addr, uint8_t len)
+ */
+void spi_read(uint8_t reg_addr, uint16_t len, uint8_t *arr)
 {
-    
+    if (len == 0) { return; }
+
+    if (spi_busy) { return; }
+    spi_busy = 1; // busy
+
+    // TODO: handle reg_addr
+
+    spi_rx_buf_ptr = arr;
+    spi_cnt = len;
+
+    UCA0IE |= UCRXIE; // enable rx buffer full interrupts
+    UCA0IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
+
+    // TODO: add timeout
+    while(spi_busy) {} // wait until rx done
 }
-*/
 
 //-----------------------------------------------------------------------------
 //  INTERRUPT SERVICE ROUTINES
@@ -95,13 +133,31 @@ __interrupt void isr_eusci_a0(void)
     switch(UCA0IV)
     {
         case 2:
-            // RXIFG
-
+            // RXIFG (rx buffer full)
+            if (spi_cnt == 0)
+            {
+                UCA0IE &= ~UCRXIE;
+                spi_busy = 0;
+            }
+            else
+            {
+                *spi_rx_buf_ptr++ = UCA0RXBUF; // store received byte
+                spi_cnt--; // decrement counter
+            }
             break;
         
         case 4:
-            // TXIFG
-
+            // TXIFG (tx complete)
+            if (spi_cnt == 0)
+            {
+                UCA0IE &= ~UCTXIE; // disable tx complete interrupts
+                spi_busy = 0; // not busy
+            }
+            else
+            {
+                UCA0TXBUF = *spi_tx_buf_ptr++; // send next byte
+                spi_cnt--; // decrement counter
+            }
             break;
         
         default: break;
