@@ -26,10 +26,10 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-gfile_t uart;
+volatile gfile_t uart;
 
-gfile_t cur_file;
-char cur_file_data0[FILE_LEN];
+volatile gfile_t cur_file;
+volatile char cur_file_data0[FILE_LEN];
 
 
 //-----------------------------------------------------------------------------

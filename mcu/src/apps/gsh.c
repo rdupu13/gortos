@@ -46,7 +46,6 @@ volatile char cur_path[] = "/home/gort";
  */
 int main_gsh(void)
 {
-    int sel = 0;
     while(1)
     {
         helloworld(cur_user);

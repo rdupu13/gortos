@@ -42,7 +42,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void adc_init(void);                            // initialize adc
+void adc_init(void);                        // initialize adc
 unsigned int adc_read(unsigned char ch);    // read the value from an adc channel
 
 

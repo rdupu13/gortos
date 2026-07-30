@@ -29,6 +29,8 @@ volatile unsigned char adc_busy;
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
+void adc_sel(unsigned char ch);
+
 /**
  * @brief initialize adc
  * 

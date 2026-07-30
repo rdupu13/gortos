@@ -169,10 +169,10 @@ char *rtc_getstr(void)
 {
     rtc_get();
     
-    hex_to_str(rtc_dt_str, &rtc_month, 1);
-    hex_to_str(rtc_dt_str + 3, &rtc_date, 1);
-    hex_to_str(rtc_dt_str + 8, &rtc_year, 1);
-    hex_to_str(rtc_dt_str + 11, &rtc_hour, 1);
+    hex_to_str(rtc_dt_str,      &rtc_month,  1);
+    hex_to_str(rtc_dt_str + 3,  &rtc_date,   1);
+    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1);
+    hex_to_str(rtc_dt_str + 11, &rtc_hour,   1);
     hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
     hex_to_str(rtc_dt_str + 17, &rtc_second, 1);
 

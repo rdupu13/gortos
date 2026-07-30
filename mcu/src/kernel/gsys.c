@@ -15,23 +15,35 @@
 
 #include "kernel/gsys.h"
 
+// hardware
+#include <msp430fr2153.h>
+#include "hw/pfc.h"
+
 // drivers
+#include "drivers/adc.h"
+#include "drivers/i2c.h"
 #include "drivers/led.h"
-#include "drivers/switch.h"
 #include "drivers/patterns.h"
+#include "drivers/pwm.h"
+#include "drivers/spi.h"
+#include "drivers/switch.h"
+#include "drivers/timer.h"
 
 // devices
 #include "devices/rtc.h"
+#include "devices/uart.h"
 
 // kernel
+#include "kernel/gfs.h"
 #include "kernel/gio.h"
+#include "kernel/gfs.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-unsigned char ledbar_cursel;
+volatile unsigned char ledbar_cursel;
 
 
 //-----------------------------------------------------------------------------
@@ -46,7 +58,60 @@ unsigned char ledbar_cursel;
  */
 void gsys_init(void)
 {
+    WDTCTL = WDTPW | WDTHOLD; // stop watchdog timer
+    
+    // initalize ports to outputs as default:
+    P1SEL0 = 0x00; P2SEL0 = 0x00; P3SEL0 = 0x00; P4SEL0 = 0x00; P5SEL0 = 0x00;
+    P1SEL1 = 0x00; P2SEL1 = 0x00; P3SEL1 = 0x00; P4SEL1 = 0x00; P5SEL1 = 0x00;
+    P1DIR  = 0xFF; P2DIR  = 0xFF; P3DIR  = 0xFF; P4DIR  = 0xFF; P5DIR  = 0xFF;
+    P1OUT  = 0x00; P2OUT  = 0x00; P3OUT  = 0x00; P4OUT  = 0x00; P5OUT  = 0x00;
+
+    // to make compiler stfu (nvm it breaks the leds for some reason):
+    //P6SEL0 = 0x00; PASEL0 = 0x00; PBSEL0 = 0x00; PCSEL0 = 0x00;
+    //P6SEL1 = 0x00; PASEL1 = 0x00; PBSEL1 = 0x00; PCSEL1 = 0x00;
+    //P6DIR  = 0xFF; PADIR  = 0xFF;  PBDIR = 0xFF; PCDIR  = 0xFF;
+    //P6OUT  = 0x00; PAOUT  = 0x00;  PBOUT = 0x00; PCOUT  = 0x00;
+    
+    PM5CTL0 &= ~LOCKLPM5; // turn off low-power mode
+
+    LED_HEARTBEAT_PORT |= LED_HEARTBEAT_PIN; // show signs of life
+
+    // DRIVERS --------------------------------------------
+    // initialize core gort system drivers
+    timer_init();
+    uart_init();
+    i2c_init();
+    spi_init();
+    adc_init();
+    
+    eep(INIT_EEP_PERIOD_MS); // epp for a lil to let clockies warm up
+    
+    __enable_interrupt(); // globally enable interrupts
+
+    // intialize more gort system drivers
+    patterns_init();
+    led_init();
+    switch_init();
+    rtc_init();
+    // ----------------------------------------------------
+
+    // KERNEL ---------------------------------------------
+    //gfs_init();
+    
     ledbar_cursel = 1;
+
+    // gin & gout = uart
+    gin = 0;
+    gout = 0;
+    // ----------------------------------------------------
+
+    // print start message
+    glear();
+    helloworld("~~~ Gort OS ~~~\n");
+    helloworld("(c) rdupu13 2026\n\n");
+    helloworld("Current time: ");
+    print_systime();
+    helloworld("\n");
 }
 
 /**

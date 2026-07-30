@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
 
 
 //-----------------------------------------------------------------------------
@@ -40,9 +39,20 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void uart_init();                                       // initialize uart
-void uart_tx(uint16_t len, uint8_t *arr);               // transmit an array over uart
-void uart_rx(uint16_t len, uint8_t *arr, uint8_t stop); // receive an array over uart
+void uart_init(void); // initialize uart
+
+// transmit an array over uart
+void uart_tx(
+    unsigned int len,
+    unsigned char *arr
+);
+
+// receive an array over uart
+void uart_rx(
+    unsigned int len,
+    unsigned char *arr,
+    unsigned char stop
+);
 
 
 #endif

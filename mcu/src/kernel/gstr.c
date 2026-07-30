@@ -20,8 +20,8 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-char hex_str[4];
-char dec_str[5];
+volatile char hex_str[5];
+volatile char dec_str[] = "00000";
 
 
 //-----------------------------------------------------------------------------
@@ -178,7 +178,7 @@ char *hex(unsigned int n)
         unsigned int n_h = ((n >> 8) & 0x00FF);
         unsigned int n_swap = n_h | n_l;
         
-        hex_to_str(hex_str, &n_swap, 2);
+        hex_to_str(hex_str, (unsigned char *) &n_swap, 2);
         return hex_str;
     }
     

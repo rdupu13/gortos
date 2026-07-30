@@ -14,7 +14,7 @@
 //-----------------------------------------------------------------------------
 
 // kernel
-#include "kernel/init.h"
+#include "kernel/gsys.h"
 #include "kernel/gio.h" // testing
 #include "kernel/gstr.h" // testing
 
@@ -26,6 +26,7 @@
 
 // drivers
 #include "drivers/adc.h" // testing
+#include "drivers/led.h" // testing
 
 
 //-----------------------------------------------------------------------------
@@ -45,18 +46,19 @@
  */
 int main(void)
 {
-    init(); // initialize gort system
+    gsys_init(); // initialize gort system
 
     //int gsh = main_gsh(); // launch gort shell
 
+    unsigned int i;
     while (1)
     {
-        helloworld(hex(adc_read(0)));
-        helloworld("\n");
+        //helloworld(hex(adc_read(0)));
+        //helloworld("\n");
 
-        //rtc_get();
-        
-        eep(100);
+        rtc_get();
+
+        eep(61);
     } // loop forever
     return 0;
 }

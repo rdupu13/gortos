@@ -58,9 +58,9 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void switch_init();
+void switch_init(void);                     // initialize switches
 
-unsigned char switch_poll(unsigned char n);
+unsigned char switch_poll(unsigned char n); // 
 
 #endif
 //-----------------------------------------------------------------------------

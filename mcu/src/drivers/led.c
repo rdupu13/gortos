@@ -14,11 +14,9 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
-
 #include "drivers/led.h"
 
-// drivers
+// drivers & devices
 // TODO: make led application at kernel level, led shouldn't need other drivers
 #include "drivers/patterns.h"
 #include "devices/rtc.h"
@@ -28,12 +26,14 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile uint16_t *ledbar_cur;
+volatile unsigned int *ledbar_cur;
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
+
+void ledbar_setpins(void);
 
 /**
  * @brief initialize leds
@@ -41,7 +41,7 @@ volatile uint16_t *ledbar_cur;
  * @param none
  * @return none
  */
-void led_init()
+void led_init(void)
 {
     LED_HEARTBEAT_PORT &= ~LED_HEARTBEAT_PIN;
     LED_TEST0_PORT &= ~LED_TEST0_PIN;
@@ -72,9 +72,9 @@ void led_heartbeat_update(unsigned int qcnt)
  * 
  * @return none
  */
-void ledbar_setpins()
+void ledbar_setpins(void)
 {
-    LEDBAR_PORT0 = (uint8_t) (*ledbar_cur & 0x00FF);
+    LEDBAR_PORT0 = *ledbar_cur & 0x00FF;
     
     if (*ledbar_cur & 0x0100) {
         LEDBAR_PORT1 |= LEDBAR_BIT8;
@@ -96,7 +96,7 @@ void ledbar_setpins()
  * 
  * @return none
  */
-void ledbar_sel(uint8_t sel)
+void ledbar_sel(unsigned char sel)
 {
     unsigned int rtc_display_ext;
     switch(sel)
@@ -106,7 +106,7 @@ void ledbar_sel(uint8_t sel)
             break;
 
         case 2:
-            rtc_display_ext = (unsigned int) (*rtc_display);
+            rtc_display_ext = (unsigned int) *rtc_display;
             ledbar_cur = &rtc_display_ext;
             break;
 

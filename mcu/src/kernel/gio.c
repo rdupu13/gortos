@@ -40,19 +40,22 @@
  */
 int helloworld(char *arr)
 {
-    int stat = 0;
+    int status = 0;
     switch(gout)
     {
         case 0:
             // uart
-            uart_tx(girth(arr), arr);
+            uart_tx(
+                girth(arr),
+                (unsigned char *) arr
+            );
             break;
         
         default:
-            stat = 1; // raise error
+            status = 1; // raise error
             break;
     }
-    return stat;
+    return status;
 }
 
 /**
@@ -66,17 +69,23 @@ int helloworld(char *arr)
  */
 int hellogort(char *arr, int n, char stop)
 {
-    int ret = 0;
+    int status = 0;
     switch(gin)
     {
         case 0:
             // uart
-            uart_rx(n, arr, stop);
+            uart_rx(
+                (unsigned int) n,
+                (unsigned char *) arr,
+                (unsigned char) stop
+            );
             break;
         
-        default: break;
+        default:
+            status = 1;
+            break;
     }
-    return ret;
+    return status;
 }
 
 /**

@@ -88,8 +88,10 @@ void uart_init(void)
  * 
  * @return none
  */
-void uart_tx(unsigned int len, unsigned char *arr)
-{
+void uart_tx(
+    unsigned int len,
+    unsigned char *arr
+) {
     if (len == 0) { return; }
 
     if (uart_busy) { return; }
@@ -116,9 +118,12 @@ void uart_tx(unsigned int len, unsigned char *arr)
  * 
  * @return none
  */
-void uart_rx(unsigned int len, unsigned char *arr, unsigned char stop)
-{
-    if (uart_busy) { return 0; }
+void uart_rx(
+    unsigned int len,
+    unsigned char *arr,
+    unsigned char stop
+) {
+    if (uart_busy) { return; }
     uart_busy = 1; // busy
 
     uart_cnt = len;

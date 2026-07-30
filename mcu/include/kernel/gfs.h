@@ -35,6 +35,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+// file struct
 typedef struct
 {
     char name[FILE_NAME_LEN];
@@ -44,7 +45,7 @@ typedef struct
 }
 gfile_t;
 
-void gfs_init();
+void gfs_init(void);
 
 gfile_t *file_open(char *path);
 int file_write(gfile_t *fp, char *arr);

@@ -26,6 +26,8 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
+#define INIT_EEP_PERIOD_MS  2000
+
 #define DELAY_LOOP_MS 103
 
 
@@ -33,11 +35,11 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void gsys_init(void);           // initialize gort system
+void gsys_init(void);               // initialize gort system
 
-void eep(unsigned int delay);   // take a gort nap
-void blinky(void);              // 
-void print_systime(void);       // write current gort system time to gout
+void eep(unsigned int delay);       // take a gort nap
+void blinky(unsigned int delay);    // blink the TEST0 LED for delay ms
+void print_systime(void);           // write current gort system time to gout
 
 // interrupt service routines (for drivers only): ---------
 // timer

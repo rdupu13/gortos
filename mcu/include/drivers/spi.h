@@ -36,7 +36,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void spi_init(void);                                                            // initialize spi
+void spi_init(void); // initialize spi
 
 // write an array to a spi slave
 void spi_write(
