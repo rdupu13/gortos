@@ -35,13 +35,17 @@ void gopy(char *src, char *dst, int n); // copy array to another array
 int girth(char *arr);                   // get the length of an array
 //void gsplits(char *arr, char delim);
 
-//char *uint_to_bcd(int num);
-void bcd_to_str(char *str, char *bcd);
-//char *uint_to_str(int num);
+void hex(char *hex, unsigned int n);
 
-//char *str_to_bcd(char *str);
-//int bcd_to_uint(char *bcd);
-//int str_to_uint(char *str);
+//void uint_to_bcd(unsigned char *bcd, unsigned int num);
+void bcd_to_str(char *str, unsigned char *bcd, unsigned int len);
+
+//char *uint_to_str(unsigned int num);
+
+void str_to_bcd(unsigned char *bcd, char *str);
+//void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len);
+
+//unsigned int str_to_uint(char *str);
 
 
 #endif

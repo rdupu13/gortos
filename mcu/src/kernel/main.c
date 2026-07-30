@@ -22,6 +22,9 @@
 // testing
 #include "kernel/gsys.h"
 #include "drivers/rtc.h"
+#include "drivers/adc.h"
+#include "kernel/gio.h"
+#include "kernel/gstr.h"
 
 
 //-----------------------------------------------------------------------------
@@ -45,10 +48,16 @@ int main(void)
 
     //int gsh = main_gsh(); // launch gort shell
 
+    char wave_str[5];
+    wave_str[4] = '\0';
     while (1) {
+        hex(wave_str, adc_read(0));
+        helloworld(wave_str);
+        helloworld("\n");
+
         rtc_get();
         
-        eep(333);
+        eep(100);
     } // loop forever
     return 0;
 }

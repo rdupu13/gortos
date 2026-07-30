@@ -20,6 +20,9 @@
 // drivers
 #include "drivers/i2c.h"
 
+// kernel
+#include "kernel/gstr.h"
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
@@ -27,13 +30,13 @@
 
 volatile unsigned char rtc_display_num;
 
-volatile uint8_t rtc_second;
-volatile uint8_t rtc_minute;
-volatile uint8_t rtc_hour;
-volatile uint8_t rtc_weekday;
-volatile uint8_t rtc_date;
-volatile uint8_t rtc_month;
-volatile uint8_t rtc_year;
+volatile unsigned char rtc_second;
+volatile unsigned char rtc_minute;
+volatile unsigned char rtc_hour;
+volatile unsigned char rtc_weekday;
+volatile unsigned char rtc_date;
+volatile unsigned char rtc_month;
+volatile unsigned char rtc_year;
 
 volatile char rtc_dt_str[RTC_STRLEN];
 
@@ -92,7 +95,7 @@ void rtc_init()
  */
 void rtc_start()
 {
-    uint8_t ctl_reg;
+    unsigned char ctl_reg;
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
     ctl_reg &= ~BIT7; // enable oscillator
     i2c_write(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
@@ -107,7 +110,7 @@ void rtc_start()
  */
 void rtc_stop()
 {
-    uint8_t ctl_reg;
+    unsigned char ctl_reg;
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
     ctl_reg |= BIT7; // disable oscillator
     i2c_write(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
@@ -122,10 +125,8 @@ void rtc_stop()
  */
 void rtc_get()
 {
-    uint8_t dt[7];
-    
+    unsigned char dt[7];
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
-
     rtc_second = dt[0];
     rtc_minute = dt[1];
     rtc_hour = dt[2];
@@ -146,7 +147,7 @@ void rtc_set()
 {
     rtc_stop();
 
-    uint8_t dt[7];
+    unsigned char dt[7];
     dt[0] = rtc_second;
     dt[1] = rtc_minute;
     dt[2] = rtc_hour;
@@ -154,7 +155,6 @@ void rtc_set()
     dt[4] = rtc_date;
     dt[5] = rtc_month;
     dt[6] = rtc_year;
-
     i2c_write(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
 
     rtc_start();
@@ -171,20 +171,34 @@ char *rtc_getstr()
 {
     rtc_get();
     
+    bcd_to_str(rtc_dt_str, &rtc_month, 1);
+    bcd_to_str(rtc_dt_str + 3, &rtc_date, 1);
+    bcd_to_str(rtc_dt_str + 8, &rtc_year, 1);
+    bcd_to_str(rtc_dt_str + 11, &rtc_hour, 1);
+    bcd_to_str(rtc_dt_str + 14, &rtc_minute, 1);
+    bcd_to_str(rtc_dt_str + 17, &rtc_second, 1);
+
+    /*
     rtc_dt_str[0] = ((rtc_month >> 4) & 0x0F) + '0';
     rtc_dt_str[1] = (rtc_month & 0x0F) + '0';
+
     rtc_dt_str[3] = ((rtc_date >> 4) & 0x0F) + '0';
     rtc_dt_str[4] = (rtc_date & 0x0F) + '0';
+    
     rtc_dt_str[8] = ((rtc_year >> 4) & 0x0F) + '0';
     rtc_dt_str[9] = (rtc_year & 0x0F) + '0';
+    
     rtc_dt_str[11] = ((rtc_hour >> 4) & 0x0F) + '0';
     rtc_dt_str[12] = (rtc_hour & 0x0F) + '0';
+    
     rtc_dt_str[14] = ((rtc_minute >> 4) & 0x0F) + '0';
     rtc_dt_str[15] = (rtc_minute & 0x0F) + '0';
+    
     rtc_dt_str[17] = ((rtc_second >> 4) & 0x0F) + '0';
     rtc_dt_str[18] = (rtc_second & 0x0F) + '0';
+    */
     
-    return (char *) rtc_dt_str;
+    return rtc_dt_str;
 }
 
 /**
@@ -212,9 +226,9 @@ void rtc_settime(int date, int month, int year)
 /**
  * 
  */
-void rtc_display_sel(unsigned int sel)
+void rtc_display_sel(unsigned char sel)
 {
-    rtc_display_num = (unsigned char) sel;
+    rtc_display_num = sel;
     switch(sel)
     {
         case 0: rtc_display = &rtc_second; break;
@@ -238,7 +252,7 @@ void rtc_display_next()
     {
         rtc_display_num = 0;
     }
-    rtc_display_sel((unsigned int) rtc_display_num);
+    rtc_display_sel(rtc_display_num);
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

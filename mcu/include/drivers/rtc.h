@@ -52,7 +52,7 @@ char *rtc_getstr(); // get current rtc date and time and convert to string
 //void rtc_setdate(int month, int day, int year);
 //void rtc_settime(int hour, int minute, int second);
 
-void rtc_display_sel(unsigned int sel);
+void rtc_display_sel(unsigned char sel);
 void rtc_display_next();
 
 #endif

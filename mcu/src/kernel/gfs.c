@@ -49,7 +49,7 @@ void gfs_init()
 /**
  * 
  */
-gfile_t *file_open()
+gfile_t *file_open(char *path)
 {
     return &cur_file;
 }
