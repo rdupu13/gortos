@@ -46,18 +46,22 @@
 #define LEDBAR_PORT1        P4OUT
 #define LEDBAR_BIT8         BIT0
 #define LEDBAR_BIT9         BIT1
-#define LEDBAR_INIT_SEL     1
+#define LEDBAR_INIT         0xFFFF
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void led_init(void);                          // initialize leds
+void led_init(void);                            // initialize leds
 
-void led_heartbeat_update(unsigned int qcnt); // update heartbeat led based on quarter-second counter
+void led_heartbeat_update(unsigned int qcnt);   // update heartbeat led based on quarter-second counter
 
-void ledbar_sel(unsigned char sel);           // select ledbar pointer
+void led_test_on(unsigned char n);              // turn on a test led
+void led_test_off(unsigned char n);             // turn off a test led
+void led_test_toggle(unsigned char n);          // toggle a test led
+
+void ledbar_setpins(unsigned int n);            // set ledbar pins
 
 
 #endif

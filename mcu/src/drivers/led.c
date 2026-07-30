@@ -16,24 +16,15 @@
 #include <msp430fr2153.h>
 #include "drivers/led.h"
 
-// drivers & devices
-// TODO: make led application at kernel level, led shouldn't need other drivers
-#include "drivers/patterns.h"
-#include "devices/rtc.h"
-
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile unsigned int *ledbar_cur;
-
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
-
-void ledbar_setpins(void);
 
 /**
  * @brief initialize leds
@@ -44,11 +35,12 @@ void ledbar_setpins(void);
 void led_init(void)
 {
     LED_HEARTBEAT_PORT &= ~LED_HEARTBEAT_PIN;
-    LED_TEST0_PORT &= ~LED_TEST0_PIN;
-    LED_TEST1_PORT &= ~LED_TEST1_PIN;
-    LED_TEST2_PORT &= ~LED_TEST2_PIN;
-
-    ledbar_sel(LEDBAR_INIT_SEL);
+    
+    led_test_off(0);
+    led_test_off(1);
+    led_test_off(2);
+    
+    ledbar_setpins(LEDBAR_INIT);
 }
 
 /**
@@ -66,57 +58,81 @@ void led_heartbeat_update(unsigned int qcnt)
 }
 
 /**
- * @brief set ledbar pins based on current pattern
+ * @brief turn on a test led
+ * 
+ * @param n test led number
+ * 
+ * @return none
+ */
+void led_test_on(unsigned char n)
+{
+    switch(n)
+    {
+        case 0: LED_TEST0_PORT |= LED_TEST0_PIN; break;
+        case 1: LED_TEST1_PORT |= LED_TEST1_PIN; break;
+        case 2: LED_TEST2_PORT |= LED_TEST2_PIN; break;
+        default: break;
+    }
+}
+
+/**
+ * @brief turn off a test led
+ * 
+ * @param n test led number
+ * 
+ * @return none
+ */
+void led_test_off(unsigned char n)
+{
+    switch(n)
+    {
+        case 0: LED_TEST0_PORT &= ~LED_TEST0_PIN; break;
+        case 1: LED_TEST1_PORT &= ~LED_TEST1_PIN; break;
+        case 2: LED_TEST2_PORT &= ~LED_TEST2_PIN; break;
+        default: break;
+    }
+}
+
+/**
+ * @brief toggle a test led
+ * 
+ * @param n test led number
+ * 
+ * @return none
+ */
+void led_test_toggle(unsigned char n)
+{
+    switch(n)
+    {
+        case 0: LED_TEST0_PORT ^= LED_TEST0_PIN; break;
+        case 1: LED_TEST1_PORT ^= LED_TEST1_PIN; break;
+        case 2: LED_TEST2_PORT ^= LED_TEST2_PIN; break;
+        default: break;
+    }
+}
+
+/**
+ * @brief set ledbar pins
  * 
  * @param none
  * 
  * @return none
  */
-void ledbar_setpins(void)
+void ledbar_setpins(unsigned int n)
 {
-    LEDBAR_PORT0 = *ledbar_cur & 0x00FF;
+    LEDBAR_PORT0 = n & 0x00FF;
     
-    if (*ledbar_cur & 0x0100) {
+    if (n & 0x0100) {
         LEDBAR_PORT1 |= LEDBAR_BIT8;
     } else {
         LEDBAR_PORT1 &= ~LEDBAR_BIT8;
     }
     
-    if (*ledbar_cur & 0x0200) {
+    if (n & 0x0200) {
         LEDBAR_PORT1 |= LEDBAR_BIT9;
     } else {
         LEDBAR_PORT1 &= ~LEDBAR_BIT9;
     }
-}
-
-/**
- * @brief select ledbar pointer
- * 
- * @param sel selection
- * 
- * @return none
- */
-void ledbar_sel(unsigned char sel)
-{
-    unsigned int rtc_display_ext;
-    switch(sel)
-    {
-        case 1:
-            ledbar_cur = cur_pattern;
-            break;
-
-        case 2:
-            rtc_display_ext = (unsigned int) *rtc_display;
-            ledbar_cur = &rtc_display_ext;
-            break;
-
-        default:
-            ledbar_cur = cur_pattern;
-            patterns_sel(-1);
-            break;
-    }
-    
-    ledbar_setpins();
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

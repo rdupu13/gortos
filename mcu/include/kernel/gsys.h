@@ -35,11 +35,16 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void gsys_init(void);               // initialize gort system
+void gsys_init(void); // initialize gort system
 
-void eep(unsigned int delay);       // take a gort nap
-void blinky(unsigned int delay);    // blink the TEST0 LED for delay ms
-void print_systime(void);           // write current gort system time to gout
+void eep(unsigned int delay); // take a gort nap
+
+// rtc
+void print_systime(void); // write current gort system time to gout
+
+// led
+void blinky(unsigned char led, unsigned int delay); // blink a test led
+void ledbar_sel(unsigned char sel);                 // select current thing displayed on ledbar
 
 // interrupt service routines (for drivers only): ---------
 // timer
@@ -49,6 +54,8 @@ void fcnt_update(unsigned int fcnt);
 void switch_0_pressed(void);
 void switch_1_pressed(void);
 // --------------------------------------------------------
+
+
 #endif
 //-----------------------------------------------------------------------------
 //  END OF CODE

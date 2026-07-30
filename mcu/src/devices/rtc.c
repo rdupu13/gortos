@@ -94,6 +94,8 @@ void rtc_init()
 void rtc_start(void)
 {
     unsigned char ctl_reg;
+
+    // TODO: handle errors
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
     ctl_reg &= ~BIT7; // enable oscillator
     i2c_write(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
@@ -109,6 +111,8 @@ void rtc_start(void)
 void rtc_stop(void)
 {
     unsigned char ctl_reg;
+
+    // TODO: handle errors
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
     ctl_reg |= BIT7; // disable oscillator
     i2c_write(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
@@ -124,6 +128,8 @@ void rtc_stop(void)
 void rtc_get(void)
 {
     unsigned char dt[7];
+
+    // TODO: handle errors
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
     rtc_second = dt[0];
     rtc_minute = dt[1];
@@ -153,6 +159,8 @@ void rtc_set(void)
     dt[4] = rtc_date;
     dt[5] = rtc_month;
     dt[6] = rtc_year;
+
+    // TODO: handle errors
     i2c_write(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
 
     rtc_start();

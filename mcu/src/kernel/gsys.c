@@ -36,14 +36,14 @@
 // kernel
 #include "kernel/gfs.h"
 #include "kernel/gio.h"
-#include "kernel/gfs.h"
+#include "kernel/gstr.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile unsigned char ledbar_cursel;
+volatile unsigned char display_mode;
 
 
 //-----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void gsys_init(void)
     spi_init();
     adc_init();
     
-    eep(INIT_EEP_PERIOD_MS); // epp for a lil to let clockies warm up
+    eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
     __enable_interrupt(); // globally enable interrupts
 
@@ -98,7 +98,7 @@ void gsys_init(void)
     // KERNEL ---------------------------------------------
     //gfs_init();
     
-    ledbar_cursel = 1;
+    display_mode = 1;
 
     // gin & gout = uart
     gin = 0;
@@ -117,7 +117,7 @@ void gsys_init(void)
 /**
  * @brief take a gort nap
  * 
- * @param delay
+ * @param delay duration of eep in ms
  * 
  * @return none
  */
@@ -130,16 +130,7 @@ void eep(unsigned int delay)
     }
 }
 
-/**
- * blink the TEST0 LED for delay ms
- */
-void blinky(unsigned int delay)
-{
-    LED_TEST0_PORT |= LED_TEST0_PIN;
-    eep(delay);
-    LED_TEST0_PORT &= ~LED_TEST0_PIN;
-}
-
+// rtc ----------------------------------------------------
 /**
  * @brief write current gort system time to gout
  * 
@@ -153,6 +144,47 @@ void print_systime(void)
     helloworld(systime);
     helloworld("\n");
 }
+// --------------------------------------------------------
+
+// led ----------------------------------------------------
+/**
+ * @brief blink a test led
+ * 
+ * @param led   test led number
+ * @param delay duration of blink in ms
+ * 
+ * @return none
+ */
+void blinky(unsigned char led, unsigned int delay)
+{
+    led_test_on(led);
+    eep(delay);
+    led_test_off(led);
+}
+
+/**
+ * @brief select current thing displayed on ledbar
+ * 
+ * @param sel selection
+ * 
+ * @return none
+ */
+void ledbar_sel(unsigned char sel)
+{
+    unsigned int n;
+    switch(sel)
+    {
+        case 1: n = *cur_pattern; break;
+        case 2: n = (unsigned int) *rtc_display; break;
+        default:
+            n = *cur_pattern;
+            patterns_sel(-1);
+            break;
+    }
+    ledbar_setpins(n);
+}
+// --------------------------------------------------------
+
 
 //-----------------------------------------------------------------------------
 //  INTERRUPT SERVICE ROUTINES
@@ -161,22 +193,28 @@ void print_systime(void)
 /**
  * @brief update things (4 Hz)
  * 
- * @param 
+ * @param qcnt timer quarter-second counter
+ * 
+ * @return none
  */
 void qcnt_update(unsigned int qcnt)
 {
-    // heartbeat LED
+    // update heartbeat led
     led_heartbeat_update(qcnt);
     
-    // LED patterns
-    patterns_update(qcnt); // advance patterns
-    ledbar_sel(ledbar_cursel); // update ledbar
+    // update patterns
+    patterns_update(qcnt);
+
+    // update ledbar
+    ledbar_sel(display_mode);
 }
 
 /**
  * @brief update things faster (256 Hz)
  * 
- * @param 
+ * @param fcnt timer "fast" counter
+ * 
+ * @return none
  */
 void fcnt_update(unsigned int fcnt)
 {
@@ -191,16 +229,16 @@ void fcnt_update(unsigned int fcnt)
  */
 void switch_0_pressed(void)
 {
-    if (ledbar_cursel == 1)
+    if (display_mode == 1)
     {
-        ledbar_cursel = 2;
-        LED_TEST0_PORT |= LED_TEST0_PIN;
+        display_mode = 2;
+        led_test_on(0);
         rtc_display_sel(0);
     }
     else
     {
-        ledbar_cursel = 1;
-        LED_TEST0_PORT &= ~LED_TEST0_PIN;
+        display_mode = 1;
+        led_test_off(0);
         patterns_sel(0);
     }
 }
