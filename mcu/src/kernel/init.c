@@ -14,16 +14,17 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-
 #include "kernel/init.h"
 
 // drivers
 #include "drivers/timer.h"
-#include "drivers/uart.h"
 #include "drivers/i2c.h"
 #include "drivers/led.h"
 #include "drivers/switch.h"
-#include "drivers/rtc.h"
+
+// devices
+#include "devices/uart.h"
+#include "devices/rtc.h"
 
 // kernel
 #include "kernel/pfc.h"
@@ -47,7 +48,7 @@
  * @param none
  * @return none
  */
-void init()
+void init(void)
 {
     WDTCTL = WDTPW | WDTHOLD; // stop watchdog timer
     

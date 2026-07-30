@@ -21,7 +21,7 @@
 // drivers
 // TODO: make led application at kernel level, led shouldn't need other drivers
 #include "drivers/patterns.h"
-#include "drivers/rtc.h"
+#include "devices/rtc.h"
 
 
 //-----------------------------------------------------------------------------

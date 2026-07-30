@@ -13,9 +13,6 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
-#include <stdint.h>
-
 #include "drivers/patterns.h"
 
 
@@ -24,22 +21,22 @@
 //-----------------------------------------------------------------------------
 
 // animated frame buffers -------------
-volatile uint16_t inout[INOUT_LEN];
-volatile uint8_t inout_cnt;
+volatile unsigned int inout[INOUT_LEN];
+volatile unsigned char inout_cnt;
 
-volatile uint16_t fillr[FILLR_LEN];
-volatile uint8_t fillr_cnt;
+volatile unsigned int fillr[FILLR_LEN];
+volatile unsigned char fillr_cnt;
 // ------------------------------------
 
 volatile int cur_pattern_num;
 
-volatile uint16_t test_pattern;
-volatile uint16_t pattern0;
-volatile uint16_t pattern1;
-volatile uint16_t pattern2;
-volatile uint16_t pattern3;
-volatile uint16_t pattern4; volatile uint8_t pattern4_qcnt; // annoying TODO: remove somehow
-volatile uint16_t pattern5;
+volatile unsigned int test_pattern;
+volatile unsigned int pattern0;
+volatile unsigned int pattern1;
+volatile unsigned int pattern2;
+volatile unsigned int pattern3;
+volatile unsigned int pattern4; volatile unsigned char pattern4_qcnt; // annoying TODO: remove somehow
+volatile unsigned int pattern5;
 
 
 //-----------------------------------------------------------------------------
@@ -52,7 +49,7 @@ volatile uint16_t pattern5;
  * @param none
  * @return none
  */
-void patterns_init()
+void patterns_init(void)
 {
     test_pattern = PATTERNS_TEST;
 
@@ -119,7 +116,7 @@ void patterns_sel(int sel)
  * 
  * @return none
  */
-void patterns_next()
+void patterns_next(void)
 {
     cur_pattern_num++;
     if (cur_pattern_num > (PATTERNS_TOTAL_NUM - 1))

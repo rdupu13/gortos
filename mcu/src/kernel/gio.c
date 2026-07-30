@@ -13,19 +13,13 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <stdint.h>
-
 #include "kernel/gio.h"
 
-// kernel
-#include "kernel/gsys.h"
-#include "kernel/gstr.h"
+// devices
+#include "devices/uart.h"
 
-// drivers
-#include "drivers/uart.h"
-#include "drivers/i2c.h"
-#include "drivers/spi.h"
-#include "drivers/led.h"
+// kernel
+#include "kernel/gstr.h"
 
 
 //-----------------------------------------------------------------------------
@@ -51,7 +45,7 @@ int helloworld(char *arr)
     {
         case 0:
             // uart
-            uart_tx(girth(arr), (uint8_t *) arr);
+            uart_tx(girth(arr), arr);
             break;
         
         default:
@@ -77,7 +71,7 @@ int hellogort(char *arr, int n, char stop)
     {
         case 0:
             // uart
-            uart_rx((uint16_t) n, (uint8_t *) arr, (uint8_t) stop);
+            uart_rx(n, arr, stop);
             break;
         
         default: break;
@@ -92,22 +86,11 @@ int hellogort(char *arr, int n, char stop)
  * 
  * @return none
  */
-void glear()
+void glear(void)
 {
     char seq[] = PUTTY_CLEAR_SEQ;
     helloworld(seq);
 }
-
-/**
- * blink the TEST0 LED for delay ms
- */
-void blinky(unsigned int delay)
-{
-    LED_TEST0_PORT |= LED_TEST0_PIN;
-    eep(delay);
-    LED_TEST0_PORT &= ~LED_TEST0_PIN;
-}
-
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

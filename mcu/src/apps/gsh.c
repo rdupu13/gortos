@@ -15,10 +15,6 @@
 
 #include "apps/gsh.h"
 
-// drivers
-// TODO: create kernel interface, apps should not have direct access to drivers
-
-
 // kernel
 #include "kernel/gio.h"
 #include "kernel/gstr.h"
@@ -29,7 +25,9 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile char gsh_cmd[64];
+#define CMD_LEN     64
+
+volatile char gsh_cmd[CMD_LEN];
 
 volatile char cur_user[] = "gort";
 volatile char cur_path[] = "/home/gort";
@@ -46,7 +44,7 @@ volatile char cur_path[] = "/home/gort";
  * 
  * @return process status
  */
-int main_gsh()
+int main_gsh(void)
 {
     int sel = 0;
     while(1)

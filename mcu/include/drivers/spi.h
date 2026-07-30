@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
 
 
 //-----------------------------------------------------------------------------
@@ -30,16 +29,28 @@
 //-----------------------------------------------------------------------------
 
 #define SPI_SEL0        P1SEL0
-#define SPI_PINS        0xF0
+#define SPI_PINS        BIT7 | BIT6 | BIT5 | BIT4
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void spi_init();                                                // initialize spi
-void spi_write(uint8_t reg_addr, uint16_t len, uint8_t *arr);   // write an array to a spi slave
-void spi_read(uint8_t reg_addr, uint16_t len, uint8_t *arr);    // read an array from a spi slave
+void spi_init(void);                                                            // initialize spi
+
+// write an array to a spi slave
+void spi_write(
+    unsigned char reg_addr,
+    unsigned int len,
+    unsigned char *arr
+);
+
+// read an array from a spi slave
+void spi_read(
+    unsigned char reg_addr,
+    unsigned int len,
+    unsigned char *arr
+);
 
 
 #endif

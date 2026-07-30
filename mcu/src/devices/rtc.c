@@ -13,9 +13,7 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <stdint.h>
-
-#include "drivers/rtc.h"
+#include "devices/rtc.h"
 
 // drivers
 #include "drivers/i2c.h"
@@ -83,7 +81,7 @@ void rtc_init()
     rtc_dt_str[17] = '0';
     rtc_dt_str[18] = '0';
     
-    //rtc_set();
+    //rtc_set(); // TODO: python gui to set system time
 }
 
 /**
@@ -93,7 +91,7 @@ void rtc_init()
  * 
  * @return none
  */
-void rtc_start()
+void rtc_start(void)
 {
     unsigned char ctl_reg;
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
@@ -108,7 +106,7 @@ void rtc_start()
  * 
  * @return none
  */
-void rtc_stop()
+void rtc_stop(void)
 {
     unsigned char ctl_reg;
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
@@ -123,7 +121,7 @@ void rtc_stop()
  * 
  * @return none
  */
-void rtc_get()
+void rtc_get(void)
 {
     unsigned char dt[7];
     i2c_read(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
@@ -143,7 +141,7 @@ void rtc_get()
  * 
  * @return none
  */
-void rtc_set()
+void rtc_set(void)
 {
     rtc_stop();
 
@@ -167,37 +165,17 @@ void rtc_set()
  * 
  * @return pointer to string representation of current rtc date and time
  */
-char *rtc_getstr()
+char *rtc_getstr(void)
 {
     rtc_get();
     
-    bcd_to_str(rtc_dt_str, &rtc_month, 1);
-    bcd_to_str(rtc_dt_str + 3, &rtc_date, 1);
-    bcd_to_str(rtc_dt_str + 8, &rtc_year, 1);
-    bcd_to_str(rtc_dt_str + 11, &rtc_hour, 1);
-    bcd_to_str(rtc_dt_str + 14, &rtc_minute, 1);
-    bcd_to_str(rtc_dt_str + 17, &rtc_second, 1);
+    hex_to_str(rtc_dt_str, &rtc_month, 1);
+    hex_to_str(rtc_dt_str + 3, &rtc_date, 1);
+    hex_to_str(rtc_dt_str + 8, &rtc_year, 1);
+    hex_to_str(rtc_dt_str + 11, &rtc_hour, 1);
+    hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
+    hex_to_str(rtc_dt_str + 17, &rtc_second, 1);
 
-    /*
-    rtc_dt_str[0] = ((rtc_month >> 4) & 0x0F) + '0';
-    rtc_dt_str[1] = (rtc_month & 0x0F) + '0';
-
-    rtc_dt_str[3] = ((rtc_date >> 4) & 0x0F) + '0';
-    rtc_dt_str[4] = (rtc_date & 0x0F) + '0';
-    
-    rtc_dt_str[8] = ((rtc_year >> 4) & 0x0F) + '0';
-    rtc_dt_str[9] = (rtc_year & 0x0F) + '0';
-    
-    rtc_dt_str[11] = ((rtc_hour >> 4) & 0x0F) + '0';
-    rtc_dt_str[12] = (rtc_hour & 0x0F) + '0';
-    
-    rtc_dt_str[14] = ((rtc_minute >> 4) & 0x0F) + '0';
-    rtc_dt_str[15] = (rtc_minute & 0x0F) + '0';
-    
-    rtc_dt_str[17] = ((rtc_second >> 4) & 0x0F) + '0';
-    rtc_dt_str[18] = (rtc_second & 0x0F) + '0';
-    */
-    
     return rtc_dt_str;
 }
 
@@ -245,7 +223,7 @@ void rtc_display_sel(unsigned char sel)
 /**
  * 
  */
-void rtc_display_next()
+void rtc_display_next(void)
 {
     rtc_display_num++;
     if (rtc_display_num > 6)

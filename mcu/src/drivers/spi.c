@@ -14,8 +14,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
-
 #include "drivers/spi.h"
 
 
@@ -23,10 +21,10 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile uint8_t *spi_tx_buf_ptr;
-volatile uint8_t *spi_rx_buf_ptr;
-volatile uint16_t spi_cnt;
-volatile uint8_t spi_busy;
+volatile unsigned char *spi_tx_buf_ptr;
+volatile unsigned char *spi_rx_buf_ptr;
+volatile unsigned int spi_cnt;
+volatile unsigned char spi_busy;
 
 
 //-----------------------------------------------------------------------------
@@ -39,7 +37,7 @@ volatile uint8_t spi_busy;
  * @param none
  * @return none
  */
-void spi_init()
+void spi_init(void)
 {
     SPI_SEL0 |= SPI_PINS; // configure pins
     
@@ -73,7 +71,7 @@ void spi_init()
  * 
  * @return none
  */
-void spi_write(uint8_t reg_addr, uint16_t len, uint8_t *arr)
+void spi_write(unsigned char reg_addr, unsigned int len, unsigned char *arr)
 {
     if (len == 0) { return; }
 
@@ -104,7 +102,7 @@ void spi_write(uint8_t reg_addr, uint16_t len, uint8_t *arr)
  * 
  * @return pointer to receive buffer
  */
-void spi_read(uint8_t reg_addr, uint16_t len, uint8_t *arr)
+void spi_read(unsigned char reg_addr, unsigned int len, unsigned char *arr)
 {
     if (len == 0) { return; }
 

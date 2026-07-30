@@ -33,7 +33,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void init(); // initialize gort system
+void init(void); // initialize gort system
 
 
 #endif

@@ -55,7 +55,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void timer_init(); // initialize timers
+void timer_init(void); // initialize timers
 
 
 #endif

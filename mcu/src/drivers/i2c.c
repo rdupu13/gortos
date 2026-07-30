@@ -14,8 +14,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
-
 #include "drivers/i2c.h"
 
 
@@ -23,14 +21,14 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile uint8_t *i2c_tx_buf_ptr;
-volatile uint8_t *i2c_rx_buf_ptr;
-volatile uint16_t i2c_cnt;
-volatile uint8_t i2c_busy;
+volatile unsigned char *i2c_tx_buf_ptr;
+volatile unsigned char *i2c_rx_buf_ptr;
+volatile unsigned int i2c_cnt;
+volatile unsigned char i2c_busy;
 
-volatile uint16_t i2c_len;
-volatile uint8_t i2c_reg_addr;
-volatile uint8_t i2c_mode;
+volatile unsigned int i2c_len;
+volatile unsigned char i2c_reg_addr;
+volatile unsigned char i2c_mode;
 
 
 //-----------------------------------------------------------------------------
@@ -43,7 +41,7 @@ volatile uint8_t i2c_mode;
  * @param none
  * @return none
  */
-void i2c_init()
+void i2c_init(void)
 {
     I2C_SEL0 |= I2C_PINS; // configure pins
     
@@ -83,8 +81,12 @@ void i2c_init()
  * 
  * @return none
  */
-void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr)
-{
+void i2c_write(
+    unsigned int slave_addr,
+    unsigned char reg_addr,
+    unsigned int len,
+    unsigned char *arr
+) {
     if (len == 0) { return; }
 
     if (i2c_busy) { return; }
@@ -118,8 +120,12 @@ void i2c_write(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr
  * 
  * @return none
  */
-void i2c_read(uint16_t slave_addr, uint8_t reg_addr, uint16_t len, uint8_t *arr)
-{
+void i2c_read(
+    unsigned int slave_addr,
+    unsigned char reg_addr,
+    unsigned int len,
+    unsigned char *arr
+) {
     if (len == 0) { return; }
 
     if (i2c_busy) { return; }

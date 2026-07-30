@@ -14,8 +14,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
-
 #include "drivers/adc.h"
 
 
@@ -37,7 +35,7 @@ volatile unsigned char adc_busy;
  * @param none
  * @return none
  */
-void adc_init()
+void adc_init(void)
 {
     // configure pins
     ADC_CH0_SEL0 |= ADC_CH0_PIN;

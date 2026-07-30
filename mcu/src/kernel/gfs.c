@@ -16,8 +16,7 @@
 #include "kernel/gfs.h"
 
 // drivers
-#include "drivers/uart.h"
-#include "drivers/spi.h"
+//#include "devices/uart.h"
 
 // kernel
 
@@ -40,7 +39,7 @@ char cur_file_data0[FILE_LEN];
 /**
  * 
  */
-void gfs_init()
+void gfs_init(void)
 {
     //uart = {"ttyUART", 0b00011011, 0, 0};
     

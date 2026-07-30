@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * uart driver library
+ * rtc driver library
  * 
  * created by rdupu13
  * 
- * @file uart.h
+ * @file rtc.h
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,37 +13,45 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef UART_H
-#define UART_H
+#ifndef RTC_H
+#define RTC_H
 
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
-#include <stdint.h>
-
 
 //-----------------------------------------------------------------------------
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define UART_SEL0       P4SEL0
-#define UART_PINS       0x0C
+#define RTC_SLAVE_ADDR 0x0068
 
-#define UART_BAUD       115200
-#define UART_ECHO       1
+#define RTC_REG_SEC 0x00
+#define RTC_REG_CTL 0x0E
+
+#define RTC_STRLEN 19
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void uart_init();                                       // initialize uart
-void uart_tx(uint16_t len, uint8_t *arr);               // transmit an array over uart
-void uart_rx(uint16_t len, uint8_t *arr, uint8_t stop); // receive an array over uart
+volatile unsigned char *rtc_display; // register currently being displayed
 
+void rtc_init(void);    // initialize rtc
+void rtc_start(void);   // start rtc
+void rtc_stop(void);    // stop rtc
+void rtc_get(void);     // get current rtc date and time
+void rtc_set(void);     // set current date and time
+
+char *rtc_getstr(); // get current rtc date and time and convert to string
+//void rtc_setdate(int month, int day, int year);
+//void rtc_settime(int hour, int minute, int second);
+
+void rtc_display_sel(unsigned char sel);
+void rtc_display_next(void);
 
 #endif
 //-----------------------------------------------------------------------------

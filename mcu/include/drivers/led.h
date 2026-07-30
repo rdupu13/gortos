@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
 
 
 //-----------------------------------------------------------------------------
@@ -54,11 +53,11 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void led_init();                        // initialize leds
+void led_init(void);                          // initialize leds
 
 void led_heartbeat_update(unsigned int qcnt); // update heartbeat led based on quarter-second counter
 
-void ledbar_sel(uint8_t sel);           // select ledbar pointer
+void ledbar_sel(unsigned char sel);           // select ledbar pointer
 
 
 #endif

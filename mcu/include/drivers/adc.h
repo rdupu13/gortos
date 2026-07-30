@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
 
 
 //-----------------------------------------------------------------------------
@@ -43,7 +42,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void adc_init();                            // initialize adc
+void adc_init(void);                            // initialize adc
 unsigned int adc_read(unsigned char ch);    // read the value from an adc channel
 
 

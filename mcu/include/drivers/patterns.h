@@ -21,9 +21,6 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
-#include <stdint.h>
-
 
 //-----------------------------------------------------------------------------
 //  MACROS
@@ -78,13 +75,13 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-volatile uint16_t *cur_pattern;     // current pattern pointer
+volatile unsigned int *cur_pattern;         // current pattern pointer
 
-void patterns_init();               // initialize patterns
+void patterns_init(void);                   // initialize patterns
 
-void patterns_sel(int sel);         // select current pattern
-void patterns_next();               // select the next pattern in cycle
-void patterns_update(unsigned int qcnt);     // update patterns based on quarter-second counter
+void patterns_sel(int sel);                 // select current pattern
+void patterns_next(void);                   // select the next pattern in cycle
+void patterns_update(unsigned int qcnt);    // update patterns based on quarter-second counter
 
 
 #endif

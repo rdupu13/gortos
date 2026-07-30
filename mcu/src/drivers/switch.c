@@ -14,8 +14,6 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
-
 #include "drivers/switch.h"
 
 // kernel
@@ -80,7 +78,7 @@ unsigned char switch_poll(unsigned char n)
 //-----------------------------------------------------------------------------
 
 #pragma vector = SWITCH_PORT_VECTOR
-__interrupt void port_isr(void)
+__interrupt void isr_port(void)
 {
     switch(SWITCH_IV)
     {

@@ -12,8 +12,8 @@
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
-#include <msp430fr2153.h>
 
+#include <msp430fr2153.h>
 #include "drivers/timer.h"
 
 // kernel
@@ -38,7 +38,7 @@ volatile unsigned int timer_fcnt; // 256 Hz
  * @param none
  * @return none
  */
-void timer_init()
+void timer_init(void)
 {
     // timer b0 ---------------------------------------------------------------
     TB0CTL |= TBCLR;            // clear timer and dividers

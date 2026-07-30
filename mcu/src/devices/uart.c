@@ -14,22 +14,20 @@
 //-----------------------------------------------------------------------------
 
 #include <msp430fr2153.h>
-#include <stdint.h>
-
-#include "drivers/uart.h"
+#include "devices/uart.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile uint8_t *uart_tx_buf_ptr;
-volatile uint8_t *uart_rx_buf_ptr;
-volatile uint16_t uart_cnt;
-volatile uint8_t uart_busy;
+volatile unsigned char *uart_tx_buf_ptr;
+volatile unsigned char *uart_rx_buf_ptr;
+volatile unsigned int uart_cnt;
+volatile unsigned char uart_busy;
 
-volatile uint8_t uart_rxmode;
-volatile uint8_t uart_stop;
+volatile unsigned char uart_rxmode;
+volatile unsigned char uart_stop;
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +40,7 @@ volatile uint8_t uart_stop;
  * @param none
  * @return none
  */
-void uart_init()
+void uart_init(void)
 {
     UART_SEL0 |= UART_PINS; // configure pins
 
@@ -90,7 +88,7 @@ void uart_init()
  * 
  * @return none
  */
-void uart_tx(uint16_t len, uint8_t *arr)
+void uart_tx(unsigned int len, unsigned char *arr)
 {
     if (len == 0) { return; }
 
@@ -118,7 +116,7 @@ void uart_tx(uint16_t len, uint8_t *arr)
  * 
  * @return none
  */
-void uart_rx(uint16_t len, uint8_t *arr, uint8_t stop)
+void uart_rx(unsigned int len, unsigned char *arr, unsigned char stop)
 {
     if (uart_busy) { return 0; }
     uart_busy = 1; // busy

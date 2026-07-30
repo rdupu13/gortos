@@ -15,16 +15,17 @@
 
 // kernel
 #include "kernel/init.h"
+#include "kernel/gio.h" // testing
+#include "kernel/gstr.h" // testing
 
 // applications
 #include "apps/gsh.h"
 
-// testing
-#include "kernel/gsys.h"
-#include "drivers/rtc.h"
-#include "drivers/adc.h"
-#include "kernel/gio.h"
-#include "kernel/gstr.h"
+// devices
+#include "devices/rtc.h" // testing
+
+// drivers
+#include "drivers/adc.h" // testing
 
 
 //-----------------------------------------------------------------------------
@@ -48,14 +49,12 @@ int main(void)
 
     //int gsh = main_gsh(); // launch gort shell
 
-    char wave_str[5];
-    wave_str[4] = '\0';
-    while (1) {
-        hex(wave_str, adc_read(0));
-        helloworld(wave_str);
+    while (1)
+    {
+        helloworld(hex(adc_read(0)));
         helloworld("\n");
 
-        rtc_get();
+        //rtc_get();
         
         eep(100);
     } // loop forever

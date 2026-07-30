@@ -19,7 +19,9 @@
 #include "drivers/led.h"
 #include "drivers/switch.h"
 #include "drivers/patterns.h"
-#include "drivers/rtc.h"
+
+// devices
+#include "devices/rtc.h"
 
 // kernel
 #include "kernel/gio.h"
@@ -42,7 +44,7 @@ unsigned char ledbar_cursel;
  * @param none
  * @return none
  */
-void gsys_init()
+void gsys_init(void)
 {
     ledbar_cursel = 1;
 }
@@ -64,12 +66,22 @@ void eep(unsigned int delay)
 }
 
 /**
+ * blink the TEST0 LED for delay ms
+ */
+void blinky(unsigned int delay)
+{
+    LED_TEST0_PORT |= LED_TEST0_PIN;
+    eep(delay);
+    LED_TEST0_PORT &= ~LED_TEST0_PIN;
+}
+
+/**
  * @brief write current gort system time to gout
  * 
  * @param none
  * @return none
  */
-void print_systime()
+void print_systime(void)
 {
     char *systime;
     systime = rtc_getstr();
@@ -112,7 +124,7 @@ void fcnt_update(unsigned int fcnt)
  * @param none
  * @return none
  */
-void switch_0_pressed()
+void switch_0_pressed(void)
 {
     if (ledbar_cursel == 1)
     {
@@ -134,7 +146,7 @@ void switch_0_pressed()
  * @param none
  * @return none
  */
-void switch_1_pressed()
+void switch_1_pressed(void)
 {
     patterns_next();
     rtc_display_next();
