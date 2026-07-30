@@ -59,7 +59,7 @@ int main(void)
         rtc_get();
 
         eep(61);
-    } // loop forever
+    } // halt / loop forever
     return 0;
 }
 //-----------------------------------------------------------------------------

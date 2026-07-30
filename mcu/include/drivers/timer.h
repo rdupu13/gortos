@@ -57,6 +57,8 @@
 
 void timer_init(void); // initialize timers
 
+void wdt_stop(void); // stop watchdog timer
+
 
 #endif
 //-----------------------------------------------------------------------------

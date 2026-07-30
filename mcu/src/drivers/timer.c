@@ -96,6 +96,17 @@ void timer_init(void)
     timer_fcnt = 0;
 }
 
+/**
+ * @brief stop watchdog timer
+ * 
+ * @param none
+ * @return none
+ */
+void wdt_stop(void)
+{
+    WDTCTL = WDTPW | WDTHOLD; // stop watchdog timer
+}
+
 
 //-----------------------------------------------------------------------------
 //  INTERRUPT SERVICE ROUTINES

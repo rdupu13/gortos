@@ -58,15 +58,15 @@ volatile unsigned char display_mode;
  */
 void gsys_init(void)
 {
-    WDTCTL = WDTPW | WDTHOLD; // stop watchdog timer
+    wdt_stop(); // stop watchdog timer
     
-    // initalize ports to outputs as default:
+    // initalize ports to outputs by default:
     P1SEL0 = 0x00; P2SEL0 = 0x00; P3SEL0 = 0x00; P4SEL0 = 0x00; P5SEL0 = 0x00;
     P1SEL1 = 0x00; P2SEL1 = 0x00; P3SEL1 = 0x00; P4SEL1 = 0x00; P5SEL1 = 0x00;
     P1DIR  = 0xFF; P2DIR  = 0xFF; P3DIR  = 0xFF; P4DIR  = 0xFF; P5DIR  = 0xFF;
     P1OUT  = 0x00; P2OUT  = 0x00; P3OUT  = 0x00; P4OUT  = 0x00; P5OUT  = 0x00;
 
-    // to make compiler stfu (nvm it breaks the leds for some reason):
+    // make compiler stfu (nvm it breaks the leds for some reason):
     //P6SEL0 = 0x00; PASEL0 = 0x00; PBSEL0 = 0x00; PCSEL0 = 0x00;
     //P6SEL1 = 0x00; PASEL1 = 0x00; PBSEL1 = 0x00; PCSEL1 = 0x00;
     //P6DIR  = 0xFF; PADIR  = 0xFF;  PBDIR = 0xFF; PCDIR  = 0xFF;
@@ -176,11 +176,9 @@ void ledbar_sel(unsigned char sel)
     {
         case 1: n = *cur_pattern; break;
         case 2: n = (unsigned int) *rtc_display; break;
-        default:
-            n = *cur_pattern;
-            patterns_sel(-1);
-            break;
+        default: n = *cur_pattern; patterns_sel(-1); break;
     }
+    
     ledbar_setpins(n);
 }
 // --------------------------------------------------------
