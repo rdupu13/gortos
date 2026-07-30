@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * gort file system
+ * led driver
  * 
  * created by rdupu13
  * 
- * @file gfs.c
+ * @file led.c
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,69 +13,28 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "kernel/gfs.h"
+#include <msp430fr2153.h>
+#include <stdint.h>
+
+#include "drivers/pwm.h"
 
 // drivers
-//#include "devices/uart.h"
-
-// kernel
-
+#include "drivers/timer.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile gfile_t uart;
 
-volatile gfile_t cur_file;
-volatile char cur_file_data0[FILE_LEN];
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
-/**
- * 
- */
-void gfs_init(void)
-{
-    //uart = {"ttyUART", 0b00011011, 0, 0};
-    
-}
 
-/**
- * 
- */
-gfile_t *file_open(char *path)
-{
-    return &cur_file;
-}
 
-/**
- * 
- */
-int file_write(gfile_t *fp, char *arr)
-{
-    return 0;
-}
-
-/**
- * 
- */
-int file_read(gfile_t *fp, char *arr, int n, char stop)
-{
-    return 0;
-}
-
-/**
- * 
- */
-void file_close(gfile_t *fp)
-{
-
-}
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

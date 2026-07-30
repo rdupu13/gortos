@@ -24,12 +24,12 @@
 #include "drivers/i2c.h"
 #include "drivers/led.h"
 #include "drivers/patterns.h"
-#include "drivers/pwm.h"
 #include "drivers/spi.h"
 #include "drivers/switch.h"
 #include "drivers/timer.h"
 
 // devices
+#include "devices/pwm.h"
 #include "devices/rtc.h"
 #include "devices/uart.h"
 
@@ -178,7 +178,7 @@ void ledbar_sel(unsigned char sel)
         case 2: n = (unsigned int) *rtc_display; break;
         default: n = *cur_pattern; patterns_sel(-1); break;
     }
-    
+
     ledbar_setpins(n);
 }
 // --------------------------------------------------------
