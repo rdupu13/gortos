@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * switch driver library
+ * uart driver library
  * 
  * created by rdupu13
  * 
- * @file switch.h
+ * @file uart.h
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,8 +13,8 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef SWITCH_H
-#define SWITCH_H
+#ifndef UART_H
+#define UART_H
 
 
 //-----------------------------------------------------------------------------
@@ -26,16 +26,26 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define SWITCH_INTERRUPT_EN   1
-
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void switch_init(void);                     // initialize switches
+void uart_init(unsigned int baud, unsigned char echo); // initialize uart
 
-unsigned char switch_poll(unsigned char n); // 
+// transmit an array over uart
+void uart_tx(
+    unsigned int len,
+    unsigned char *arr
+);
+
+// receive an array over uart
+void uart_rx(
+    unsigned int len,
+    unsigned char *arr,
+    unsigned char stop
+);
+
 
 #endif
 //-----------------------------------------------------------------------------

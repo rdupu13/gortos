@@ -21,7 +21,7 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// drivers
+// hardware
 #include "hw/pfc.h"
 
 
@@ -32,14 +32,12 @@
 #define I2C_BUSY_PORT   LED_TEST1_PORT
 #define I2C_BUSY_PIN    LED_TEST1_PIN
 
-#define I2C_TIMEOUT     60000
-
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void i2c_init(void); // initialize i2c
+void i2c_init(unsigned int timeout); // initialize i2c
 
 // write an array to an i2c slave
 int i2c_write(

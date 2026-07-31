@@ -1,15 +1,15 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * port function control
+ * port function control library
  * 
  * created by rdupu13
  * 
  * @file pfc.h
  * controls the port functions of the specific mcu in use
  * 
- * mcu: msp430fr2153
- * package: tdbt
+ * mcu:     MSP430FR2153
+ * package: TDBT 38-pin (34 GPIO + 2 prog + 2 power)
  *
 ----------------------------------------------------------------------------- */
 
@@ -67,7 +67,7 @@
 
 // spi ----------------------------------------------------
 #define SPI_SEL0        P1SEL0
-#define SPI_PINS        BIT7 | BIT6 | BIT5 | BIT4
+#define SPI_PINS        BIT4 | BIT5 | BIT6 | BIT7
 // TODO: peripheral base addr
 // --------------------------------------------------------
 
@@ -94,6 +94,7 @@
 #define SWITCH1_IFG     P3IFG
 #define SWITCH1_PIN     BIT6
 #define SWITCH1_IV_VAL  0x0E
+// TODO: peripheral base addr
 // --------------------------------------------------------
 
 // timer --------------------------------------------------
@@ -103,14 +104,21 @@
 
 // uart ---------------------------------------------------
 #define UART_SEL0       P4SEL0
-#define UART_PINS       BIT3 | BIT2
+#define UART_PINS       BIT2 | BIT3
 // TODO: peripheral base addr
 // --------------------------------------------------------
 
+// lora ---------------------------------------------------
+// TODO: force to use led
+#define LORA_RESET_PORT         P3OUT
+#define LORA_RESET_PIN          BIT5
+// --------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
+
+void pfc_init(void); // initialize ports
 
 
 #endif

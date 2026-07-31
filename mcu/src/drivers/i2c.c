@@ -31,20 +31,23 @@ volatile unsigned char i2c_busy;
 volatile unsigned int i2c_len;
 volatile unsigned char i2c_reg_addr;
 volatile unsigned char i2c_mode;
+volatile unsigned int i2c_timeout;
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
-int i2c_wait(unsigned int timeout);
+int i2c_wait(void);
 
 /**
  * @brief initialize i2c
  * 
+ * @param timeout countdown period until i2c bus timeout
+ * 
  * @return none
  */
-void i2c_init(void)
+void i2c_init(unsigned int timeout)
 {
     I2C_SEL0 |= I2C_PINS; // configure pins
     
@@ -72,6 +75,7 @@ void i2c_init(void)
     i2c_len = 0;
     i2c_reg_addr = 0;
     i2c_mode = 0;
+    i2c_timeout = timeout;
 }
 
 /**
@@ -112,7 +116,7 @@ int i2c_write(
     UCB1CTLW0 |= UCTXSTT; // send start + send slave addr
     // --------------------------------
 
-    return i2c_wait(I2C_TIMEOUT); // wait until tx done (with timeout)
+    return i2c_wait(); // wait until tx done (with timeout)
 }
 
 /**
@@ -153,18 +157,21 @@ int i2c_read(
     UCB1CTLW0 |= UCTXSTT; // send start + slave addr
     // --------------------------------
 
-    return i2c_wait(I2C_TIMEOUT); // wait until rx done (with timeout)
+    return i2c_wait(); // wait until rx done (with timeout)
 }
 
 /**
  * 
  */
-int i2c_wait(unsigned int timeout)
+int i2c_wait(void)
 {
-    volatile unsigned int cnt = timeout;
+    volatile unsigned int cnt = i2c_timeout;
+
+    // wait until i2c bus not busy or until countdown reaches 0
     while(i2c_busy && (cnt > 0)) { cnt--; }
 
     if (cnt == 0) {
+        UCB1CTLW0 |= UCTR; // put peripheral into tx mode
         UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0);  // clear tx/rx interrupt flags
         UCB1IE &= ~(UCTXIE0 | UCRXIE0);     // disable tx/rx interrupts
         UCB1CTLW0 |= UCTXSTP; // send stop condition
@@ -188,6 +195,7 @@ __interrupt void isr_eusci_b1(void)
         case 0x02: break; // ALIFG (arbitration lost)
         case 0x04:
             // NACKIFG (no acknowledge received)
+            UCB1CTLW0 |= UCTR; // put peripheral into tx mode
             UCB1IFG &= ~(UCTXIFG0 | UCRXIFG0); // clear tx/rx interrupt flags
             UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
             UCB1CTLW0 |= UCTXSTP; // send stop condition

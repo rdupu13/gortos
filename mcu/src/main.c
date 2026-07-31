@@ -1,43 +1,66 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * switch driver library
+ * gort kernel
  * 
  * created by rdupu13
  * 
- * @file switch.h
+ * @file main.c
  *
 ----------------------------------------------------------------------------- */
-
-//-----------------------------------------------------------------------------
-//  HEADER DEFINITION
-//-----------------------------------------------------------------------------
-
-#ifndef SWITCH_H
-#define SWITCH_H
-
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// kernel
+#include "kernel/gsys.h"
+#include "kernel/gio.h" // testing
+#include "kernel/gstr.h" // testing
+
+// applications
+#include "apps/gsh.h"
+
+// devices
+#include "devices/rtc.h" // testing
+
+// drivers
+#include "drivers/adc.h" // testing
+#include "drivers/led.h" // testing
+
 
 //-----------------------------------------------------------------------------
-//  MACROS
+//  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
-
-#define SWITCH_INTERRUPT_EN   1
 
 
 //-----------------------------------------------------------------------------
-//  FUNCTION PROTOTYPES
+//  FUNCTIONS
 //-----------------------------------------------------------------------------
 
-void switch_init(void);                     // initialize switches
+/**
+ * @brief gort kernel!
+ * 
+ * @param none
+ * @return never returns!
+ */
+int main(void)
+{
+    gsys_init(); // initialize gort system
 
-unsigned char switch_poll(unsigned char n); // 
+    //int gsh = main_gsh(); // launch gort shell
 
-#endif
+    while (1)
+    {
+        //helloworld(hex(adc_read(0)));
+        //helloworld("\n");
+
+        rtc_get();
+
+        eep(61);
+    } // halt / loop forever
+    return 0;
+}
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

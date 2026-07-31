@@ -1,56 +1,45 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * uart driver library
+ * port function control
  * 
  * created by rdupu13
  * 
- * @file uart.h
+ * @file pfc.c
  *
 ----------------------------------------------------------------------------- */
-
-//-----------------------------------------------------------------------------
-//  HEADER DEFINITION
-//-----------------------------------------------------------------------------
-
-#ifndef UART_H
-#define UART_H
-
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-//  MACROS
-//-----------------------------------------------------------------------------
-
-#define UART_BAUD       115200
-#define UART_ECHO       1
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
-//  FUNCTION PROTOTYPES
+//  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-void uart_init(void); // initialize uart
 
-// transmit an array over uart
-void uart_tx(
-    unsigned int len,
-    unsigned char *arr
-);
+//-----------------------------------------------------------------------------
+//  FUNCTIONS
+//-----------------------------------------------------------------------------
 
-// receive an array over uart
-void uart_rx(
-    unsigned int len,
-    unsigned char *arr,
-    unsigned char stop
-);
+/**
+ * @brief initialize ports
+ * 
+ * @return none
+ */
+void pfc_init(void)
+{
+    // initalize ports to outputs by default
+    P1SEL0 = 0x00; P2SEL0 = 0x00; P3SEL0 = 0x00; P4SEL0 = 0x00; P5SEL0 = 0x00;
+    P1SEL1 = 0x00; P2SEL1 = 0x00; P3SEL1 = 0x00; P4SEL1 = 0x00; P5SEL1 = 0x00;
+    P1DIR  = 0xFF; P2DIR  = 0xFF; P3DIR  = 0xFF; P4DIR  = 0xFF; P5DIR  = 0xFF;
+    P1OUT  = 0x00; P2OUT  = 0x00; P3OUT  = 0x00; P4OUT  = 0x00; P5OUT  = 0x00;
 
-
-#endif
+    PM5CTL0 &= ~LOCKLPM5; // turn off low-power mode
+}
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

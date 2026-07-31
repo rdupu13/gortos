@@ -25,12 +25,12 @@
 #include "drivers/spi.h"
 #include "drivers/switch.h"
 #include "drivers/timer.h"
+#include "drivers/uart.h"
 
 // devices
 #include "devices/patterns.h"
 #include "devices/pwm.h"
 #include "devices/rtc.h"
-#include "devices/uart.h"
 
 // kernel
 #include "kernel/gfs.h"
@@ -52,34 +52,21 @@ volatile unsigned char display_mode;
 /**
  * @brief initialize gort system
  * 
- * @param none
  * @return none
  */
 void gsys_init(void)
 {
     wdt_stop(); // stop watchdog timer
     
-    // initalize ports to outputs by default:
-    P1SEL0 = 0x00; P2SEL0 = 0x00; P3SEL0 = 0x00; P4SEL0 = 0x00; P5SEL0 = 0x00;
-    P1SEL1 = 0x00; P2SEL1 = 0x00; P3SEL1 = 0x00; P4SEL1 = 0x00; P5SEL1 = 0x00;
-    P1DIR  = 0xFF; P2DIR  = 0xFF; P3DIR  = 0xFF; P4DIR  = 0xFF; P5DIR  = 0xFF;
-    P1OUT  = 0x00; P2OUT  = 0x00; P3OUT  = 0x00; P4OUT  = 0x00; P5OUT  = 0x00;
-
-    // make compiler stfu (nvm it breaks the leds for some reason):
-    //P6SEL0 = 0x00; PASEL0 = 0x00; PBSEL0 = 0x00; PCSEL0 = 0x00;
-    //P6SEL1 = 0x00; PASEL1 = 0x00; PBSEL1 = 0x00; PCSEL1 = 0x00;
-    //P6DIR  = 0xFF; PADIR  = 0xFF;  PBDIR = 0xFF; PCDIR  = 0xFF;
-    //P6OUT  = 0x00; PAOUT  = 0x00;  PBOUT = 0x00; PCOUT  = 0x00;
-    
-    PM5CTL0 &= ~LOCKLPM5; // turn off low-power mode
+    pfc_init(); // initialize ports
 
     LED_HEARTBEAT_PORT |= LED_HEARTBEAT_PIN; // show signs of life
 
     // DRIVERS --------------------------------------------
     // initialize core gort system drivers
     timer_init();
-    uart_init();
-    i2c_init();
+    uart_init(96, 1); // 9600 baud, echo enabled
+    i2c_init(60000); // timeout = 60000
     spi_init();
     adc_init();
     
@@ -88,9 +75,12 @@ void gsys_init(void)
     __enable_interrupt(); // globally enable interrupts
 
     // intialize more gort system drivers
-    patterns_init();
     led_init();
     switch_init();
+    // ----------------------------------------------------
+
+    // DEVICES --------------------------------------------
+    patterns_init();
     rtc_init();
     // ----------------------------------------------------
 
@@ -133,7 +123,6 @@ void eep(unsigned int delay)
 /**
  * @brief write current gort system time to gout
  * 
- * @param none
  * @return none
  */
 void print_systime(void)
@@ -221,7 +210,6 @@ void fcnt_update(unsigned int fcnt)
 /**
  * @brief executes when switch 0 is pressed
  * 
- * @param none
  * @return none
  */
 void switch_0_pressed(void)
@@ -243,7 +231,6 @@ void switch_0_pressed(void)
 /**
  * @brief executes when switch 1 is pressed
  * 
- * @param none
  * @return none
  */
 void switch_1_pressed(void)

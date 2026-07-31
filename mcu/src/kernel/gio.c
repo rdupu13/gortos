@@ -15,8 +15,8 @@
 
 #include "kernel/gio.h"
 
-// devices
-#include "devices/uart.h"
+// drivers
+#include "drivers/uart.h"
 
 // kernel
 #include "kernel/gstr.h"

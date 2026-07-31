@@ -35,7 +35,7 @@
  */
 void led_init(void)
 {
-    LED_HEARTBEAT_PORT &= ~LED_HEARTBEAT_PIN;
+    LED_HEARTBEAT_PORT &= ~LED_HEARTBEAT_PIN; // turn off heartbeat led
     
     led_test_off(0);
     led_test_off(1);

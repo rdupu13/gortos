@@ -22,14 +22,15 @@
 //	LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
+// hardware
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
 //	MACROS
 //-----------------------------------------------------------------------------
 
-// radio registers
+// radio register addresses
 #define LORA_REG_FIFO                 0x00
 #define LORA_REG_OP_MODE              0x01
 
@@ -72,10 +73,6 @@
 #define LORA_REG_VERSION              0x42
 
 #define LORA_REG_PA_DAC               0x4D
-
-// pinout
-#define LORA_RESET_PORT         P3OUT
-#define LORA_RESET_PIN          BIT5
 
 // frequencies
 #define LORA_FREQ_905MHz_H      0x00E1

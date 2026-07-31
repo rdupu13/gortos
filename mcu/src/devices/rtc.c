@@ -49,7 +49,7 @@ char rtc_dt_str[RTC_STRLEN];
  * @param none
  * @return none
  */
-void rtc_init()
+void rtc_init(void)
 {
     rtc_display_num = 0;
 

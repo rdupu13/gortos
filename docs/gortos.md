@@ -113,16 +113,16 @@
 ### `gfile_t`
 - `char name[16]`
 - `unsigned char mode`
-    - type [1:0]
+    - type (1:0)
         - 00 - normal
 	    - 01 - directory
 	    - 10 - stream
 	    - 11 - ?
-    - permissions [4:2]
+    - permissions (4:2)
         - read
 	    - write
         - execute
-    - interface (if type = stream) [7:5]
+    - interface (if type = stream) (7:5)
         - 000 - uart
         - 001 - lcd
         - 010 - ?

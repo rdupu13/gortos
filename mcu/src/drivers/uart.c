@@ -13,7 +13,7 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "devices/uart.h"
+#include "drivers/uart.h"
 
 // hardware
 #include "hw/pfc.h"
@@ -30,6 +30,7 @@ volatile unsigned char uart_busy;
 
 volatile unsigned char uart_rxmode;
 volatile unsigned char uart_stop;
+volatile unsigned char uart_echo;
 
 
 //-----------------------------------------------------------------------------
@@ -39,23 +40,27 @@ volatile unsigned char uart_stop;
 /**
  * @brief initialize uart
  * 
- * @param none
+ * @param baud baud rate (divided by 100 to fit in int, e.g. 96 for 9600 baud)
+ * @param echo echo enable (1 = enabled, 0 = disabled)
+ * 
  * @return none
  */
-void uart_init(void)
+void uart_init(unsigned int baud, unsigned char echo)
 {
     UART_SEL0 |= UART_PINS; // configure pins
 
     // setup peripheral
     UCA1CTLW0 |= UCSWRST; // put peripheral into software reset
-    switch(UART_BAUD)
+    switch(baud)
     {
-        case 9600:
+        case 96:
+            // 9600 baud
             UCA1CTLW0 |= UCSSEL__ACLK;  // clock source = aclk (32.768 kHz)
             UCA1BRW = 3;                // divide brclk by 3
             UCA1MCTLW |= 0x9200;        // modulation = 0x9200 (9600 baud)
             break;
-        case 115200:
+        case 1152:
+            // 115200 baud
             UCA1CTLW0 |= UCSSEL__SMCLK; // clock source = smclk (1 MHz)
             UCA1BRW = 8;                // divide brclk by 8
             UCA1MCTLW |= 0xD600;        // modulation = 0xD608 (115200 baud)
@@ -80,6 +85,7 @@ void uart_init(void)
     uart_busy = 0;
     uart_rxmode = 0;
     uart_stop = '\r';
+    uart_echo = echo;
 }
 
 /**
@@ -157,7 +163,7 @@ __interrupt void isr_eusci_a1(void)
             *uart_rx_buf_ptr = UCA1RXBUF; // store received byte
             
             // echo char if enabled
-            if (UART_ECHO)
+            if (uart_echo)
             {
                 UCA1TXBUF = *uart_rx_buf_ptr;
             }

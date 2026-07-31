@@ -26,7 +26,7 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define LED_HEARTBEAT_QDIV  4 // only powers of 2
+#define LED_HEARTBEAT_QDIV  4 // toggles at 1 Hz
 
 #define LEDBAR_LEN          10
 #define LEDBAR_INIT         0xFFFF
