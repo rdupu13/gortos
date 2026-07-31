@@ -31,9 +31,10 @@ fully functional with driver support for the following peripherals:
     - 
     - 
 
+---------------------------------------
 
-
-
+## software architecture
+![Gort OS Software Architecture](docs/assets/gortos_softarch.svg)
 
 
 

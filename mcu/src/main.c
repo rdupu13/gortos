@@ -13,6 +13,13 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// drivers
+#include "drivers/adc.h" // testing
+#include "drivers/led.h" // testing
+
+// devices
+#include "devices/rtc.h" // testing
+
 // kernel
 #include "kernel/gsys.h"
 #include "kernel/gio.h" // testing
@@ -20,13 +27,6 @@
 
 // applications
 #include "apps/gsh.h"
-
-// devices
-#include "devices/rtc.h" // testing
-
-// drivers
-#include "drivers/adc.h" // testing
-#include "drivers/led.h" // testing
 
 
 //-----------------------------------------------------------------------------
@@ -41,8 +41,7 @@
 /**
  * @brief gort kernel!
  * 
- * @param none
- * @return never returns!
+ * @return never!
  */
 int main(void)
 {
