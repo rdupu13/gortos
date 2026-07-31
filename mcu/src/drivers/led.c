@@ -13,8 +13,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
 #include "drivers/led.h"
+
+// hardware
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
@@ -29,7 +31,6 @@
 /**
  * @brief initialize leds
  * 
- * @param none
  * @return none
  */
 void led_init(void)
@@ -113,8 +114,6 @@ void led_test_toggle(unsigned char n)
 
 /**
  * @brief set ledbar pins
- * 
- * @param none
  * 
  * @return none
  */

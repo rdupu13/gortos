@@ -26,17 +26,17 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile unsigned char rtc_display_num;
+unsigned char rtc_display_num;
 
-volatile unsigned char rtc_second;
-volatile unsigned char rtc_minute;
-volatile unsigned char rtc_hour;
-volatile unsigned char rtc_weekday;
-volatile unsigned char rtc_date;
-volatile unsigned char rtc_month;
-volatile unsigned char rtc_year;
+unsigned char rtc_second;
+unsigned char rtc_minute;
+unsigned char rtc_hour;
+unsigned char rtc_weekday;
+unsigned char rtc_date;
+unsigned char rtc_month;
+unsigned char rtc_year;
 
-volatile char rtc_dt_str[RTC_STRLEN];
+char rtc_dt_str[RTC_STRLEN];
 
 
 //-----------------------------------------------------------------------------

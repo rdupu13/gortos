@@ -13,8 +13,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
 #include "drivers/i2c.h"
+
+// hardware
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
@@ -40,7 +42,6 @@ int i2c_wait(unsigned int timeout);
 /**
  * @brief initialize i2c
  * 
- * @param none
  * @return none
  */
 void i2c_init(void)
@@ -90,7 +91,6 @@ int i2c_write(
     unsigned int len,
     unsigned char *arr
 ) {
-    int status = 0;
     if (len == 0) { return -1; }
 
     if (i2c_busy) { return 1; }

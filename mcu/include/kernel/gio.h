@@ -34,15 +34,13 @@
 //-----------------------------------------------------------------------------
 
 // TODO: make these files:
-volatile int gin;
-volatile int gout;
+int gin;
+int gout;
 
 int helloworld(char *arr);                  // write an array to gout
 int hellogort(char *arr, int n, char stop); // read n chars from gin, if n = 0: read until stop char
 
 void glear(void); // clear screen (write PuTTY clear sequence to gout)
-
-void blinky(unsigned int delay); // blink the TEST0 LED for delay ms
 
 
 #endif

@@ -13,8 +13,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
 #include "drivers/switch.h"
+
+// hardware
+#include "hw/pfc.h"
 
 // kernel
 #include "kernel/gsys.h"
@@ -32,10 +34,9 @@
 /**
  * @brief initialize switches
  * 
- * @param none
  * @return none
  */
-void switch_init()
+void switch_init(void)
 {
     // initialize switch 0
     SWITCH0_DIR &= ~SWITCH0_PIN; // set as input

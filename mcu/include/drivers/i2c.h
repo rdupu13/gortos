@@ -21,18 +21,13 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
-
 // drivers
-#include "drivers/led.h"
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
 //  MACROS
 //-----------------------------------------------------------------------------
-
-#define I2C_SEL0        P4SEL0
-#define I2C_PINS        BIT6 | BIT7
 
 #define I2C_BUSY_PORT   LED_TEST1_PORT
 #define I2C_BUSY_PIN    LED_TEST1_PIN

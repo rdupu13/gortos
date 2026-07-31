@@ -13,8 +13,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
 #include "drivers/timer.h"
+
+// hardware
+#include "hw/pfc.h"
 
 // kernel
 #include "kernel/gsys.h"
@@ -35,7 +37,6 @@ volatile unsigned int timer_fcnt; // 256 Hz
 /**
  * @brief initialize timers
  * 
- * @param none
  * @return none
  */
 void timer_init(void)
@@ -99,7 +100,6 @@ void timer_init(void)
 /**
  * @brief stop watchdog timer
  * 
- * @param none
  * @return none
  */
 void wdt_stop(void)

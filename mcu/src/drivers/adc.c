@@ -13,8 +13,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
 #include "drivers/adc.h"
+
+// hardware
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
@@ -65,7 +67,11 @@ void adc_init(void)
 }
 
 /**
+ * @brief select adc channel
  * 
+ * @param ch channel number
+ * 
+ * @return none
  */
 void adc_sel(unsigned char ch)
 {
@@ -73,7 +79,7 @@ void adc_sel(unsigned char ch)
     switch(ch)
     {
         case 0: ADCMCTL0 |= ADC_CH0_INCH; break;
-        default: break;
+        default: ADCMCTL0 |= ADC_CH0_INCH; break;
     }
 }
 

@@ -50,7 +50,6 @@ int main(void)
 
     //int gsh = main_gsh(); // launch gort shell
 
-    unsigned int i;
     while (1)
     {
         //helloworld(hex(adc_read(0)));

@@ -25,7 +25,7 @@
     - P3.2 - 
     - P3.3 - 
     - P3.4 - 
-    - P3.5 - 
+    - P3.5 - LORA_RESET
     - P3.6 - SWITCH1
     - P3.7 - SWITCH0
     - P4.0 - LEDBAR_BIT8
@@ -44,7 +44,7 @@
     - P1.4 - MISO
     - P1.5 - MOSI
     - P1.6 - CLK
-    - P1.7 - CS
+    - P1.7 - CS0
 ---------------------------------------
 
 ## embedded system: -------------------
@@ -63,7 +63,6 @@
 - `adc`
 - `i2c`
 - `led`
-- `patterns`
 - `spi`
 - `switch`
 - `timer`
@@ -72,7 +71,9 @@
 ## devices ----------------------------
 - `dial` (coming soon)
 - `lcd` (coming soon)
+- `lora` (coming soon)
 - `mmm` (coming soon)
+- `patterns`
 - `pwm` (coming soon)
 - `rtc`
 - `uart`

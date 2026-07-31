@@ -27,10 +27,10 @@
 
 #define CMD_LEN     64
 
-volatile char gsh_cmd[CMD_LEN];
+char gsh_cmd[CMD_LEN];
 
-volatile char cur_user[] = "gort";
-volatile char cur_path[] = "/home/gort";
+char cur_user[] = "gort";
+char cur_path[] = "/home/gort";
 
 
 //-----------------------------------------------------------------------------

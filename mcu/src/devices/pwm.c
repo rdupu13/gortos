@@ -13,13 +13,11 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include <msp430fr2153.h>
-#include <stdint.h>
-
-#include "drivers/pwm.h"
+#include "devices/pwm.h"
 
 // drivers
 #include "drivers/timer.h"
+
 
 
 //-----------------------------------------------------------------------------

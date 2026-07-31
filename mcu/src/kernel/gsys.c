@@ -16,19 +16,18 @@
 #include "kernel/gsys.h"
 
 // hardware
-#include <msp430fr2153.h>
 #include "hw/pfc.h"
 
 // drivers
 #include "drivers/adc.h"
 #include "drivers/i2c.h"
 #include "drivers/led.h"
-#include "drivers/patterns.h"
 #include "drivers/spi.h"
 #include "drivers/switch.h"
 #include "drivers/timer.h"
 
 // devices
+#include "devices/patterns.h"
 #include "devices/pwm.h"
 #include "devices/rtc.h"
 #include "devices/uart.h"
