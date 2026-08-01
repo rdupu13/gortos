@@ -105,37 +105,38 @@
 - `unsigned char weekday`
 - `unsigned char date`
 - `unsigned char month`
-- `unsigned char year`
+- `unsigned int year`
 - string: `"10-13-2003 03:42:00"`
 ---------------------------------------
 
 ## file format ------------------------
 ### `gfile_t`
-- `char name[16]`
 - `unsigned char mode`
-    - type (1:0)
-        - 00 - normal
-	    - 01 - directory
-	    - 10 - stream
-	    - 11 - ?
-    - permissions (4:2)
-        - read
-	    - write
-        - execute
-    - interface (if type = stream) (7:5)
-        - 000 - uart
-        - 001 - lcd
-        - 010 - ?
+    - device? (if type = device) (7:5)
+        - 000 - uart?
+        - 001 - lcd?
+        - 010 - dial?
         - 011 - ?
         - 100 - ?
         - 101 - ?
         - 110 - ?
         - 111 - ?
+    - permissions (4:2)
+        - r - read
+	    - w - write
+        - x - execute
+    - type (1:0)
+        - 00 - normal
+	    - 01 - directory
+	    - 10 - device
+	    - 11 - ?
 - `unsigned int size`
+- `unsigned char loaded`
+- `char name[16]`
 - `char *data`
 	- normal: `unsigned char[size]`
 	- directory: `*gfile_t[size]`
-	- stream: null pointer
+	- stream: null pointer?
 ---------------------------------------
 
 ## filesystem -------------------------

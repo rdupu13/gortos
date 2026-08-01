@@ -41,12 +41,14 @@ volatile unsigned char uart_echo;
  * @brief initialize uart
  * 
  * @param baud baud rate (divided by 100 to fit in int, e.g. 96 for 9600 baud)
- * @param echo echo enable (1 = enabled, 0 = disabled)
+ * @param echo echo enable (0 = disabled, 1 = enabled)
  * 
  * @return none
  */
-void uart_init(unsigned int baud, unsigned char echo)
-{
+void uart_init(
+    unsigned int baud,
+    unsigned char echo
+) {
     UART_SEL0 |= UART_PINS; // configure pins
 
     // setup peripheral
@@ -75,9 +77,9 @@ void uart_init(unsigned int baud, unsigned char echo)
     UCA1CTLW0 &= ~UCSWRST; // take peripheral out of software reset
     
     // setup interrupts
-    UCA1IE &= ~(UCTXCPTIE | UCRXIFG);   // disable tx/rx interrupts
     UCA1IFG &= ~(UCTXCPTIFG | UCRXIFG); // clear tx/rx interrupt flags
-
+    UCA1IE &= ~(UCTXCPTIE | UCRXIE);    // disable tx/rx interrupts
+    
     // initialize variables
     uart_tx_buf_ptr = 0;
     uart_rx_buf_ptr = 0;
@@ -91,60 +93,72 @@ void uart_init(unsigned int baud, unsigned char echo)
 /**
  * @brief transmit an array over uart
  * 
- * @param len length in bytes of array to be transmitted
  * @param arr pointer to array to be transmitted
+ * @param len length in bytes of array to be transmitted
  * 
- * @return none
+ * @return status of transmit:
+ *               0: ok
+ *               1: uart busy
+ *              -1: 0 length error
  */
-void uart_tx(
-    unsigned int len,
-    unsigned char *arr
+int uart_tx(
+    unsigned char *arr, // pronounced "char star arr"
+    unsigned int len
 ) {
-    if (len == 0) { return; }
+    if (len == 0) { return -1; }
 
-    if (uart_busy) { return; }
-    uart_busy = 1; // busy
-
-    uart_cnt = len - 1;
+    if (uart_busy) { return 1; }
+    
     uart_tx_buf_ptr = arr;
+    uart_cnt = len - 1;
     
-    UCA1IE |= UCTXCPTIE; // enable tx complete interrupts
     UCA1IFG &= ~UCTXCPTIFG; // clear tx complete interrupt flag
+    UCA1IE |= UCTXCPTIE; // enable tx complete interrupts
     
+    // critical section ---------------
+    uart_busy = 1;
     UCA1TXBUF = *uart_tx_buf_ptr++; // tx first byte, triggering TXCPTIFG
+    // --------------------------------
 
-    // TODO: add timeout (tx didn't work for some reason)
     while(uart_busy) {} // wait until tx done
+
+    return 0;
 }
 
 /**
  * @brief receive an array over uart
  * 
- * @param len   number of bytes to read (> 0)
  * @param arr   pointer to array to store received data
+ * @param len   number of bytes to read (> 0)
  * @param stop  if len = 0, read until this character received
  * 
- * @return none
+ * @return status of receive:
+ *               0: ok
+ *               1: uart busy
  */
-void uart_rx(
-    unsigned int len,
+int uart_rx(
     unsigned char *arr,
+    unsigned int len,
     unsigned char stop
 ) {
-    if (uart_busy) { return; }
-    uart_busy = 1; // busy
+    if (uart_busy) { return 1; }
 
-    uart_cnt = len;
     uart_rx_buf_ptr = arr;
+    uart_cnt = len;
+    uart_stop = stop;
 
     uart_rxmode = (len == 0) ? 1 : 0;
-    uart_stop = stop;
     
-    UCA1IE |= UCRXIFG; // enable rx buffer full interrupts
     UCA1IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
+    UCA1IE |= UCRXIFG; // enable rx buffer full interrupts
+    
+    // critical section ---------------
+    uart_busy = 1;
+    // --------------------------------
 
-    // TODO: add timeout
     while(uart_busy) {} // wait until rx done
+
+    return 0;
 }
 
 
@@ -152,8 +166,8 @@ void uart_rx(
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
-#pragma vector = EUSCI_A1_VECTOR
-__interrupt void isr_eusci_a1(void)
+#pragma vector = UART_VECTOR
+__interrupt void isr_uart(void)
 {
     switch(__even_in_range(UCA1IV, 18))
     {
@@ -170,10 +184,11 @@ __interrupt void isr_eusci_a1(void)
             
             uart_cnt--; // decrement counter
 
-            // stop condition
+            // check stop criteria
             if ((!uart_rxmode && (uart_cnt == 0))
                 || (uart_rxmode && (*uart_rx_buf_ptr == uart_stop)))
             {
+                UCA1IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
                 UCA1IE &= ~UCRXIE; // disable rx buffer full interrupts
                 uart_busy = 0; // not busy
             }
@@ -187,6 +202,7 @@ __interrupt void isr_eusci_a1(void)
             // UCTXCPTIFG (tx complete)
             if (uart_cnt == 0)
             {
+                UCA1IFG &= ~UCTXCPTIFG; // clear tx complete interrupt flag
                 UCA1IE &= ~UCTXCPTIE; // disable tx complete interrupts
                 uart_busy = 0; // not busy
             }

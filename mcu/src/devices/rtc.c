@@ -26,7 +26,7 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-unsigned char rtc_display_num;
+volatile unsigned char rtc_display_num;
 
 unsigned char rtc_second;
 unsigned char rtc_minute;
@@ -36,7 +36,7 @@ unsigned char rtc_date;
 unsigned char rtc_month;
 unsigned char rtc_year;
 
-char rtc_dt_str[RTC_STRLEN];
+volatile char rtc_dt_str[RTC_STRLEN];
 
 
 //-----------------------------------------------------------------------------
@@ -46,7 +46,6 @@ char rtc_dt_str[RTC_STRLEN];
 /**
  * @brief initialize rtc
  * 
- * @param none
  * @return none
  */
 void rtc_init(void)
@@ -81,56 +80,81 @@ void rtc_init(void)
     rtc_dt_str[17] = '0';
     rtc_dt_str[18] = '0';
     
-    //rtc_set(); // TODO: python gui to set system time
+    //rtc_set(); // TODO: python gui to set system time?
 }
 
 /**
  * @brief start rtc
  * 
- * @param none
- * 
  * @return none
  */
 void rtc_start(void)
 {
-    unsigned char ctl_reg;
+    volatile unsigned char ctl_reg;
 
     // TODO: handle errors
-    i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
+    i2c_read(
+        &ctl_reg,
+        1,
+        RTC_SLAVE_ADDR,
+        RTC_REG_CTL
+    );
+    
     ctl_reg &= ~BIT7; // enable oscillator
-    i2c_write(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
+    
+    i2c_write(
+        &ctl_reg,
+        1,
+        RTC_SLAVE_ADDR,
+        RTC_REG_CTL
+    );
 }
 
 /**
  * @brief stop rtc
  * 
- * @param none
- * 
  * @return none
  */
 void rtc_stop(void)
 {
-    unsigned char ctl_reg;
+    volatile unsigned char ctl_reg;
 
     // TODO: handle errors
-    i2c_read(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
+    i2c_read(
+        &ctl_reg,
+        1,
+        RTC_SLAVE_ADDR,
+        RTC_REG_CTL
+    );
+
     ctl_reg |= BIT7; // disable oscillator
-    i2c_write(RTC_SLAVE_ADDR, RTC_REG_CTL, 1, &ctl_reg);
+    
+    // TODO: handle errors
+    i2c_write(
+        &ctl_reg,
+        1,
+        RTC_SLAVE_ADDR,
+        RTC_REG_CTL
+    );
 }
 
 /**
  * @brief get current rtc date and time
  * 
- * @param none
- * 
  * @return none
  */
 void rtc_get(void)
 {
-    unsigned char dt[7];
+    volatile unsigned char dt[7];
 
     // TODO: handle errors
-    i2c_read(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
+    i2c_read(
+        dt,
+        7,
+        RTC_SLAVE_ADDR,
+        RTC_REG_SEC
+    );
+
     rtc_second = dt[0];
     rtc_minute = dt[1];
     rtc_hour = dt[2];
@@ -143,15 +167,14 @@ void rtc_get(void)
 /**
  * @brief set current rtc date and time
  * 
- * @param none
- * 
  * @return none
  */
 void rtc_set(void)
 {
     rtc_stop();
 
-    unsigned char dt[7];
+    volatile unsigned char dt[7];
+    
     dt[0] = rtc_second;
     dt[1] = rtc_minute;
     dt[2] = rtc_hour;
@@ -161,7 +184,12 @@ void rtc_set(void)
     dt[6] = rtc_year;
 
     // TODO: handle errors
-    i2c_write(RTC_SLAVE_ADDR, RTC_REG_SEC, 7, dt);
+    i2c_write(
+        dt,
+        7,
+        RTC_SLAVE_ADDR,
+        RTC_REG_SEC
+    );
 
     rtc_start();
 }
@@ -169,11 +197,9 @@ void rtc_set(void)
 /**
  * @brief get current rtc date and time and convert to string
  * 
- * @param none
- * 
  * @return pointer to string representation of current rtc date and time
  */
-char *rtc_getstr(void)
+volatile char *rtc_getstr(void)
 {
     rtc_get();
     
@@ -210,7 +236,11 @@ void rtc_settime(int date, int month, int year)
 // NON-I2C FUNCTIONS ----------------------------------------------------------
 
 /**
+ * @brief select which register to display
  * 
+ * @param sel date/time register to select relative to seconds
+ * 
+ * @return none
  */
 void rtc_display_sel(unsigned char sel)
 {
@@ -229,7 +259,9 @@ void rtc_display_sel(unsigned char sel)
 }
 
 /**
+ * @brief select next register to display
  * 
+ * @return none
  */
 void rtc_display_next(void)
 {

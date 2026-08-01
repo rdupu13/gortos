@@ -26,14 +26,30 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define INIT_EEP_PERIOD_MS  2000
+#define INIT_EEP_PERIOD_MS 2000
 
 #define DELAY_LOOP_MS 103
+
+#define BLK_SIZE 256
+
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
+
+// TODO: use
+typedef struct
+{
+    unsigned char second;
+    unsigned char minute;
+    unsigned char hour;
+    unsigned char weekday;
+    unsigned char date;
+    unsigned char month;
+    unsigned int year;
+}
+gtime_t;
 
 void gsys_init(void); // initialize gort system
 

@@ -78,7 +78,7 @@ unsigned char switch_poll(unsigned char n)
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
-#pragma vector = SWITCH_PORT_VECTOR
+#pragma vector = SWITCH_VECTOR
 __interrupt void isr_port(void)
 {
     switch(SWITCH_IV)

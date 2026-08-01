@@ -65,3 +65,6 @@ targetConfigs/
 # draw.io tmp files
 *.bkp
 *.dtmp
+
+# datasheets
+docs/datasheets/

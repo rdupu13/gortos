@@ -1,12 +1,12 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * port function control library
+ * port/peripheral function control library
  * 
  * created by rdupu13
  * 
  * @file pfc.h
- * controls the port functions of the specific mcu in use
+ * controls the port functions and peripherals of the specific mcu in use
  * 
  * mcu:     MSP430FR2153
  * package: TDBT 38-pin (34 GPIO + 2 prog + 2 power)
@@ -43,6 +43,8 @@
 // --------------------------------------------------------
 
 // i2c ----------------------------------------------------
+#define I2C_VECTOR      EUSCI_B1_VECTOR
+
 #define I2C_SEL0        P4SEL0
 #define I2C_PINS        BIT6 | BIT7
 // TODO: peripheral base addr
@@ -66,15 +68,18 @@
 // --------------------------------------------------------
 
 // spi ----------------------------------------------------
+// TODO: peripheral base addr
+#define SPI_VECTOR      EUSCI_A0_VECTOR
 #define SPI_SEL0        P1SEL0
 #define SPI_PINS        BIT4 | BIT5 | BIT6 | BIT7
-// TODO: peripheral base addr
 // --------------------------------------------------------
 
 // switch -------------------------------------------------
-#define SWITCH_PORT_VECTOR  PORT3_VECTOR
-#define SWITCH_IV           P3IV
+// TODO: peripheral base addr
+#define SWITCH_VECTOR   PORT3_VECTOR
+#define SWITCH_IV       P3IV
 
+// TODO: peripheral base addr
 #define SWITCH0_DIR     P3DIR
 #define SWITCH0_REN     P3REN
 #define SWITCH0_OUT     P3OUT
@@ -85,6 +90,7 @@
 #define SWITCH0_PIN     BIT7
 #define SWITCH0_IV_VAL  0x10
 
+// TODO: peripheral base addr
 #define SWITCH1_DIR     P3DIR
 #define SWITCH1_REN     P3REN
 #define SWITCH1_OUT     P3OUT
@@ -94,19 +100,19 @@
 #define SWITCH1_IFG     P3IFG
 #define SWITCH1_PIN     BIT6
 #define SWITCH1_IV_VAL  0x0E
-// TODO: peripheral base addr
 // --------------------------------------------------------
 
 // timer --------------------------------------------------
-// TODO: carry over timer stuff
 // TODO: peripheral base addr
 // --------------------------------------------------------
 
 // uart ---------------------------------------------------
+// TODO: peripheral base addr
+#define UART_VECTOR     EUSCI_A1_VECTOR
 #define UART_SEL0       P4SEL0
 #define UART_PINS       BIT2 | BIT3
-// TODO: peripheral base addr
 // --------------------------------------------------------
+
 
 // lora ---------------------------------------------------
 // TODO: force to use led

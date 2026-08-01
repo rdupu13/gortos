@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * uart driver library
+ * mini memory manager library
  * 
  * created by rdupu13
  * 
- * @file uart.h
+ * @file mmm.h
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,59 +13,49 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef UART_H
-#define UART_H
+#ifndef MMM_H
+#define MMM_H
 
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// kernel
+#include "kernel/gsys.h"
+
 
 //-----------------------------------------------------------------------------
 //  MACROS
 //-----------------------------------------------------------------------------
 
-/*
-#define UART_CTLW0 // control word 0
-#define UART_BRW // baud rate word
-#define UART_MCTLW // modulation control word
-#define UART_IE // interrupt enable
-#define UART_IFG // interrupt flags
-#define UART_IV // interrupt vector
-#define UART_TXBUF // tx buffer
-#define UART_RXBUF // rx buffer
+// device specific ----------------------------------------
+// 23lc1024 ---------------------------
 
-#define UART_SWRST // software reset
-#define UART_SSEL // clock source select
-#define UART_TXCPTIE // tx complete interrupt enable
-#define UART_TXCPTIFG // tx complete interrupt flag
-#define UART_RXIE // rx buffer full interrupt enable
-#define UART_RXIFG // rx buffer full interrupt flag
-*/
+// ------------------------------------
+// --------------------------------------------------------
+
+// current device ---------------------
+
+// ------------------------------------
+
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-// initialize uart
-void uart_init(
-    unsigned int baud,
-    unsigned char echo
-);
+// blk_t --------------------------------------------------
+typedef struct
+{
+    unsigned int n;
+    char blk_data[BLK_SIZE];
+}
+blk_t;
+// --------------------------------------------------------
 
-// transmit an array over uart
-int uart_tx(
-    unsigned char *arr,
-    unsigned int len
-);
 
-// receive an array over uart
-int uart_rx(
-    unsigned char *arr,
-    unsigned int len,
-    unsigned char stop
-);
+void mmm_init(void); // initialize mini memory manager
 
 
 #endif

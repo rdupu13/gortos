@@ -21,6 +21,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// devices
+#include "devices/mmm.h"
 
 
 //-----------------------------------------------------------------------------
@@ -28,22 +30,24 @@
 //-----------------------------------------------------------------------------
 
 #define FILE_NAME_LEN   16
-#define FILE_LEN        256
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-// file struct
+// gfile_t ------------------------------------------------
 typedef struct
 {
-    char name[FILE_NAME_LEN];
     unsigned char mode;
     unsigned int size;
-    char *data;
+    unsigned char loaded; // not stored
+    char name[FILE_NAME_LEN];
+    blk_t *blk; // only valid when loaded = 1, null otherwise
 }
 gfile_t;
+// --------------------------------------------------------
+
 
 void gfs_init(void);
 

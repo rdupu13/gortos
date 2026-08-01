@@ -26,10 +26,7 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-gfile_t uart;
 
-gfile_t cur_file;
-char cur_file_data0[FILE_LEN];
 
 
 //-----------------------------------------------------------------------------
@@ -50,7 +47,7 @@ void gfs_init(void)
  */
 gfile_t *file_open(char *path)
 {
-    return &cur_file;
+    
 }
 
 /**

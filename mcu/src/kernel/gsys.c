@@ -28,8 +28,12 @@
 #include "drivers/uart.h"
 
 // devices
+//#include "devices/dial.h"
+//#include "devices/lcd.h"
+//#include "devices/lora.h"
+//#include "devices/mmm.h"
 #include "devices/patterns.h"
-#include "devices/pwm.h"
+//#include "devices/pwm.h"
 #include "devices/rtc.h"
 
 // kernel
@@ -67,7 +71,7 @@ void gsys_init(void)
     timer_init();
     uart_init(96, 1); // 9600 baud, echo enabled
     i2c_init(60000); // timeout = 60000
-    spi_init();
+    spi_init(60000); // timeout = 60000
     adc_init();
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
@@ -98,7 +102,6 @@ void gsys_init(void)
     glear();
     helloworld("~~~ Gort OS ~~~\n");
     helloworld("(c) rdupu13 2026\n\n");
-    helloworld("Current time: ");
     print_systime();
     helloworld("\n");
 }
@@ -127,8 +130,10 @@ void eep(unsigned int delay)
  */
 void print_systime(void)
 {
-    char *systime;
+    volatile char *systime;
     systime = rtc_getstr();
+
+    helloworld("Current time: ");
     helloworld(systime);
     helloworld("\n");
 }

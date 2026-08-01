@@ -32,11 +32,13 @@
 //-----------------------------------------------------------------------------
 
 /**
- * @brief write an array to gout
+ * @brief write a null-terminated array to gout
  * 
  * @param arr array to be written
  * 
- * @return status of write
+ * @return status of write:
+ *               0: ok
+ *              -1: error
  */
 int helloworld(char *arr)
 {
@@ -45,14 +47,15 @@ int helloworld(char *arr)
     {
         case 0:
             // uart
+            // TODO: handle errors
             uart_tx(
-                girth(arr),
-                (unsigned char *) arr
+                (unsigned char *) arr,
+                girth(arr)
             );
             break;
         
         default:
-            status = 1; // raise error
+            status = -1; // raise error
             break;
     }
     return status;
@@ -65,7 +68,9 @@ int helloworld(char *arr)
  * @param n     number of bytes to read (> 0)
  * @param stop  if n = 0, read until this character received
  * 
- * @return status of read
+ * @return status of read:
+ *               0: ok
+ *              -1: error
  */
 int hellogort(char *arr, int n, char stop)
 {
@@ -74,15 +79,16 @@ int hellogort(char *arr, int n, char stop)
     {
         case 0:
             // uart
+            // TODO: handle errors
             uart_rx(
-                (unsigned int) n,
                 (unsigned char *) arr,
+                (unsigned int) n,
                 (unsigned char) stop
             );
             break;
         
         default:
-            status = 1;
+            status = -1;
             break;
     }
     return status;
