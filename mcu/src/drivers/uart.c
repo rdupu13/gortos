@@ -102,7 +102,7 @@ void uart_init(
  *              -1: 0 length error
  */
 int uart_tx(
-    unsigned char *arr, // pronounced "char star arr"
+    volatile unsigned char *arr, // pronounced "char star arr"
     unsigned int len
 ) {
     if (len == 0) { return -1; }
@@ -137,7 +137,7 @@ int uart_tx(
  *               1: uart busy
  */
 int uart_rx(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned char stop
 ) {

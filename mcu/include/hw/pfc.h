@@ -26,7 +26,7 @@
 //-----------------------------------------------------------------------------
 
 // hardware
-#include <msp430fr2153.h>
+#include "hw/msp430fr2153.h"
 
 
 //-----------------------------------------------------------------------------
@@ -104,6 +104,20 @@
 
 // timer --------------------------------------------------
 // TODO: peripheral base addr
+#define TIMER_B0_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
+#define TIMER_B0_DIV    ID__1           // divide by 1
+#define TIMER_B0_LEN    CNTL_0          // len = 16-bit
+#define TIMER_B0_MODE   MC__UP          // up mode
+
+#define TIMER_B1_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
+#define TIMER_B1_DIV    ID__1           // divide by 1
+#define TIMER_B1_LEN    CNTL_0          // len = 16-bit
+#define TIMER_B1_MODE   MC__UP          // up mode
+
+#define TIMER_B2_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
+#define TIMER_B2_DIV    ID__1           // divide by 1
+#define TIMER_B2_LEN    CNTL_0          // len = 16-bit
+#define TIMER_B2_MODE   MC__CONTINOUS   // continuous mode
 // --------------------------------------------------------
 
 // uart ---------------------------------------------------

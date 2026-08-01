@@ -65,14 +65,14 @@ void spi_init(unsigned int timeout); // initialize spi
 
 // write an array to a spi slave
 int spi_write(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned char slave
 );
 
 // read an array from a spi slave
 int spi_read(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned char slave
 );

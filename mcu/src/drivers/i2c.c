@@ -99,7 +99,7 @@ void i2c_init(unsigned int timeout)
  *          -3: nack error
  */
 int i2c_write(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
@@ -144,7 +144,7 @@ int i2c_write(
  *          -3: nack error
  */
 int i2c_read(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
@@ -183,7 +183,7 @@ int i2c_read(
  */
 int i2c_wait(void)
 {
-    volatile unsigned int cnt = i2c_timeout;
+    unsigned int cnt = i2c_timeout;
 
     // wait until i2c bus not busy or until countdown reaches 0
     while(i2c_busy && (cnt > 0)) { cnt--; }
@@ -208,8 +208,8 @@ int i2c_wait(void)
  */
 void i2c_busy_set(void)
 {
-    i2c_busy = 1;
     I2C_BUSY_PORT |= I2C_BUSY_PIN;
+    i2c_busy = 1;
 }
 
 /**
@@ -219,8 +219,8 @@ void i2c_busy_set(void)
  */
 void i2c_busy_clear(void)
 {
-    i2c_busy = 0;
     I2C_BUSY_PORT &= ~I2C_BUSY_PIN;
+    i2c_busy = 0;
 }
 
 

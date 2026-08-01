@@ -199,18 +199,22 @@ void rtc_set(void)
  * 
  * @return pointer to string representation of current rtc date and time
  */
-volatile char *rtc_getstr(void)
+char *rtc_getstr(void)
 {
     rtc_get();
     
-    hex_to_str(rtc_dt_str,      &rtc_month,  1);
-    hex_to_str(rtc_dt_str + 3,  &rtc_date,   1);
-    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1);
-    hex_to_str(rtc_dt_str + 11, &rtc_hour,   1);
-    hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
-    hex_to_str(rtc_dt_str + 17, &rtc_second, 1);
+    // TODO: fix without needing to make literally everything volatile
+    // is it even really fixed if the compiler shuts up?
+    char *_rtc_dt_str = (char *) rtc_dt_str;
 
-    return rtc_dt_str;
+    hex_to_str(_rtc_dt_str,      &rtc_month,  1);
+    hex_to_str(_rtc_dt_str + 3,  &rtc_date,   1);
+    hex_to_str(_rtc_dt_str + 8,  &rtc_year,   1);
+    hex_to_str(_rtc_dt_str + 11, &rtc_hour,   1);
+    hex_to_str(_rtc_dt_str + 14, &rtc_minute, 1);
+    hex_to_str(_rtc_dt_str + 17, &rtc_second, 1);
+
+    return (char *) rtc_dt_str;
 }
 
 /**

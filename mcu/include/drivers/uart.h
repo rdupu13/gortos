@@ -56,13 +56,13 @@ void uart_init(
 
 // transmit an array over uart
 int uart_tx(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len
 );
 
 // receive an array over uart
 int uart_rx(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned char stop
 );

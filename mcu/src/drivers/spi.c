@@ -88,7 +88,7 @@ void spi_init(unsigned int timeout)
  *          -2: timeout error
  */
 int spi_write(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned char slave
 ) {
@@ -124,7 +124,7 @@ int spi_write(
  *          -2: timeout error
  */
 int spi_read(
-    unsigned char *arr,
+    volatile unsigned char *arr,
     unsigned int len,
     unsigned char slave
 ) {
@@ -154,7 +154,7 @@ int spi_read(
  */
 int spi_wait(void)
 {
-    volatile unsigned int cnt = spi_timeout;
+    unsigned int cnt = spi_timeout;
 
     // wait until i2c bus not busy or until countdown reaches 0
     while(spi_busy && (cnt > 0)) { cnt--; }

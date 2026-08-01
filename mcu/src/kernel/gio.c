@@ -49,7 +49,7 @@ int helloworld(char *arr)
             // uart
             // TODO: handle errors
             uart_tx(
-                (unsigned char *) arr,
+                (volatile unsigned char *) arr,
                 girth(arr)
             );
             break;
@@ -81,7 +81,7 @@ int hellogort(char *arr, int n, char stop)
             // uart
             // TODO: handle errors
             uart_rx(
-                (unsigned char *) arr,
+                (volatile unsigned char *) arr,
                 (unsigned int) n,
                 (unsigned char) stop
             );

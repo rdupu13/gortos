@@ -130,7 +130,7 @@ void eep(unsigned int delay)
  */
 void print_systime(void)
 {
-    volatile char *systime;
+    char *systime;
     systime = rtc_getstr();
 
     helloworld("Current time: ");

@@ -62,7 +62,7 @@ void rtc_stop(void);    // stop rtc
 void rtc_get(void);     // get current rtc date and time
 void rtc_set(void);     // set current date and time
 
-volatile char *rtc_getstr(void); // get current rtc date and time and convert to string
+char *rtc_getstr(void); // get current rtc date and time and convert to string
 //void rtc_setdate(int month, int day, int year);
 //void rtc_settime(int hour, int minute, int second);
 
