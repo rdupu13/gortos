@@ -21,8 +21,7 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// kernel
-#include "kernel/gsys.h"
+
 
 
 //-----------------------------------------------------------------------------
@@ -36,9 +35,19 @@
 // --------------------------------------------------------
 
 // current device ---------------------
+#define MMM_SPI_SLAVE_NUM   0
+#define MMM_MODE 2 // sequential mode
+
+#define BLK_SIZE_P2 8
+#define BLK_SIZE 256 // 2^(BLK_SIZE_P2)
+
+#define MMM_SIZE_P2 16 // actually 17
+#define MMM_SIZE 65536 // 2^(MMM_SIZE_P2)
+
+#define MMM_BLKS_P2 (MMM_SIZE_P2 - BLK_SIZE_P2) // if >8, there be problems
+
 
 // ------------------------------------
-
 
 
 //-----------------------------------------------------------------------------
@@ -49,7 +58,7 @@
 typedef struct
 {
     unsigned int n;
-    char blk_data[BLK_SIZE];
+    volatile char data[BLK_SIZE];
 }
 blk_t;
 // --------------------------------------------------------

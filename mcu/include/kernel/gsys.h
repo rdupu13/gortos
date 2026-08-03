@@ -30,14 +30,13 @@
 
 #define DELAY_LOOP_MS 103
 
-#define BLK_SIZE 256
-
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+// gtime_t ------------------------------------------------
 // TODO: use
 typedef struct
 {
@@ -50,6 +49,7 @@ typedef struct
     unsigned int year;
 }
 gtime_t;
+// --------------------------------------------------------
 
 void gsys_init(void); // initialize gort system
 
