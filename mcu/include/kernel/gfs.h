@@ -21,8 +21,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// devices
-#include "devices/mmm.h"
+// kernel
+#include "kernel/gsys.h"
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ typedef struct
     unsigned char mode;
     unsigned int size;
     unsigned char loaded; // not stored
-    char name[FILE_NAME_LEN];
+    volatile char name[FILE_NAME_LEN];
     blk_t *blk; // only valid when loaded = 1, null otherwise
 }
 gfile_t;
@@ -53,7 +53,7 @@ void gfs_init(void);
 
 gfile_t *file_open(char *path);
 int file_write(gfile_t *fp, char *arr);
-int file_read(gfile_t *fp, char *arr, int n, char stop);
+int file_read(gfile_t *fp, char *arr, unsigned int len, char stop);
 void file_close(gfile_t *fp);
 
 

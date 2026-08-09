@@ -1,7 +1,7 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * mini memory manager library
+ * mini memory module driver library
  * 
  * created by rdupu13
  * 
@@ -21,7 +21,11 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// hardware
+#include "hw/pfc.h"
 
+// kernel
+#include "kernel/gsys.h"
 
 
 //-----------------------------------------------------------------------------
@@ -30,41 +34,28 @@
 
 // device specific ----------------------------------------
 // 23lc1024 ---------------------------
+#ifdef MMM_23LC1024
 
-// ------------------------------------
-// --------------------------------------------------------
-
-// current device ---------------------
-#define MMM_SPI_SLAVE_NUM   0
-#define MMM_MODE 2 // sequential mode
-
-#define BLK_SIZE_P2 8
-#define BLK_SIZE 256 // 2^(BLK_SIZE_P2)
+#define MMM_MODE            2 // sequential mode
 
 #define MMM_SIZE_P2 16 // actually 17
 #define MMM_SIZE 65536 // 2^(MMM_SIZE_P2)
 
-#define MMM_BLKS_P2 (MMM_SIZE_P2 - BLK_SIZE_P2) // if >8, there be problems
-
-
+#endif
 // ------------------------------------
+// --------------------------------------------------------
+
+#define MMM_BLKS_P2 (MMM_SIZE_P2 - BLK_SIZE_P2) // if >8, there be problems
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-// blk_t --------------------------------------------------
-typedef struct
-{
-    unsigned int n;
-    volatile char data[BLK_SIZE];
-}
-blk_t;
-// --------------------------------------------------------
-
-
 void mmm_init(void); // initialize mini memory manager
+
+int mmm_load_block(blk_t *blk); // load a block from memory
+int mmm_store_block(blk_t *blk); // store a block to memory
 
 
 #endif

@@ -77,7 +77,7 @@ void uart_init(
     UCA1CTLW0 &= ~UCSWRST; // take peripheral out of software reset
     
     // setup interrupts
-    UCA1IFG &= ~(UCTXCPTIFG | UCRXIFG); // clear tx/rx interrupt flags
+    UCA1IFG = 0;                        // clear interrupt flags
     UCA1IE &= ~(UCTXCPTIE | UCRXIE);    // disable tx/rx interrupts
     
     // initialize variables
@@ -115,11 +115,9 @@ int uart_tx(
     UCA1IFG &= ~UCTXCPTIFG; // clear tx complete interrupt flag
     UCA1IE |= UCTXCPTIE; // enable tx complete interrupts
     
-    // critical section ---------------
     uart_busy = 1;
     UCA1TXBUF = *uart_tx_buf_ptr++; // tx first byte, triggering TXCPTIFG
-    // --------------------------------
-
+    
     while(uart_busy) {} // wait until tx done
 
     return 0;
@@ -152,10 +150,7 @@ int uart_rx(
     UCA1IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
     UCA1IE |= UCRXIFG; // enable rx buffer full interrupts
     
-    // critical section ---------------
     uart_busy = 1;
-    // --------------------------------
-
     while(uart_busy) {} // wait until rx done
 
     return 0;

@@ -30,11 +30,23 @@
 
 #define DELAY_LOOP_MS 103
 
+#define BLK_SIZE_P2 8
+#define BLK_SIZE 256 // 2^(BLK_SIZE_P2)
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
+
+// blk_t --------------------------------------------------
+typedef struct
+{
+    // TODO: maybe just store block address on device?
+    unsigned int num; // block number, used to load/store from device
+    volatile unsigned char data[BLK_SIZE];
+}
+blk_t;
+// --------------------------------------------------------
 
 // gtime_t ------------------------------------------------
 // TODO: use

@@ -21,6 +21,10 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+// hardware
+#include "hw/pfc.h"
+
+
 
 //-----------------------------------------------------------------------------
 //  MACROS
@@ -28,23 +32,23 @@
 
 // device specific ----------------------------------------
 // ds32318n ---------------------------
-#define DS32318N_SLAVE_ADDR     0x0068
-#define DS32318N_REG_SEC        0x00
-#define DS32318N_REG_CTL        0x0E
+#ifdef RTC_DS32318N
+#define RTC_SLAVE_ADDR     0x0068
+#define RTC_REG_SEC        0x00
+#define RTC_REG_CTL        0x0E
+#define RTC_SWAP_WEEKDAY   0
+#endif
 // ------------------------------------
 
-/* mcp7940n ---------------------------
-#define MCP7940N_SLAVE_ADDR     0x0068
-#define MCP7940N_REG_SEC        0x03
-#define MCP7940N_REG_CTL        0x00
-// ------------------------------------*/
+// mcp7940n ---------------------------
+#ifdef RTC_MCP7940N
+#define RTC_SLAVE_ADDR     0x0068
+#define RTC_REG_SEC        0x03
+#define RTC_REG_CTL        0x00
+#define RTC_SWAP_WEEKDAY   ?
+#endif
+// ------------------------------------
 // --------------------------------------------------------
-
-// current device ---------------------
-#define RTC_SLAVE_ADDR  DS32318N_SLAVE_ADDR
-#define RTC_REG_SEC     DS32318N_REG_SEC
-#define RTC_REG_CTL     DS32318N_REG_CTL
-// ------------------------------------
 
 #define RTC_STRLEN 19
 
@@ -55,8 +59,8 @@
 
 volatile unsigned char *rtc_display; // register currently being displayed
 
-
 void rtc_init(void);    // initialize rtc
+
 void rtc_start(void);   // start rtc
 void rtc_stop(void);    // stop rtc
 void rtc_get(void);     // get current rtc date and time

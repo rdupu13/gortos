@@ -127,6 +127,18 @@
 #define UART_PINS       BIT2 | BIT3
 // --------------------------------------------------------
 
+// board configuration ------------------------------------
+// rtc
+#define RTC_DS32318N
+
+// mmm
+#define MMM_23LC1024
+#define MMM_SPI_SLAVE_NUM 0
+
+// lcd
+#define LCD_NHD_0420AZ_FL_YBW_33V3
+
+// --------------------------------------------------------
 
 // lora ---------------------------------------------------
 // TODO: force to use led

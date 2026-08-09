@@ -102,6 +102,7 @@ void rtc_start(void)
     
     ctl_reg &= ~BIT7; // enable oscillator
     
+    // TODO: handle errors
     i2c_write(
         &ctl_reg,
         1,

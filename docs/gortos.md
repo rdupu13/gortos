@@ -25,7 +25,7 @@
     - P3.2 - 
     - P3.3 - 
     - P3.4 - 
-    - P3.5 - LORA_RESET
+    - P3.5 - 
     - P3.6 - SWITCH1
     - P3.7 - SWITCH0
     - P4.0 - LEDBAR_BIT8
@@ -55,6 +55,7 @@
     - 3.3 v battery
 - 1 Mbit ram (coming soon)
 - lcd display (coming soon)
+- dial pad (coming soon)
 ---------------------------------------
 
 # SOFTWARE ====================================================================
@@ -66,6 +67,7 @@
 - `spi`
 - `switch`
 - `timer`
+- `uart`
 ---------------------------------------
 
 ## devices ----------------------------
@@ -76,7 +78,6 @@
 - `patterns`
 - `pwm` (coming soon)
 - `rtc`
-- `uart`
 ---------------------------------------
 
 ## kernel -----------------------------
@@ -87,14 +88,14 @@
 ---------------------------------------
 
 ## system variables -------------------
-- `gtime_t gsystime;`
-- `gtime_t guptime;`
-- `unsigned char guid;`
-- `unsigned char gusername[16];`
+- `gtime_t gsystime`
+- `gtime_t guptime`
+- `unsigned char guid`
+- `unsigned char gusername[16]`
 - `gfile_t *gwd`
 - `gfile_t *gin` --> `/dev/tty`
 - `gfile_t *gout` --> `/dev/tty`
-- `unsigned char display_mode;`
+- `unsigned char display_mode`
 ---------------------------------------
 
 ## time format ------------------------
@@ -116,7 +117,7 @@
         - 000 - uart?
         - 001 - lcd?
         - 010 - dial?
-        - 011 - ?
+        - 011 - lora?
         - 100 - ?
         - 101 - ?
         - 110 - ?
@@ -141,7 +142,7 @@
 
 ## filesystem -------------------------
 ### `/`
-- `/bin`
+- `/bin/`
 	- `/bin/cat`
     - `/bin/clear`
     - `/bin/cd`
@@ -156,20 +157,22 @@
     - `/bin/mv`
     - `/bin/rm`
     - `/bin/time`
-- `/dev`
-	- `/dev/tty`
+- `/dev/`
+    - `/dev/dial`
     - `/dev/lcd`
-- `/home`
-	- `/home/gort`
-- `/sys`
+    - `/dev/lora`
+	- `/dev/uart`
+- `/home/`
+	- `/home/gort/`
+- `/sys/`
 	- `/sys/log.txt`
-- `/tmp`
+- `/tmp/`
 
 ### filesystem v2:
-- `/boot`
+- `/boot/`
 	- `/boot/gorb`
 	- `/boot/gorb.cfg`
-- `/proc`
+- `/proc/`
     - `/proc/0`
     - `/proc/...`
 ---------------------------------------

@@ -37,10 +37,10 @@
 int gin;
 int gout;
 
-int helloworld(char *arr);                  // write an array to gout
-int hellogort(char *arr, int n, char stop); // read n chars from gin, if n = 0: read until stop char
+int helloworld(char *arr);                              // write a null-terminated array to gout
+int hellogort(char *arr, unsigned int len, char stop);  // read an array from gin
 
-void glear(void); // clear screen (write PuTTY clear sequence to gout)
+void glear(void); // write putty clear sequence to gout
 
 
 #endif

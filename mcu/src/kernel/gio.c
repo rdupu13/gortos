@@ -65,14 +65,14 @@ int helloworld(char *arr)
  * @brief read an array from gin
  * 
  * @param arr   pointer to where received array will be stored
- * @param n     number of bytes to read (> 0)
+ * @param len   number of bytes to read (> 0)
  * @param stop  if n = 0, read until this character received
  * 
  * @return status of read:
  *               0: ok
  *              -1: error
  */
-int hellogort(char *arr, int n, char stop)
+int hellogort(char *arr, unsigned int len, char stop)
 {
     int status = 0;
     switch(gin)
@@ -82,7 +82,7 @@ int hellogort(char *arr, int n, char stop)
             // TODO: handle errors
             uart_rx(
                 (volatile unsigned char *) arr,
-                (unsigned int) n,
+                len,
                 (unsigned char) stop
             );
             break;
@@ -95,7 +95,7 @@ int hellogort(char *arr, int n, char stop)
 }
 
 /**
- * @brief write clear sequence to gout
+ * @brief write putty clear sequence to gout
  * 
  * @param none
  * 

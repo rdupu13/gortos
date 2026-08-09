@@ -62,8 +62,8 @@ void spi_init(unsigned int timeout)
     UCA0CTLW0 &= ~UCSWRST;      // take peripheral out of software reset
 
     // setup interrupts
-    UCA0IFG &= ~(UCTXIFG | UCRXIFG);    // clear tx/rx interrupt flags
-    UCA0IE &= ~(UCTXIE | UCRXIE);       // disable tx/rx interrupts
+    UCA0IFG = 0;                    // clear interrupt flags
+    UCA0IE &= ~(UCTXIE | UCRXIE);   // disable tx/rx interrupts
 
     // initialize variables
     spi_tx_buf_ptr = 0;
@@ -161,8 +161,8 @@ int spi_wait(void)
 
     if (cnt == 0) {
         // recover bus
-        UCA0IFG &= ~(UCTXIFG | UCRXIFG);  // clear tx/rx interrupt flags
-        UCA0IE &= ~(UCTXIE | UCRXIE);     // disable tx/rx interrupts
+        UCA0IFG = 0;                    // clear interrupt flags
+        UCA0IE &= ~(UCTXIE | UCRXIE);   // disable tx/rx interrupts
         spi_busy_clear();
         return -2;
     }

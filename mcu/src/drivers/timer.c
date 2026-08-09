@@ -47,50 +47,60 @@ void timer_init(void)
     TB0CTL |= TIMER_B0_DIV;     // set divider
     TB0CTL |= TIMER_B0_LEN;     // set length
     TB0CTL |= TIMER_B0_MODE;    // set mode
-    if (TIMER_B0_INT) {
+    #if TIMER_B0_INT
         TB0CCR0 = TIMER_B0_CCR0;    // set ccr0
-        TB0CCTL0 |= CCIE;           // enable ccr0 interrupts
         TB0CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
-    } else {
-        TB0CTL |= TBIE;             // enable overflow interrupts
+        TB0CCTL0 |= CCIE;           // enable ccr0 interrupts
+    #else
         TB0CTL &= ~TBIFG;           // clear overflow interrupt flag
-    }
+        TB0CTL |= TBIE;             // enable overflow interrupts
+    #endif
     // ------------------------------------------------------------------------
 
     // timer b1 ---------------------------------------------------------------
-    if (TIMER_B1_TOGGLE) {
-        TB1CTL |= TBCLR;            // clear timer and dividers
+    TB1CTL |= TBCLR; // clear timer and dividers
+    #if TIMER_B1_TOGGLE
         TB1CTL |= TIMER_B1_SRC;     // set clock source
         TB1CTL |= TIMER_B1_DIV;     // set divider
         TB1CTL |= TIMER_B1_LEN;     // set length
         TB1CTL |= TIMER_B1_MODE;    // set mode
-        if (TIMER_B1_INT) {
+        #if TIMER_B1_INT
             TB1CCR0 = TIMER_B1_CCR0;    // set ccr0
-            TB1CCTL0 |= CCIE;           // enable ccr0 interrupts
             TB1CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
-        } else {
-            TB1CTL |= TBIE;             // enable overflow interrupts
+            TB1CCTL0 |= CCIE;           // enable ccr0 interrupts
+        #else
             TB1CTL &= ~TBIFG;           // clear overflow interrupt flag
-        }
-    }
+            TB1CTL |= TBIE;             // enable overflow interrupts
+        #endif
+    #else
+        TB1CCTL0 &= ~CCIFG; // clear ccr0 interrupt flag
+        TB1CCTL0 &= ~CCIE;  // disable ccr0 interrupts
+        TB1CTL &= ~TBIFG;   // clear overflow interrupt flag
+        TB1CTL &= ~TBIE;    // disable overflow interrupts
+    #endif
     // ------------------------------------------------------------------------
 
     // timer b2 ---------------------------------------------------------------
-    if (TIMER_B2_TOGGLE) {
-        TB2CTL |= TBCLR;            // clear timer and dividers
+    TB2CTL |= TBCLR; // clear timer and dividers
+    #if TIMER_B2_TOGGLE
         TB2CTL |= TIMER_B2_SRC;     // set clock source
         TB2CTL |= TIMER_B2_DIV;     // set divider
         TB2CTL |= TIMER_B2_LEN;     // set length
         TB2CTL |= TIMER_B2_MODE;    // set mode
-        if (TIMER_B2_INT) {
+        #if TIMER_B2_INT
             TB2CCR0 = TIMER_B2_CCR0;    // set ccr0
-            TB2CCTL0 |= CCIE;           // enable ccr0 interrupts
             TB2CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
-        } else {
-            TB2CTL |= TBIE;             // enable overflow interrupts
+            TB2CCTL0 |= CCIE;           // enable ccr0 interrupts
+        #else
             TB2CTL &= ~TBIFG;           // clear overflow interrupt flag
-        }
-    }
+            TB2CTL |= TBIE;             // enable overflow interrupts
+        #endif
+    #else
+        TB2CCTL0 &= ~CCIFG; // clear ccr0 interrupt flag
+        TB2CCTL0 &= ~CCIE;  // disable ccr0 interrupts
+        TB2CTL &= ~TBIFG;   // clear overflow interrupt flag
+        TB2CTL &= ~TBIE;    // disable overflow interrupts
+    #endif
     // ------------------------------------------------------------------------
 
     timer_qcnt = 0;

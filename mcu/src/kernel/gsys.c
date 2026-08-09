@@ -80,16 +80,21 @@ void gsys_init(void)
 
     // intialize more gort system drivers
     led_init();
-    switch_init();
+    switch_init(); // interrupts
     // ----------------------------------------------------
 
     // DEVICES --------------------------------------------
     patterns_init();
-    rtc_init();
+    //pwm_init(); // timer
+    //dial_init(); // led, switch
+    rtc_init(); // i2c
+    //lcd_init(); // i2c
+    //mmm_init(); // spi
+    //lora_init(); // spi
     // ----------------------------------------------------
 
     // KERNEL ---------------------------------------------
-    //gfs_init();
+    //gfs_init(); // mmm, (uart, lcd, lora)?
     
     display_mode = 1;
 
