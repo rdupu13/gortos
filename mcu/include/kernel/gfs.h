@@ -43,7 +43,7 @@ typedef struct
     unsigned int size;
     unsigned char loaded; // not stored
     volatile char name[FILE_NAME_LEN];
-    blk_t *blk; // only valid when loaded = 1, null otherwise
+    gblk_t *blk; // only valid when loaded = 1, null otherwise
 }
 gfile_t;
 // --------------------------------------------------------

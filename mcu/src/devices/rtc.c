@@ -26,8 +26,6 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile unsigned char rtc_display_num;
-
 unsigned char rtc_second;
 unsigned char rtc_minute;
 unsigned char rtc_hour;
@@ -37,6 +35,9 @@ unsigned char rtc_month;
 unsigned char rtc_year;
 
 volatile char rtc_dt_str[RTC_STRLEN];
+
+volatile unsigned char *rtc_display;
+volatile unsigned char rtc_display_num;
 
 
 //-----------------------------------------------------------------------------
@@ -79,6 +80,8 @@ void rtc_init(void)
         rtc_dt_str[16] = ':';
     rtc_dt_str[17] = '0';
     rtc_dt_str[18] = '0';
+
+    rtc_display_sel(0);
     
     //rtc_set(); // TODO: python gui to set system time?
 }

@@ -112,8 +112,7 @@ unsigned int adc_read(unsigned char ch)
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
-#pragma vector = ADC_VECTOR
-__interrupt void isr_adc(void)
+void __attribute__((interrupt(ADC_VECTOR))) isr_adc(void)
 {
     adc_val = ADCMEM0; // store adc value (clears interrupt flag)
 

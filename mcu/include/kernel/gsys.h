@@ -33,6 +33,8 @@
 #define BLK_SIZE_P2 8
 #define BLK_SIZE 256 // 2^(BLK_SIZE_P2)
 
+#define BLK_ALLOC_NUM 2
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
@@ -45,7 +47,7 @@ typedef struct
     unsigned int num; // block number, used to load/store from device
     volatile unsigned char data[BLK_SIZE];
 }
-blk_t;
+gblk_t;
 // --------------------------------------------------------
 
 // gtime_t ------------------------------------------------

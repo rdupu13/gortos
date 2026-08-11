@@ -41,6 +41,8 @@ volatile unsigned int timer_fcnt; // 256 Hz
  */
 void timer_init(void)
 {
+    wdt_stop(); // stop watchdog timer
+    
     // timer b0 ---------------------------------------------------------------
     TB0CTL |= TBCLR;            // clear timer and dividers
     TB0CTL |= TIMER_B0_SRC;     // set clock source
@@ -123,8 +125,7 @@ void wdt_stop(void)
 //-----------------------------------------------------------------------------
 
 // TIMER B0 -------------------------------------------------------------------
-#pragma vector = TIMER0_B0_VECTOR
-__interrupt void isr_tb0_ccr0(void)
+void __attribute__((interrupt(TIMER0_B0_VECTOR))) isr_tb0_ccr0(void)
 {
     qcnt_update(timer_qcnt);
     timer_qcnt++;
@@ -146,8 +147,7 @@ __interrupt void isr_tb0_iv(void)
 // ----------------------------------------------------------------------------
 
 #if TIMER_B1_TOGGLE // --------------------------------------------------------
-#pragma vector = TIMER1_B0_VECTOR
-__interrupt void isr_tb1_ccr0(void)
+__attribute__((interrupt(TIMER1_B0_VECTOR))) isr_tb1_ccr0
 {
     fcnt_update(timer_fcnt);
     timer_fcnt++;
@@ -177,8 +177,7 @@ __interrupt void isr_tb2_ccr0(void)
 }
 */
 
-#pragma vector = TIMER2_B1_VECTOR
-__interrupt void isr_tb2_iv(void)
+__attribute__((interrupt(TIMER2_B1_VECTOR))) isr_tb2_iv
 {
     switch(TB2IV)
     {

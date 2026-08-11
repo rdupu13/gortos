@@ -33,9 +33,8 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-// TODO: make these files:
-int gin;
-int gout;
+extern int gin;
+extern int gout;
 
 int helloworld(char *arr);                              // write a null-terminated array to gout
 int hellogort(char *arr, unsigned int len, char stop);  // read an array from gin

@@ -38,6 +38,8 @@ volatile unsigned int pattern3;
 volatile unsigned int pattern4; volatile unsigned char pattern4_qcnt; // annoying TODO: remove somehow
 volatile unsigned int pattern5;
 
+volatile unsigned int *cur_pattern;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS

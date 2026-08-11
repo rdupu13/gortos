@@ -224,10 +224,9 @@ void i2c_busy_clear(void)
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
-#pragma vector = I2C_VECTOR
-__interrupt void isr_i2c(void)
+void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
 {
-    switch(__even_in_range(UCB1IV, 0x1E))
+    switch(UCB1IV)
     {
         case 0x00: break; // no interrupts
         case 0x02: break; // ALIFG (arbitration lost)

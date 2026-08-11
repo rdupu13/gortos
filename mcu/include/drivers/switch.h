@@ -26,16 +26,21 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define SWITCH_INTERRUPT_EN   1
+#define SWITCH_INTERRUPT_INIT_EN    1
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void switch_init(void);                     // initialize switches
+// initialize switches
+void switch_init(
+    unsigned char pol0,
+    unsigned char pol1
+);
 
-unsigned char switch_poll(unsigned char n); // 
+unsigned char switch_poll(unsigned char n);             // poll a switch input
+void switch_wait(unsigned char n, unsigned char lvl);   // wait for a switch to be pressed/unpressed
 
 #endif
 //-----------------------------------------------------------------------------

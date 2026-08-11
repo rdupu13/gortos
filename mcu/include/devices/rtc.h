@@ -57,7 +57,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-volatile unsigned char *rtc_display; // register currently being displayed
+extern volatile unsigned char *rtc_display; // register currently being displayed
 
 void rtc_init(void);    // initialize rtc
 

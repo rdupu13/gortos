@@ -206,8 +206,7 @@ void spi_busy_clear(void)
 //  INTERRUPT SERVICE ROUTINES
 //-----------------------------------------------------------------------------
 
-#pragma vector = SPI_VECTOR
-__interrupt void isr_spi(void)
+void __attribute__((interrupt(SPI_VECTOR))) isr_spi(void)
 {
     switch(UCA0IV)
     {

@@ -75,7 +75,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-volatile unsigned int *cur_pattern;         // current pattern pointer
+extern volatile unsigned int *cur_pattern;  // current pattern pointer
 
 void patterns_init(void);                   // initialize patterns
 

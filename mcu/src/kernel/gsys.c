@@ -48,6 +48,9 @@
 
 volatile unsigned char display_mode;
 
+volatile gblk_t gblks[BLK_ALLOC_NUM];
+volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -60,14 +63,12 @@ volatile unsigned char display_mode;
  */
 void gsys_init(void)
 {
-    wdt_stop(); // stop watchdog timer
-    
     pfc_init(); // initialize ports
 
     LED_HEARTBEAT_PORT |= LED_HEARTBEAT_PIN; // show signs of life
 
     // DRIVERS --------------------------------------------
-    // initialize core gort system drivers
+    // initialize core gort peripheral drivers
     timer_init();
     uart_init(96, 1); // 9600 baud, echo enabled
     i2c_init(60000); // timeout = 60000
@@ -76,11 +77,12 @@ void gsys_init(void)
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
-    __enable_interrupt(); // globally enable interrupts
+    // globally enable interrupts
+    __asm__ __volatile__("eint" ::: "memory");
 
-    // intialize more gort system drivers
+    // intialize digital i/o
     led_init();
-    switch_init(); // interrupts
+    switch_init(0, 0);
     // ----------------------------------------------------
 
     // DEVICES --------------------------------------------
@@ -109,6 +111,19 @@ void gsys_init(void)
     helloworld("(c) rdupu13 2026\n\n");
     print_systime();
     helloworld("\n");
+
+    // initialize gort blocks
+    int i;
+    for (i = 0; i < BLK_ALLOC_NUM; i++) {
+        int j;
+        for (j = 0; j < BLK_SIZE; j++) {
+            gblks_data[i][j] = 0;
+        }
+        gblks[i] = (gblk_t) {
+            .num = i,
+            .data = gblks_data[i]
+        };
+    }
 }
 
 /**

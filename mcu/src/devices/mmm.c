@@ -7,6 +7,7 @@
  * 
  * @file mmm.c
  *
+ *
 ----------------------------------------------------------------------------- */
 
 //-----------------------------------------------------------------------------
@@ -74,7 +75,7 @@ void mmm_init(void)
  *              0: ok
  *              
  */
-int mmm_load_block(blk_t *blk)
+int mmm_load_block(gblk_t *blk)
 {
     volatile unsigned char instr;
 
@@ -101,7 +102,7 @@ int mmm_load_block(blk_t *blk)
  *              0: ok
  *              
  */
-int mmm_store_block(blk_t *blk)
+int mmm_store_block(gblk_t *blk)
 {
     volatile unsigned char instr;
 
