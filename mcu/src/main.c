@@ -55,15 +55,15 @@ int main(void)
         //helloworld(hex(adc_read(0)));
         //helloworld("\n");
 
-        //rtc_get();
-        //eep(610);
+        int stat = rtc_get();
+        if (stat) {
+            gsys_log("rtc: error");
+            gsys_log(hex(gabs(stat)));
+        }
+        eep(61);
 
-        volatile unsigned char mode_reg;
-        volatile unsigned char instr = 0x05; // read mode register
-        spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
-        spi_read(&mode_reg, 1, MMM_SPI_SLAVE_NUM);
-        helloworld(hex((unsigned int) mode_reg));
-        eep(610);
+        //eep(610);
+        //mmm_init();
 
         //rtc_get();
         //eep(50);

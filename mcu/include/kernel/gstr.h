@@ -50,6 +50,7 @@ char *hex(unsigned int n);
 
 //unsigned int dec_to_uint(char *str);
 
+unsigned int gabs(int i); // absolute value
 
 #endif
 //-----------------------------------------------------------------------------

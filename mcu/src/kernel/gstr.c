@@ -223,6 +223,21 @@ unsigned int dec_to_uint(char *str)
     // char[5] -> 5 x 4-bit BCD (char[3])
 }
 */
+
+/**
+ * @brief absolute value
+ * 
+ * @param i
+ * 
+ * @return 
+ */
+unsigned int gabs(int i)
+{
+    if (i & 0x8000) {
+        return (unsigned int) -i;
+    }
+    return (unsigned int) i;
+}
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

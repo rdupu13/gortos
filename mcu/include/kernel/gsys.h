@@ -67,6 +67,7 @@ gtime_t;
 
 void gsys_init(void); // initialize gort system
 
+void gsys_log(char *entry); // add an entry to gort's diary
 void eep(unsigned int delay); // take a gort nap
 
 // rtc

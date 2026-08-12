@@ -52,6 +52,8 @@
 
 #define RTC_STRLEN 19
 
+#define RTC_SECOND_INIT 0x00
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
@@ -59,12 +61,12 @@
 
 extern volatile unsigned char *rtc_display; // register currently being displayed
 
-void rtc_init(void);    // initialize rtc
+int rtc_init(void);    // initialize rtc
 
-void rtc_start(void);   // start rtc
-void rtc_stop(void);    // stop rtc
-void rtc_get(void);     // get current rtc date and time
-void rtc_set(void);     // set current date and time
+int rtc_start(void);   // start rtc
+int rtc_stop(void);    // stop rtc
+int rtc_get(void);     // get current rtc date and time
+int rtc_set(void);     // set current date and time
 
 char *rtc_getstr(void); // get current rtc date and time and convert to string
 //void rtc_setdate(int month, int day, int year);

@@ -72,5 +72,8 @@ mcu/include/legacy.h
 *.bkp
 *.dtmp
 
+# waveforms project files
+*.dwf3work
+
 # datasheets
 docs/datasheets/

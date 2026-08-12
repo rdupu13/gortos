@@ -53,17 +53,19 @@ void mmm_init(void)
     instr = 0x05; // read mode register
     
     // TODO: handle errors
-    spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
-    spi_read(&mode_reg, 1, MMM_SPI_SLAVE_NUM);
+    //SPI_CS0_PORT &= ~SPI_CS0_PIN;
+    spi_read(&mode_reg, 1, MMM_SPI_SLAVE_NUM, &instr, 1);
     
-    mode_reg &= ~0xC0;
-    mode_reg |= (MMM_MODE << 6); // set mode
+    mode_reg &= ~0xC0;              // clear mode
+    mode_reg |= (MMM_MODE << 6);    // set mode
 
     instr = 0x01; // write mode register
 
     // TODO: handle errors
-    spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mode_reg, 1, MMM_SPI_SLAVE_NUM);
+    //spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
+    //spi_write(&mode_reg, 1, MMM_SPI_SLAVE_NUM);
+    //spi_stop();
+    //SPI_CS0_PORT |= SPI_CS0_PIN;
 }
 
 /**
@@ -77,18 +79,14 @@ void mmm_init(void)
  */
 int mmm_load_block(gblk_t *blk)
 {
-    volatile unsigned char instr;
+    volatile unsigned char instr[4] = {
+        0x03, mmm_addr[2], mmm_addr[1], mmm_addr[0]
+    };
 
-    instr = 0x03; // read
     get_mmm_addr(blk->num);
     
     // TODO: handle errors
-    spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mmm_addr[2], 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mmm_addr[1], 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mmm_addr[0], 1, MMM_SPI_SLAVE_NUM);
-
-    spi_read(blk->data, BLK_SIZE, MMM_SPI_SLAVE_NUM);
+    spi_read(blk->data, BLK_SIZE, MMM_SPI_SLAVE_NUM, instr, 4);
 
     return 0;
 }
@@ -104,17 +102,13 @@ int mmm_load_block(gblk_t *blk)
  */
 int mmm_store_block(gblk_t *blk)
 {
-    volatile unsigned char instr;
+    volatile unsigned char instr[4] = {
+        0x02, mmm_addr[2], mmm_addr[1], mmm_addr[0]
+    };
 
-    instr = 0x02; // write
     get_mmm_addr(blk->num);
     
-    // TODO: handle errors
-    spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mmm_addr[2], 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mmm_addr[1], 1, MMM_SPI_SLAVE_NUM);
-    spi_write(&mmm_addr[0], 1, MMM_SPI_SLAVE_NUM);
-
+    spi_write(instr, 4, MMM_SPI_SLAVE_NUM);
     spi_write(blk->data, BLK_SIZE, MMM_SPI_SLAVE_NUM);
 
     return 0;

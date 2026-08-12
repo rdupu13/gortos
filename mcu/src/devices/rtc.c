@@ -47,13 +47,15 @@ volatile unsigned char rtc_display_num;
 /**
  * @brief initialize rtc
  * 
- * @return none
+ * @return status of device
+ *          0: ok
+ *          other: not ok
  */
-void rtc_init(void)
+int rtc_init(void)
 {
     rtc_display_num = 0;
 
-    rtc_second = 0x00;
+    rtc_second = RTC_SECOND_INIT;
     rtc_minute = 0x23;
     rtc_hour = 0x12;
     rtc_weekday = 0x07;
@@ -84,6 +86,17 @@ void rtc_init(void)
     rtc_display_sel(0);
     
     //rtc_set(); // TODO: python gui to set system time?
+
+    int stat = rtc_stop();
+    if (stat) { return stat; }
+    stat = rtc_set();
+    if (stat) { return stat; }
+    stat = rtc_start();
+    if (stat) { return stat; }
+    stat = rtc_get();
+    if (stat) { return stat; }
+
+    return 0;
 }
 
 /**
@@ -91,27 +104,27 @@ void rtc_init(void)
  * 
  * @return none
  */
-void rtc_start(void)
+int rtc_start(void)
 {
     volatile unsigned char ctl_reg;
 
-    // TODO: handle errors
-    i2c_read(
+    int stat = i2c_read(
         &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
+    if (stat) { return stat; }
     
     ctl_reg &= ~BIT7; // enable oscillator
     
-    // TODO: handle errors
-    i2c_write(
+    stat = i2c_write(
         &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
+    return stat;
 }
 
 /**
@@ -119,27 +132,27 @@ void rtc_start(void)
  * 
  * @return none
  */
-void rtc_stop(void)
+int rtc_stop(void)
 {
     volatile unsigned char ctl_reg;
 
-    // TODO: handle errors
-    i2c_read(
+    int stat = i2c_read(
         &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
+    if (stat) { return stat; }
 
     ctl_reg |= BIT7; // disable oscillator
     
-    // TODO: handle errors
-    i2c_write(
+    stat = i2c_write(
         &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
+    return stat;
 }
 
 /**
@@ -147,17 +160,17 @@ void rtc_stop(void)
  * 
  * @return none
  */
-void rtc_get(void)
+int rtc_get(void)
 {
     volatile unsigned char dt[7];
 
-    // TODO: handle errors
-    i2c_read(
+    int stat = i2c_read(
         dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
     );
+    if (stat) { return stat; }
 
     rtc_second = dt[0];
     rtc_minute = dt[1];
@@ -166,16 +179,18 @@ void rtc_get(void)
     rtc_date = dt[4];
     rtc_month = dt[5];
     rtc_year = dt[6];
+    return 0;
 }
 
 /**
  * @brief set current rtc date and time
  * 
- * @return none
+ * @return status of i2c write
  */
-void rtc_set(void)
+int rtc_set(void)
 {
-    rtc_stop();
+    int stat = rtc_stop();
+    if (stat) { return stat; }
 
     volatile unsigned char dt[7];
     
@@ -187,15 +202,13 @@ void rtc_set(void)
     dt[5] = rtc_month;
     dt[6] = rtc_year;
 
-    // TODO: handle errors
-    i2c_write(
+    stat = i2c_write(
         dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
     );
-
-    rtc_start();
+    return stat;
 }
 
 /**

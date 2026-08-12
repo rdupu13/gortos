@@ -56,6 +56,8 @@ volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
+void die(char *last_words);
+
 /**
  * @brief initialize gort system
  * 
@@ -77,42 +79,43 @@ void gsys_init(void)
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
-    // globally enable interrupts
-    __asm__ __volatile__("eint" ::: "memory");
+    __asm__ __volatile__("eint" ::: "memory"); // globally enable interrupts
 
     // intialize digital i/o
     led_init();
     switch_init(0, 0);
     // ----------------------------------------------------
 
-    // DEVICES --------------------------------------------
-    patterns_init();
-    //pwm_init(); // timer
-    //dial_init(); // led, switch
-    rtc_init(); // i2c
-    //lcd_init(); // i2c
-    //mmm_init(); // spi
-    //lora_init(); // spi
-    // ----------------------------------------------------
-
-    // KERNEL ---------------------------------------------
-    //gfs_init(); // mmm, (uart, lcd, lora)?
-    
+    // KERNEL -----------------------------------------------------------------
     display_mode = 1;
 
     // gin & gout = uart
     gin = 0;
     gout = 0;
+    glear();
     // ----------------------------------------------------
 
-    // print start message
-    glear();
-    helloworld("~~~ Gort OS ~~~\n");
-    helloworld("(c) rdupu13 2026\n\n");
-    print_systime();
-    helloworld("\n");
+    // DEVICES --------------------------------------------
+    patterns_init(); // timer sort of
 
-    // initialize gort blocks
+    //pwm_init(); // timer
+    //dial_init(); // led, switch
+
+    int rtc_stat = rtc_init();
+    if (rtc_stat) {
+        die("rtc: initialization error :(");
+    } else {
+        gsys_log("rtc: initialization successful :)");
+    }
+
+    //lcd_init(); // i2c
+    //mmm_init(); // spi
+    //lora_init(); // spi
+    // ----------------------------------------------------    
+
+    //gfs_init(); // mmm, (uart, lcd, lora)?
+    
+    // initialize gort blocks TODO: maybe clunky, but for fun
     int i;
     for (i = 0; i < BLK_ALLOC_NUM; i++) {
         int j;
@@ -124,6 +127,48 @@ void gsys_init(void)
             .data = gblks_data[i]
         };
     }
+
+    // print start message (init successful)
+    helloworld("\n\n~~~ Gort OS ~~~\n");
+    helloworld("(c) rdupu13 2026\n\n");
+    helloworld("Current time: ");
+    print_systime();
+    helloworld("\n\n");
+    // ------------------------------------------------------------------------
+}
+
+/**
+ * @brief add an entry to gort's diary
+ * 
+ * @param entry entry to be written
+ * 
+ * @return none
+ */
+void gsys_log(char *entry)
+{
+    //gout = " ";
+
+    helloworld("[ ");
+    print_systime(); // TODO: maybe just time
+    helloworld(" ] ");
+    helloworld(entry);
+    helloworld("\n");
+}
+
+/**
+ * @brief gort died :(
+ * 
+ * @param last_words gort's last dying words
+ * 
+ * @return none
+ */
+void die(char *last_words)
+{
+    gsys_log(last_words);
+    helloworld("\n\ngort died :(\nreboot now\n"); // final dying words
+    __asm__ __volatile__("dint" ::: "memory"); // globally disable interrupts
+    led_init(); // nothing but ledbar test pattern TODO: error code?
+    while (1) {} // infinity
 }
 
 /**
@@ -152,10 +197,7 @@ void print_systime(void)
 {
     char *systime;
     systime = rtc_getstr();
-
-    helloworld("Current time: ");
     helloworld(systime);
-    helloworld("\n");
 }
 // --------------------------------------------------------
 
@@ -176,7 +218,7 @@ void blinky(unsigned char led, unsigned int delay)
 }
 
 /**
- * @brief select current thing displayed on ledbar
+ * @brief select current thing displayed on ledbar TODO: APP
  * 
  * @param sel selection
  * 
@@ -202,7 +244,7 @@ void ledbar_sel(unsigned char sel)
 //-----------------------------------------------------------------------------
 
 /**
- * @brief update things (4 Hz)
+ * @brief update things (4 Hz) TODO: APP
  * 
  * @param qcnt timer quarter-second counter
  * 
@@ -221,7 +263,7 @@ void qcnt_update(unsigned int qcnt)
 }
 
 /**
- * @brief update things faster (256 Hz)
+ * @brief update things faster (256 Hz) TODO: APP
  * 
  * @param fcnt timer "fast" counter
  * 
@@ -233,7 +275,7 @@ void fcnt_update(unsigned int fcnt)
 }
 
 /**
- * @brief executes when switch 0 is pressed
+ * @brief executes when switch 0 is pressed TODO: APP
  * 
  * @return none
  */
@@ -254,7 +296,7 @@ void switch_0_pressed(void)
 }
 
 /**
- * @brief executes when switch 1 is pressed
+ * @brief executes when switch 1 is pressed TODO: APP
  * 
  * @return none
  */

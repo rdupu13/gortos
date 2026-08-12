@@ -71,7 +71,9 @@
 // TODO: peripheral base addr
 #define SPI_VECTOR      EUSCI_A0_VECTOR
 #define SPI_SEL0        P1SEL0
-#define SPI_PINS        BIT4 | BIT5 | BIT6 | BIT7
+#define SPI_PINS        BIT5 | BIT6 | BIT7 // 3-pin mode
+#define SPI_CS0_PORT    P1OUT
+#define SPI_CS0_PIN     BIT4
 // --------------------------------------------------------
 
 // switch -------------------------------------------------

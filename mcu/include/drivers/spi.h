@@ -74,8 +74,13 @@ int spi_write(
 int spi_read(
     volatile unsigned char *arr,
     unsigned int len,
-    unsigned char slave
+    unsigned char slave,
+    volatile unsigned char *addr,
+    unsigned int addr_len
 );
+
+void spi_start(void);   // set gpio chip select for specific slave
+void spi_stop(void);    // clear gpio chip select for specific slave
 
 
 #endif
