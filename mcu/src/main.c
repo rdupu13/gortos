@@ -60,7 +60,7 @@ int main(void)
             gsys_log("rtc: error");
             gsys_log(hex(gabs(stat)));
         }
-        eep(61);
+        eep(610);
 
         //eep(610);
         //mmm_init();
