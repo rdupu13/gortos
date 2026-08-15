@@ -1,4 +1,4 @@
-MCU      = msp430fr2153
+MCU = msp430fr2153
 
 USBIPD = usbipd.exe
 MSP_VIDPID = 2047:0013
@@ -9,33 +9,60 @@ TOOLDIR = /opt/msp430-gcc/msp430-elf
 SRCDIR = src
 INCDIR = include
 
-EXCLUDE = src/devices/lora.c src/kernel/gfs.c
+EXCLUDE = 	src/kernel/gfs.c \
+			include/kernel/gfs.h \
+			src/devices/dial.c \
+			include/devices/dial.h \
+			src/devices/lcd.c \
+			include/devices/lcd.h \
+			src/devices/lora.c \
+			include/devices/lora.h \
+			src/devices/mmm.c \
+			include/devices/mmm.h \
+			src/devices/pwm.c \
+			include/devices/pwm.h
 
-WARNFLAGS = -Wall -Wno-builtin-declaration-mismatch -Wno-unknown-pragmas -Wno-implicit-function-declaration -Wno-unused-variable -Wno-missing-braces -Wno-comment
+WARNFLAGS = -Wall \
+			-Wno-builtin-declaration-mismatch \
+			-Wno-unknown-pragmas \
+			-Wno-implicit-function-declaration \
+			-Wno-missing-braces \
+			-Wno-comment
 
-CFLAGS  = -mmcu=$(MCU) -Os -fdiagnostics-color=always $(WARNFLAGS) -I $(INCDIR) -I $(TOOLDIR)/include
-LDFLAGS = -mmcu=$(MCU) -L $(TOOLDIR)/lib -T $(TOOLDIR)/lib/$(MCU).ld
+CCFLAGS =	-mmcu=$(MCU) \
+			-Os \
+			-fdiagnostics-color=always \
+			$(WARNFLAGS) \
+			-I $(INCDIR) \
+			-I $(TOOLDIR)/include
 
-SRCS   = $(filter-out $(EXCLUDE), $(shell find $(SRCDIR) -name '*.c'))
-TARGET = firmware
+LDFLAGS = 	-mmcu=$(MCU) \
+			-L $(TOOLDIR)/lib \
+			-T $(TOOLDIR)/lib/$(MCU).ld
 
-all: $(TARGET).elf
+SRCS =		$(filter-out $(EXCLUDE), \
+			$(shell find $(SRCDIR) -name '*.c'))
 
-$(TARGET).elf: $(SRCS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SRCS)
+TARGET = gort
 
-flash: $(TARGET).elf
+all: $(TARGET).out
+
+$(TARGET).out: $(SRCS)
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $(SRCS)
+
+flash: $(TARGET).out
 	@echo "Found MSP430 eZ-FET at BUSID $(BUSID)"
 	@$(USBIPD) attach --wsl --busid $(BUSID) 2>/dev/null || true
 	@sleep 1
-	@sudo mspdebug tilib "prog $(TARGET).elf"
+	@sudo mspdebug tilib "prog $(TARGET).out"
 
-run: $(TARGET).elf
-	usbipd.exe attach --wsl --busid 5-4 2>/dev/null || true
-	sleep 1
-	sudo mspdebug tilib
+debug: $(TARGET).out
+	@echo "Found MSP430 eZ-FET at BUSID $(BUSID)"
+	@$(USBIPD) attach --wsl --busid $(BUSID) 2>/dev/null || true
+	@sleep 1
+	@sudo mspdebug tilib
 
 clean:
-	rm -f $(TARGET).elf
+	rm -f $(TARGET).out
 
-.PHONY: all flash clean
+.PHONY: all flash debug clean

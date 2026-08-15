@@ -45,7 +45,7 @@ typedef struct
 {
     // TODO: maybe just store block address on device?
     unsigned int num; // block number, used to load/store from device
-    volatile unsigned char data[BLK_SIZE];
+    volatile unsigned char *data;
 }
 gblk_t;
 // --------------------------------------------------------

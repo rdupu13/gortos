@@ -79,7 +79,9 @@ void gsys_init(void)
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
+    __asm__ __volatile__("nop");
     __asm__ __volatile__("eint" ::: "memory"); // globally enable interrupts
+    __asm__ __volatile__("nop");
 
     // intialize digital i/o
     led_init();
@@ -167,6 +169,7 @@ void die(char *last_words)
     gsys_log(last_words);
     helloworld("\n\ngort died :(\nreboot now\n"); // final dying words
     __asm__ __volatile__("dint" ::: "memory"); // globally disable interrupts
+    __asm__ __volatile__("nop");
     led_init(); // nothing but ledbar test pattern TODO: error code?
     while (1) {} // infinity
 }
