@@ -72,17 +72,17 @@ void gsys_init(void)
     // DRIVERS --------------------------------------------
     // initialize core gort peripheral drivers
     timer_init();
+    adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
     i2c_init(60000); // timeout = 60000
     spi_init(60000); // timeout = 60000
-    adc_init();
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
     __asm__ __volatile__("nop");
     __asm__ __volatile__("eint" ::: "memory"); // globally enable interrupts
     __asm__ __volatile__("nop");
-
+    
     // intialize digital i/o
     led_init();
     switch_init(0, 0);
@@ -90,12 +90,9 @@ void gsys_init(void)
 
     // KERNEL -----------------------------------------------------------------
     display_mode = 1;
-
-    // gin & gout = uart
     gin = 0;
     gout = 0;
     glear();
-    // ----------------------------------------------------
 
     // DEVICES --------------------------------------------
     patterns_init(); // timer sort of
