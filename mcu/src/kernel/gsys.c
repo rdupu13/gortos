@@ -37,7 +37,7 @@
 #include "devices/rtc.h"
 
 // kernel
-#include "kernel/gfs.h"
+//#include "kernel/gfs.h"
 #include "kernel/gio.h"
 #include "kernel/gstr.h"
 
@@ -79,10 +79,11 @@ void gsys_init(void)
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
+    // globally enable interrupts
     __asm__ __volatile__("nop");
-    __asm__ __volatile__("eint" ::: "memory"); // globally enable interrupts
+    __asm__ __volatile__("eint" ::: "memory");
     __asm__ __volatile__("nop");
-    
+
     // intialize digital i/o
     led_init();
     switch_init(0, 0);
@@ -97,9 +98,6 @@ void gsys_init(void)
     // DEVICES --------------------------------------------
     patterns_init(); // timer sort of
 
-    //pwm_init(); // timer
-    //dial_init(); // led, switch
-
     int rtc_stat = rtc_init();
     if (rtc_stat) {
         die("rtc: initialization error :(");
@@ -107,6 +105,9 @@ void gsys_init(void)
         gsys_log("rtc: initialization successful :)");
     }
 
+    //pwm_init(); // timer
+    //dial_init(); // led, switch
+    
     //lcd_init(); // i2c
     //mmm_init(); // spi
     //lora_init(); // spi
@@ -165,10 +166,15 @@ void die(char *last_words)
 {
     gsys_log(last_words);
     helloworld("\n\ngort died :(\nreboot now\n"); // final dying words
-    __asm__ __volatile__("dint" ::: "memory"); // globally disable interrupts
+    
+    // globally disable interrupts
+    __asm__ __volatile__("dint" ::: "memory");
     __asm__ __volatile__("nop");
-    led_init(); // nothing but ledbar test pattern TODO: error code?
-    while (1) {} // infinity
+
+    led_init(); // nothing but ledbar test pattern
+    //TODO: display error code?
+
+    while (1) {} // dead for infinity
 }
 
 /**
@@ -197,7 +203,11 @@ void print_systime(void)
 {
     char *systime;
     systime = rtc_getstr();
-    helloworld(systime);
+    if (!systime) {
+        helloworld("(error getting rtc time)");
+    } else {
+        helloworld(systime);
+    }
 }
 // --------------------------------------------------------
 

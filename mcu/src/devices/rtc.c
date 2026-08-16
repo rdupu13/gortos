@@ -34,7 +34,7 @@ unsigned char rtc_date;
 unsigned char rtc_month;
 unsigned char rtc_year;
 
-volatile char rtc_dt_str[RTC_STRLEN];
+volatile char rtc_dt_str[RTC_STRLEN + 1];
 
 volatile unsigned char *rtc_display;
 volatile unsigned char rtc_display_num;
@@ -55,38 +55,21 @@ int rtc_init(void)
 {
     rtc_display_num = 0;
 
-    rtc_second = RTC_SECOND_INIT;
-    rtc_minute = 0x23;
+    rtc_second = 0x18;
+    rtc_minute = 0x24;
     rtc_hour = 0x12;
-    rtc_weekday = 0x07;
-    rtc_date = 0x25;
-    rtc_month = 0x07;
-    rtc_year = 0x26;
+    rtc_weekday = 0x06;
+    rtc_date = 0x23;
+    rtc_month = 0x12;
+    rtc_year = 0x05;
 
-    rtc_dt_str[0]  = '1';
-    rtc_dt_str[1]  = '0';
-        rtc_dt_str[2]  = '-';
-    rtc_dt_str[3]  = '1';
-    rtc_dt_str[4]  = '3';
-        rtc_dt_str[5]  = '-';
-        rtc_dt_str[6]  = '2';
-        rtc_dt_str[7]  = '0';
-    rtc_dt_str[8]  = '0';
-    rtc_dt_str[9]  = '3'; 
-        rtc_dt_str[10] = ' ';
-    rtc_dt_str[11] = '0';
-    rtc_dt_str[12] = '3';
-        rtc_dt_str[13] = ':';
-    rtc_dt_str[14] = '4';
-    rtc_dt_str[15] = '2';
-        rtc_dt_str[16] = ':';
-    rtc_dt_str[17] = '0';
-    rtc_dt_str[18] = '0';
+    gopy(rtc_dt_str, RTC_INIT_DT_STR, girth(RTC_INIT_DT_STR) + 1);
 
     rtc_display_sel(0);
     
     //rtc_set(); // TODO: python gui to set system time?
 
+    // sets fake init time TODO: maybe get time from internet (AFTER this init function?)
     int stat = rtc_stop();
     if (stat) { return stat; }
     stat = rtc_set();
@@ -189,9 +172,6 @@ int rtc_get(void)
  */
 int rtc_set(void)
 {
-    int stat = rtc_stop();
-    if (stat) { return stat; }
-
     volatile unsigned char dt[7];
     
     dt[0] = rtc_second;
@@ -202,7 +182,7 @@ int rtc_set(void)
     dt[5] = rtc_month;
     dt[6] = rtc_year;
 
-    stat = i2c_write(
+    int stat = i2c_write(
         dt,
         7,
         RTC_SLAVE_ADDR,
@@ -218,18 +198,17 @@ int rtc_set(void)
  */
 char *rtc_getstr(void)
 {
-    rtc_get();
-    
-    // TODO: fix without needing to make literally everything volatile
-    // is it even really fixed if the compiler shuts up?
-    char *_rtc_dt_str = (char *) rtc_dt_str;
+    int stat = rtc_get();
+    if (stat) {
+        return (char *) 0;
+    }
 
-    hex_to_str(_rtc_dt_str,      &rtc_month,  1);
-    hex_to_str(_rtc_dt_str + 3,  &rtc_date,   1);
-    hex_to_str(_rtc_dt_str + 8,  &rtc_year,   1);
-    hex_to_str(_rtc_dt_str + 11, &rtc_hour,   1);
-    hex_to_str(_rtc_dt_str + 14, &rtc_minute, 1);
-    hex_to_str(_rtc_dt_str + 17, &rtc_second, 1);
+    hex_to_str(rtc_dt_str,      &rtc_month,  1);
+    hex_to_str(rtc_dt_str + 3,  &rtc_date,   1);
+    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1); // TODO: NOT WORKING FOR SOME REASON???
+    hex_to_str(rtc_dt_str + 11, &rtc_hour,   1);
+    hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
+    hex_to_str(rtc_dt_str + 17, &rtc_second, 1);
 
     return (char *) rtc_dt_str;
 }

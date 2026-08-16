@@ -2,10 +2,7 @@
 
 an embedded operating system
 
-## platforms:
-TI MSP430FR2153 microcontroller unit
-
-
+### platform: TI MSP430FR2153 microcontroller unit
 #### author: ryan dup
 
 MSP430FR2153 needs an operating system, and gort is up to the task!
@@ -30,9 +27,10 @@ gort os is fully functional with driver support for the following peripherals:
 
 gort os supports a variety of off-chip modules, suitable for any embedded project:
 
-* ON-
-    - real-time clock module (RTC)
-    - 128KB serial mini memory manager (MMM)
+* ON-BOARD
+    - CP2102N USB-to-UART
+    - MCP7940N real-time clock module (RTC)
+    - 23LC1024 128KB serial mini memory manager (MMM)
     - 
 
 ---------------------------------------

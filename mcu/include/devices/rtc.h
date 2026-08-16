@@ -33,26 +33,28 @@
 // device specific ----------------------------------------
 // ds32318n ---------------------------
 #ifdef RTC_DS32318N
-#define RTC_SLAVE_ADDR     0x0068
-#define RTC_REG_SEC        0x00
-#define RTC_REG_CTL        0x0E
-#define RTC_SWAP_WEEKDAY   0
+#define RTC_SLAVE_ADDR      0x0068
+#define RTC_REG_SEC         0x00
+#define RTC_REG_CTL         0x0E
+#define RTC_WEEKDAY_0       1
+#define RTC_SWAP_WEEKDAY    0
 #endif
 // ------------------------------------
 
 // mcp7940n ---------------------------
 #ifdef RTC_MCP7940N
-#define RTC_SLAVE_ADDR     0x0068
-#define RTC_REG_SEC        0x03
-#define RTC_REG_CTL        0x00
-#define RTC_SWAP_WEEKDAY   ?
+#define RTC_SLAVE_ADDR      0x0068
+#define RTC_REG_SEC         0x03
+#define RTC_REG_CTL         0x00
+#define RTC_WEEKDAY_0       ?
+#define RTC_SWAP_WEEKDAY    ?
 #endif
 // ------------------------------------
 // --------------------------------------------------------
 
 #define RTC_STRLEN 19
 
-#define RTC_SECOND_INIT 0x00
+#define RTC_INIT_DT_STR "12-23-2005 12:24:18"
 
 
 //-----------------------------------------------------------------------------

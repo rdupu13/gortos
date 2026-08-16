@@ -1,7 +1,7 @@
+
 /** ---------------------------------------------------------------------------
  * 
- * GORTOS
- * gort kernel
+ * MSP430 test main file
  * 
  * created by rdupu13
  * 
@@ -13,21 +13,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// drivers
-#include "drivers/adc.h" // testing
-#include "drivers/led.h" // testing
-
-// devices
-#include "devices/mmm.h" // testing
-#include "devices/rtc.h" // testing
-
-// kernel
-#include "kernel/gsys.h"
-#include "kernel/gio.h" // testing
-#include "kernel/gstr.h" // testing
-
-// applications
-#include "apps/gsh.h"
+// hardware
+#include "hw/msp430fr2153.h"
 
 
 //-----------------------------------------------------------------------------
@@ -40,43 +27,29 @@
 //-----------------------------------------------------------------------------
 
 /**
- * @brief gort kernel!
+ * @brief main test
  * 
  * @return never!
  */
 int main(void)
 {
-    gsys_init(); // initialize gort system
+    WDTCTL = WDTPW | WDTHOLD; // stop watchdog timer
 
-    //int gsh = main_gsh(); // launch gort shell
+    PM5CTL0 &= ~LOCKLPM5; // turn off low-power mode
 
+    // TEST CODE HERE -------------------------------------
+    P1DIR |= BIT0;
+    P1OUT &= ~BIT0;
+
+    int i;
     while (1)
     {
-        //helloworld(hex(adc_read(0)));
-        //helloworld("\n");
-
-        //print_systime();
-        //helloworld("\n");
-        //eep(610);
-
-        int stat = rtc_get();
-        if (stat) {
-            gsys_log("rtc: error");
-            helloworld(hex(gabs(stat)));
-        }
-        eep(610);
-
-        //eep(610);
-        //mmm_init();
-
-        //rtc_get();
-        //eep(50);
-        //switch_wait(0, 0);
-        //eep(50);
-        //switch_wait(0, 1);
+        for (i = 0; i < 30000; i++) {}
+        P1OUT ^= BIT0;
         
     } // halt / loop forever
     return 0;
+    // ----------------------------------------------------
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE
