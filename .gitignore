@@ -42,29 +42,6 @@
 *.idb
 *.pdb
 
-# code composer studio files
-# https://software-dl.ti.com/ccs/esd/documents/users_guide/ccs_project-management2.html#files-to-check-in
-Debug
-Debug/
-Release
-.xdchelp
-.config/
-.launches/
-targetConfigs/
-.ccsproject
-.clangd
-.clang-format
-.clang-tidy
-.cproject
-.project
-.settings/
-
-# dumb msp430 files
-mcu/include/in430.h
-mcu/include/intrinsics_legacy_undefs.h
-mcu/include/intrinsics.h
-mcu/include/legacy.h
-
 # vscode files
 .vscode/
 
@@ -77,3 +54,4 @@ mcu/include/legacy.h
 
 # datasheets
 docs/datasheets/
+docs/dwg/

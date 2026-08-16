@@ -34,10 +34,10 @@ unsigned char rtc_date;
 unsigned char rtc_month;
 unsigned char rtc_year;
 
-volatile char rtc_dt_str[RTC_STRLEN + 1];
+char rtc_dt_str[RTC_STRLEN + 1];
 
 volatile unsigned char *rtc_display;
-volatile unsigned char rtc_display_num;
+unsigned char rtc_display_num;
 
 
 //-----------------------------------------------------------------------------
@@ -89,10 +89,10 @@ int rtc_init(void)
  */
 int rtc_start(void)
 {
-    volatile unsigned char ctl_reg;
+    unsigned char ctl_reg;
 
     int stat = i2c_read(
-        &ctl_reg,
+        (volatile unsigned char *) &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
@@ -102,7 +102,7 @@ int rtc_start(void)
     ctl_reg &= ~BIT7; // enable oscillator
     
     stat = i2c_write(
-        &ctl_reg,
+        (volatile unsigned char *) &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
@@ -117,10 +117,10 @@ int rtc_start(void)
  */
 int rtc_stop(void)
 {
-    volatile unsigned char ctl_reg;
+    unsigned char ctl_reg;
 
     int stat = i2c_read(
-        &ctl_reg,
+        (volatile unsigned char *) &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
@@ -145,10 +145,10 @@ int rtc_stop(void)
  */
 int rtc_get(void)
 {
-    volatile unsigned char dt[7];
+    unsigned char dt[7];
 
     int stat = i2c_read(
-        dt,
+        (volatile unsigned char *) dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
@@ -172,7 +172,7 @@ int rtc_get(void)
  */
 int rtc_set(void)
 {
-    volatile unsigned char dt[7];
+    unsigned char dt[7];
     
     dt[0] = rtc_second;
     dt[1] = rtc_minute;
@@ -183,7 +183,7 @@ int rtc_set(void)
     dt[6] = rtc_year;
 
     int stat = i2c_write(
-        dt,
+        (volatile unsigned char *) dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
@@ -210,7 +210,7 @@ char *rtc_getstr(void)
     hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
     hex_to_str(rtc_dt_str + 17, &rtc_second, 1);
 
-    return (char *) rtc_dt_str;
+    return rtc_dt_str;
 }
 
 /**

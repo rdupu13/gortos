@@ -57,7 +57,9 @@ int main_gsh(void)
         // ----------------------------------------------------
         
         // print rtc time
+        helloworld("\n\n");
         print_systime();
+        helloworld("\n");
 
         // ----------------------------------------------------
         helloworld("\n");
