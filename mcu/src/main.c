@@ -48,32 +48,13 @@ int main(void)
 {
     gsys_init(); // initialize gort system
 
-    int gsh = main_gsh(); // launch gort shell
+    //int gsh = main_gsh(); // launch gort shell
 
     while (1)
     {
-        //helloworld(hex(adc_read(0)));
-        //helloworld("\n");
-
-        //print_systime();
-        //helloworld("\n");
-        //eep(610);
-
-        //int stat = rtc_get();
-        //if (stat) {
-        //    gsys_log("rtc: error");
-        //    helloworld(hex(gabs(stat)));
-        //}
-        //eep(610);
-
-        //eep(610);
-        //mmm_init();
-
-        //rtc_get();
-        //eep(50);
-        //switch_wait(0, 0);
-        //eep(50);
-        //switch_wait(0, 1);
+        print_systime();
+        helloworld("\n");
+        eep(610);
         
     } // halt / loop forever
     return 0;

@@ -6,7 +6,7 @@
 
 # COMPILER & TOOLCHAIN ------------------------------------
 CC = msp430-elf-gcc
-TOOLDIR = /opt/msp430-gcc/msp430-elf
+TOOLDIR = /opt/msp430-gcc
 # ---------------------------------------------------------
 
 # BUILD CONFIGURATION ---------------------------------------------------------
@@ -16,22 +16,20 @@ PLATFORM = wsl
 MCU = msp430fr2153
 # -------------------------------------
 
-INCDIR = include
-SRCDIR = src
-TEST_SRCDIR = test
+INCDIR = mcu/include
+SRCDIR = mcu/src
+TEST_SRCDIR = mcu/test
 
-EXCLUDE = 	src/kernel/gfs.c \
-			include/kernel/gfs.h \
-			src/devices/dial.c \
-			include/devices/dial.h \
-			src/devices/lcd.c \
-			include/devices/lcd.h \
-			src/devices/lora.c \
-			include/devices/lora.h \
-			src/devices/mmm.c \
-			include/devices/mmm.h \
-			src/devices/pwm.c \
-			include/devices/pwm.h
+EXCLUDE = 	mcu/src/kernel/gfs.c \
+			mcu/include/kernel/gfs.h \
+			mcu/src/devices/dial.c \
+			mcu/include/devices/dial.h \
+			mcu/src/devices/lcd.c \
+			mcu/include/devices/lcd.h \
+			mcu/src/devices/lora.c \
+			mcu/include/devices/lora.h \
+			mcu/src/devices/pwm.c \
+			mcu/include/devices/pwm.h
 
 WARNFLAGS = -Wall \
 			-Wno-builtin-declaration-mismatch \
@@ -45,11 +43,12 @@ CCFLAGS =	-mmcu=$(MCU) \
 			-fdiagnostics-color=always \
 			$(WARNFLAGS) \
 			-I $(INCDIR) \
-			-I $(TOOLDIR)/include
+			-I $(TOOLDIR)/include \
+			-I $(TOOLDIR)/msp430-elf/include
 
 LDFLAGS = 	-mmcu=$(MCU) \
-			-L $(TOOLDIR)/lib \
-			-T $(TOOLDIR)/lib/$(MCU).ld
+			-L $(TOOLDIR)/msp430-elf/lib \
+			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld
 
 SRCS =		$(filter-out $(EXCLUDE), \
 			$(shell find $(SRCDIR) -name '*.c'))
