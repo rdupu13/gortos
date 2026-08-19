@@ -39,6 +39,8 @@ char rtc_dt_str[RTC_STRLEN + 1];
 volatile unsigned char *rtc_display;
 unsigned char rtc_display_num;
 
+unsigned char rtc_initialized;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -47,9 +49,12 @@ unsigned char rtc_display_num;
 /**
  * @brief initialize rtc
  * 
- * @return status of device
+ * @return status of initialization via i2c
  *          0: ok
- *          other: not ok
+ *          -1: i2c bus busy
+ *          -2: i2c 0 length error
+ *          -3: i2c timeout error
+ *          -4: i2c nack error
  */
 int rtc_init(void)
 {
@@ -69,15 +74,18 @@ int rtc_init(void)
     
     //rtc_set(); // TODO: python gui to set system time?
 
-    // sets fake init time TODO: maybe get time from internet (AFTER this init function?)
-    int stat = rtc_stop();
-    if (stat) { return stat; }
-    stat = rtc_set();
-    if (stat) { return stat; }
-    stat = rtc_start();
-    if (stat) { return stat; }
+    rtc_initialized = 1;
+
+    // stop clock, set (fake) init time, start clock, get time
+    int stat;
+    //stat = rtc_stop();
+    //if (stat) { rtc_initialized = 0; return stat; }
+    //stat = rtc_set();
+    //if (stat) { rtc_initialized = 0; return stat; }
+    //stat = rtc_start();
+    //if (stat) { rtc_initialized = 0; return stat; }
     stat = rtc_get();
-    if (stat) { return stat; }
+    if (stat) { rtc_initialized = 0; return stat; }
 
     return 0;
 }
@@ -85,10 +93,18 @@ int rtc_init(void)
 /**
  * @brief start rtc
  * 
- * @return none
+ * @return status of read/write:
+ *          0: ok
+ *          -1: i2c bus busy
+ *          -2: i2c 0 length error
+ *          -3: i2c timeout error
+ *          -4: i2c nack error
+ *          -5: rtc not initialized error
  */
 int rtc_start(void)
 {
+    if (!rtc_initialized) { return -5; }
+
     unsigned char ctl_reg;
 
     int stat = i2c_read(
@@ -113,10 +129,18 @@ int rtc_start(void)
 /**
  * @brief stop rtc
  * 
- * @return none
+ * @return status of read/write:
+ *          0: ok
+ *          -1: i2c bus busy
+ *          -2: i2c 0 length error
+ *          -3: i2c timeout error
+ *          -4: i2c nack error
+ *          -5: rtc not initialized error
  */
 int rtc_stop(void)
 {
+    if (!rtc_initialized) { return -5; }
+
     unsigned char ctl_reg;
 
     int stat = i2c_read(
@@ -141,10 +165,18 @@ int rtc_stop(void)
 /**
  * @brief get current rtc date and time
  * 
- * @return none
+ * @return status of read:
+ *          0: ok
+ *          -1: i2c bus busy
+ *          -2: i2c 0 length error
+ *          -3: i2c timeout error
+ *          -4: i2c nack error
+ *          -5: rtc not initialized error
  */
 int rtc_get(void)
 {
+    if (!rtc_initialized) { return -5; }
+    
     unsigned char dt[7];
 
     int stat = i2c_read(
@@ -168,10 +200,18 @@ int rtc_get(void)
 /**
  * @brief set current rtc date and time
  * 
- * @return status of i2c write
+ * @return status of write:
+ *           0: ok
+ *          -1: i2c bus busy
+ *          -2: i2c 0 length error
+ *          -3: i2c timeout error
+ *          -4: i2c nack error
+ *          -5: rtc not initialized error
  */
 int rtc_set(void)
 {
+    if (!rtc_initialized) { return -5; }
+
     unsigned char dt[7];
     
     dt[0] = rtc_second;
@@ -195,11 +235,13 @@ int rtc_set(void)
  * @brief get current rtc date and time and convert to string
  * 
  * @return pointer to string representation of current rtc date and time
+ *          null pointer means rtc_get() returned an error
  */
 char *rtc_getstr(void)
 {
     int stat = rtc_get();
     if (stat) {
+        // TODO: pass error along
         return (char *) 0;
     }
 

@@ -98,12 +98,14 @@ void gsys_init(void)
     // DEVICES --------------------------------------------
     patterns_init(); // timer sort of
 
+    /*
     int rtc_stat = rtc_init();
     if (rtc_stat) {
         die("rtc: initialization error :(");
     } else {
         gsys_log("rtc: initialization successful :)");
     }
+    */
 
     //pwm_init(); // timer
     //dial_init(); // led, switch

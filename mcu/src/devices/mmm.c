@@ -44,7 +44,6 @@ void get_mmm_addr(unsigned int blk_num);
  * 
  * @return none
  */
-// TODO: add to gsys_init
 void mmm_init(void)
 {
     volatile unsigned char instr;
@@ -60,10 +59,10 @@ void mmm_init(void)
     mode_reg |= (MMM_MODE << 6);    // set mode
 
     instr = 0x01; // write mode register
+    volatile unsigned char wr[] = {0x01, 0x80};
 
     // TODO: handle errors
-    //spi_write(&instr, 1, MMM_SPI_SLAVE_NUM);
-    //spi_write(&mode_reg, 1, MMM_SPI_SLAVE_NUM);
+    spi_write(wr, 2, MMM_SPI_SLAVE_NUM);
     //spi_stop();
     //SPI_CS0_PORT |= SPI_CS0_PIN;
 }

@@ -64,6 +64,7 @@ void spi_init(unsigned int timeout)
     UCA0CTLW0 |= UCMST;         // master mode
     UCA0CTLW0 |= UCMODE_0;      // 3-pin spi mode
     UCA0CTLW0 |= UCMSB;         // MSB first
+    UCA0CTLW0 |= UCCKPL;        // clock polarity: inactive state = HIGH
     UCA0CTLW0 &= ~UCSWRST;      // take peripheral out of software reset
 
     // setup interrupts
@@ -98,7 +99,9 @@ void spi_init(unsigned int timeout)
 int spi_write(
     volatile unsigned char *arr,
     unsigned int len,
-    unsigned char slave
+    unsigned char slave,
+    volatile unsigned char *addr,
+    unsigned int addr_len
 ) {
     if (len == 0) { return -1; }
 
@@ -153,11 +156,6 @@ int spi_read(
     spi_slave = slave;
     spi_addr_ptr = addr;
     spi_len = len;
-
-    //UCA0IFG = 0; // clear interrupt flags
-    //UCA0IE |= UCRXIE; // enable rx buffer full interrupts
-    //spi_busy = 1; // turn on bus
-    //UCA0TXBUF = 0; // send dummy byte
 
     UCA0IFG = 0; // clear interrupt flags
     UCA0IE |= UCTXIE; // enable tx complete interrupts

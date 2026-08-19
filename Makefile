@@ -48,9 +48,8 @@ WARNFLAGS = -Wall \
 
 # COMPILER FLAGS ------------------------------------------
 CCFLAGS =	-mmcu=$(MCU) \
-			-Os \
+			-O0 \
 			-fdiagnostics-color=always \
-			-x assembler-with-cpp \
 			$(WARNFLAGS) \
 			-I $(INCDIR) \
 			-I $(TOOLDIR)/include \

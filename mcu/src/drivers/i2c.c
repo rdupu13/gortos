@@ -92,10 +92,10 @@ void i2c_init(unsigned int timeout)
  * 
  * @return status of write:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
- *          -3: nack error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
+ *          -4: nack error
  */
 int i2c_write(
     volatile unsigned char *arr,
@@ -103,9 +103,9 @@ int i2c_write(
     unsigned int slave_addr,
     unsigned char reg_addr
 ) {
-    if (len == 0) { return -1; }
+    if (i2c_busy) { return -1; }
 
-    if (i2c_busy) { return 1; }
+    if (len == 0) { return -2; }
 
     i2c_tx_buf_ptr = arr;
     i2c_cnt = len + 1;
@@ -135,10 +135,10 @@ int i2c_write(
  * 
  * @return status of read:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
- *          -3: nack error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
+ *          -4: nack error
  */
 int i2c_read(
     volatile unsigned char *arr,
@@ -146,9 +146,9 @@ int i2c_read(
     unsigned int slave_addr,
     unsigned char reg_addr
 ) {
-    if (len == 0) { return -1; }
+    if (i2c_busy) { return -1; }
 
-    if (i2c_busy) { return 1; }
+    if (len == 0) { return -2; }
 
     i2c_rx_buf_ptr = arr;
     i2c_cnt = len + 1;
@@ -173,8 +173,8 @@ int i2c_read(
  * 
  * @return status of wait:
  *           0: ok
- *          -2: timeout error
- *          -3: nack error
+ *          -3: timeout error
+ *          -4: nack error
  */
 int i2c_wait(void)
 {
@@ -184,16 +184,16 @@ int i2c_wait(void)
     while(i2c_busy && (cnt > 0)) { cnt--; }
 
     if (cnt == 0) {
-        // TODO: figure out how to recover bus
+        // TODO: figure out how to recover bus properly
         UCB1CTLW0 |= UCTR;              // put peripheral into tx mode
         UCB1IFG = 0;                    // clear interrupt flags
         UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
         
         UCB1CTLW0 |= UCTXSTP;           // send stop condition
         i2c_busy_clear();
-        return -2;
+        return -3; // 
     }
-    if (i2c_nack) { return -3; } // handle nack case
+    if (i2c_nack) { return -4; } // handle nack error case
     return 0;
 }
 
