@@ -4,18 +4,19 @@
 # created by rdupu13
 # =============================================================================
 
+# TOGGLE FOR YOUR PLATFORM: -----------
+PLATFORM = wsl
+MCU = msp430fr2153
+# -------------------------------------
+
+
+# BUILD CONFIGURATION ---------------------------------------------------------
+TARGET = gort
+
 # COMPILER & TOOLCHAIN ------------------------------------
 CC = msp430-elf-gcc
 TOOLDIR = /opt/msp430-gcc
 # ---------------------------------------------------------
-
-# BUILD CONFIGURATION ---------------------------------------------------------
-
-# TOGGLE FOR YOUR PLATFORM: -----------
-PLATFORM = wsl
-MCU = msp430fr2153
-TARGET = gort
-# -------------------------------------
 
 # FILES & DIRECTORIES------------------
 INCDIR = mcu/include
