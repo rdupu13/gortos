@@ -52,9 +52,22 @@ int main(void)
 
     while (1)
     {
-        print_systime();
-        helloworld("\n");
+        //helloworld(hex(adc_read(0)));
+        //helloworld("\n");
+
+        //print_systime();
+        //helloworld("\n");
+        //eep(610);
+
+        //int stat = rtc_get();
+        //if (stat) {
+        //    gsys_log("rtc: error");
+        //    helloworld(hex(gabs(stat)));
+        //}
+        //eep(610);
+
         eep(610);
+        mmm_init();
         
     } // halt / loop forever
     return 0;
