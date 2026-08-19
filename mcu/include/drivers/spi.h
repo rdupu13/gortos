@@ -65,20 +65,20 @@ void spi_init(unsigned int timeout); // initialize spi
 
 // write an array to a spi slave
 int spi_write(
-    volatile unsigned char *arr,
-    unsigned int len,
     unsigned char slave,
     volatile unsigned char *addr,
-    unsigned int addr_len
+    unsigned int addr_len,
+    volatile unsigned char *arr,
+    unsigned int len
 );
 
 // read an array from a spi slave
 int spi_read(
-    volatile unsigned char *arr,
-    unsigned int len,
     unsigned char slave,
     volatile unsigned char *addr,
-    unsigned int addr_len
+    unsigned int addr_len,
+    volatile unsigned char *arr,
+    unsigned int len
 );
 
 void spi_start(void);   // set gpio chip select for specific slave

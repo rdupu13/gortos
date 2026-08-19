@@ -41,8 +41,8 @@ unsigned int spi_timeout;
 //-----------------------------------------------------------------------------
 
 int spi_wait(void);
-void spi_busy_set(void);
-void spi_busy_clear(void);
+void spi_start(void);
+void spi_stop(void);
 
 /**
  * @brief initialize spi
@@ -86,43 +86,48 @@ void spi_init(unsigned int timeout)
 /**
  * @brief write an array to a spi slave
  * 
- * @param arr   pointer to array to be written
- * @param len   length in bytes of array to be written
- * @param slave selected slave
+ * @param slave     selected slave
+ * @param addr      pointer to preamble array to be sent
+ * @param addr_len  length in bytes of preamble array
+ * @param arr       pointer to data array to be written
+ * @param len       length in bytes of array to be written
  * 
  * @return status of write:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
  */
 int spi_write(
-    volatile unsigned char *arr,
-    unsigned int len,
     unsigned char slave,
     volatile unsigned char *addr,
-    unsigned int addr_len
+    unsigned int addr_len,
+    volatile unsigned char *arr,
+    unsigned int len
 ) {
-    if (len == 0) { return -1; }
+    if (spi_busy) { return -1; }
 
-    if (spi_busy) { return 1; }
+    if (len == 0) { return -2; }
 
     spi_tx_buf_ptr = arr;
-    spi_cnt = len - 1;
+    spi_cnt = len + addr_len - 1;
     spi_slave = slave;
-    spi_len = 0;
+    spi_addr_ptr = addr;
+    spi_len = len;
+
+    spi_mode = 0; // write mode
 
     UCA0IFG = 0; // clear interrupt flags
     UCA0IE |= UCTXIE; // enable tx complete interrupts
     
-    SPI_CS0_PORT &= ~SPI_CS0_PIN;
+    SPI_CS0_PORT &= ~SPI_CS0_PIN; // TODO: use func
     spi_busy = 1; // turn on bus
 
     UCA0TXBUF = *spi_tx_buf_ptr++; // tx first byte (triggers tx interrupt)
 
     int stat = spi_wait(); // wait until tx done (with timeout)
 
-    SPI_CS0_PORT |= SPI_CS0_PIN;
+    SPI_CS0_PORT |= SPI_CS0_PIN; // TODO: use func
 
     return stat;
 }
@@ -130,26 +135,28 @@ int spi_write(
 /**
  * @brief read an array from a spi slave
  * 
- * @param arr   pointer to array to store received data
- * @param len   length in bytes of array to be read
- * @param slave selected slave
+ * @param slave     selected slave
+ * @param addr      pointer to preamble array to be sent
+ * @param addr_len  length in bytes of preamble array
+ * @param arr       pointer to data array to store received data
+ * @param len       length in bytes of array to be read
  * 
  * @return status of read:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
  */
 int spi_read(
-    volatile unsigned char *arr,
-    unsigned int len,
     unsigned char slave,
     volatile unsigned char *addr,
-    unsigned int addr_len
+    unsigned int addr_len,
+    volatile unsigned char *arr,
+    unsigned int len
 ) {
-    if (len == 0) { return -1; }
+    if (spi_busy) { return -1; }
 
-    if (spi_busy) { return 1; }
+    if (len == 0) { return -2; }
 
     spi_rx_buf_ptr = arr;
     spi_cnt = len + addr_len - 1;
@@ -157,10 +164,12 @@ int spi_read(
     spi_addr_ptr = addr;
     spi_len = len;
 
+    spi_mode = 1; // read mode
+
     UCA0IFG = 0; // clear interrupt flags
     UCA0IE |= UCTXIE; // enable tx complete interrupts
     
-    SPI_CS0_PORT &= ~SPI_CS0_PIN;
+    SPI_CS0_PORT &= ~SPI_CS0_PIN; // TODO: use func
     spi_busy = 1; // turn on bus
 
     // tx first addr byte or dummy (triggers tx interrupt)
@@ -168,7 +177,7 @@ int spi_read(
 
     int stat = spi_wait(); // wait until rx done (with timeout)
 
-    SPI_CS0_PORT |= SPI_CS0_PIN;
+    SPI_CS0_PORT |= SPI_CS0_PIN; // TODO: use func
 
     return stat;
 }
@@ -178,7 +187,7 @@ int spi_read(
  * 
  * @return status of wait:
  *           0: ok
- *          -2: timeout error
+ *          -3: timeout error
  */
 int spi_wait(void)
 {
@@ -188,11 +197,11 @@ int spi_wait(void)
     while(spi_busy && (cnt > 0)) { cnt--; }
 
     if (cnt == 0) {
-        // recover bus? TODO: hmm
+        // recover bus? TODO: hmmmmm
         UCA0IFG = 0;    // clear interrupt flags
         UCA0IE = 0;     // disable interrupts
         spi_busy = 0;   // turn off bus
-        return -2;
+        return -3;      // timeout!
     }
     return 0;
 }
@@ -247,14 +256,14 @@ void __attribute__((interrupt(SPI_VECTOR))) isr_spi(void)
             *spi_rx_buf_ptr++ = UCA0RXBUF; // store received byte
             if (spi_cnt == 0)
             {
-                UCA0IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
-                UCA0IE &= ~UCRXIE; // disable rx buffer full interrupts
+                UCA0IFG &= ~UCRXIFG;    // clear rx buffer full interrupt flag
+                UCA0IE &= ~UCRXIE;      // disable rx buffer full interrupts
                 spi_busy = 0;
             }
             else
             {
-                spi_cnt--; // decrement counter
-                UCA0TXBUF = 0; // send dummy byte
+                spi_cnt--;      // decrement counter
+                UCA0TXBUF = 0;  // send dummy byte
             }
             break;
         
@@ -262,8 +271,8 @@ void __attribute__((interrupt(SPI_VECTOR))) isr_spi(void)
             // TXIFG (tx complete)
             if (spi_cnt == 0)
             {
-                UCA0IFG &= ~UCTXIFG; // clear tx complete interrupt flag
-                UCA0IE &= ~UCTXIE; // disable tx complete interrupts
+                UCA0IFG &= ~UCTXIFG;    // clear tx complete interrupt flag
+                UCA0IE &= ~UCTXIE;      // disable tx complete interrupts
                 spi_busy = 0;
             }
             else if (spi_cnt > spi_len)
@@ -271,14 +280,15 @@ void __attribute__((interrupt(SPI_VECTOR))) isr_spi(void)
                 UCA0TXBUF = *spi_addr_ptr++; // send next addr byte
                 spi_cnt--; // decrement counter
             }
-            else if (spi_cnt == spi_len)
+            else if (spi_mode && (spi_cnt == spi_len))
             {
-                UCA0IFG = 0; // clear interrupt flags
-                UCA0IE &= ~UCTXIE; // disable tx complete interrupts
-                UCA0IFG &= ~UCRXIFG; // clear tx complete interrupt flag
-                UCA0IE |= UCRXIE; // enable rx buffer full interrupts
-                spi_cnt--;
-                UCA0TXBUF = 0;
+                UCA0IFG = 0;            // clear interrupt flags
+                UCA0IE &= ~UCTXIE;      // disable tx complete interrupts
+                UCA0IFG &= ~UCRXIFG;    // clear tx complete interrupt flag
+                UCA0IE |= UCRXIE;       // enable rx buffer full interrupts
+                
+                spi_cnt--;      // decrement counter
+                UCA0TXBUF = 0;  // send dummy byte
             }
             else
             {

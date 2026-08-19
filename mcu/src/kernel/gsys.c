@@ -96,28 +96,44 @@ void gsys_init(void)
     glear();
 
     // DEVICES --------------------------------------------
-    patterns_init(); // timer sort of
+    patterns_init();
 
-    /*
-    int rtc_stat = rtc_init();
+    eep(610);
+    int rtc_stat = rtc_init(); // i2c
+    
+    helloworld(hex(gabs(rtc_stat)));
+    helloworld("\n");
+
     if (rtc_stat) {
+        gsys_log("rtc: error:");
+        gsys_log(hex(gabs(rtc_stat)));
+
         die("rtc: initialization error :(");
     } else {
         gsys_log("rtc: initialization successful :)");
     }
-    */
 
     //pwm_init(); // timer
     //dial_init(); // led, switch
+    //lcd_init(); // led
     
-    //lcd_init(); // i2c
-    //mmm_init(); // spi
+    /*
+    int mmm_stat = mmm_init(); // spi
+    if (mmm_stat) {
+        gsys_log("mmm: error:")
+        gsys_log(hex(gabs(mmm_stat)));
+
+        die("mmm: initialization error :(");
+    } else {
+        gsys_log("mmm: initialization successful :)");
+    }
+    */
     //lora_init(); // spi
     // ----------------------------------------------------    
 
     //gfs_init(); // mmm, (uart, lcd, lora)?
     
-    // initialize gort blocks TODO: maybe clunky, but for fun
+    // initialize gort blocks... maybe clunky, but for fun
     int i;
     for (i = 0; i < BLK_ALLOC_NUM; i++) {
         int j;
@@ -151,7 +167,7 @@ void gsys_log(char *entry)
     //gout = " ";
 
     helloworld("[ ");
-    print_systime(); // TODO: maybe just time
+    print_systime();
     helloworld(" ] ");
     helloworld(entry);
     helloworld("\n");
@@ -206,7 +222,9 @@ void print_systime(void)
     char *systime;
     systime = rtc_getstr();
     if (!systime) {
-        helloworld("(error getting rtc time)");
+        helloworld("(RTC ERROR ");
+        helloworld(hex(gabs(rtc_error)));
+        helloworld(")");
     } else {
         helloworld(systime);
     }

@@ -52,7 +52,7 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void mmm_init(void); // initialize mini memory manager
+int mmm_init(void); // initialize mini memory manager
 
 int mmm_load_block(gblk_t *blk); // load a block from memory
 int mmm_store_block(gblk_t *blk); // store a block to memory

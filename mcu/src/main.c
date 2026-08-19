@@ -66,8 +66,8 @@ int main(void)
         //}
         //eep(610);
 
-        eep(610);
-        mmm_init();
+        //eep(610);
+        //mmm_init();
         
     } // halt / loop forever
     return 0;

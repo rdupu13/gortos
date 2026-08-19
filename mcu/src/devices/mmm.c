@@ -21,13 +21,16 @@
 
 // kernel
 #include "kernel/gsys.h"
+#include "kernel/gstr.h"
 
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile unsigned char mmm_addr[3];
+volatile unsigned char mmm_instr[4];
+
+unsigned char mmm_initialized;
 
 
 //-----------------------------------------------------------------------------
@@ -36,35 +39,40 @@ volatile unsigned char mmm_addr[3];
 
 void get_mmm_addr(unsigned int blk_num);
 
-// TODO: check if spi transactions actually stay live
-// across multiple read/write calls
-
 /**
  * @brief initialize mini memory manager
  * 
- * @return none
+ * @return status of initialization via spi:
+ *           0: ok
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
  */
-void mmm_init(void)
+int mmm_init(void)
 {
-    volatile unsigned char instr;
     volatile unsigned char mode_reg;
     
-    instr = 0x05; // read mode register
+    mmm_instr[0] = 0x05; // read mode register (RDMR)
     
-    // TODO: handle errors
-    //SPI_CS0_PORT &= ~SPI_CS0_PIN;
-    spi_read(&mode_reg, 1, MMM_SPI_SLAVE_NUM, &instr, 1);
+    mmm_instr[1] = 0x00; // address MSB
+    mmm_instr[2] = 0xAB;
+    mmm_instr[3] = 0xCD; // address LSB
     
-    mode_reg &= ~0xC0;              // clear mode
-    mode_reg |= (MMM_MODE << 6);    // set mode
+    mmm_initialized = 1;
 
-    instr = 0x01; // write mode register
-    volatile unsigned char wr[] = {0x01, 0x80};
+    int stat = spi_read(
+        MMM_SPI_SLAVE_NUM,
+        mmm_instr,
+        1,
+        &mode_reg,
+        1
+    );
+    if (stat) { mmm_initialized = 0; return stat; }
 
-    // TODO: handle errors
-    spi_write(wr, 2, MMM_SPI_SLAVE_NUM);
-    //spi_stop();
-    //SPI_CS0_PORT |= SPI_CS0_PIN;
+    gsys_log("mmm: mode register:");
+    gsys_log(hex((unsigned int) mode_reg));
+
+    return 0;
 }
 
 /**
@@ -73,19 +81,28 @@ void mmm_init(void)
  * @param blk block object to load
  * 
  * @return status of load operation:
- *              0: ok
- *              
+ *           0: ok
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
+ *          -4: mmm not initialized error
  */
 int mmm_load_block(gblk_t *blk)
 {
-    volatile unsigned char instr[4] = {
-        0x03, mmm_addr[2], mmm_addr[1], mmm_addr[0]
-    };
+    if (!mmm_initialized) { return -4; }
+
+    mmm_instr[0] = 0x03;
 
     get_mmm_addr(blk->num);
     
-    // TODO: handle errors
-    spi_read(blk->data, BLK_SIZE, MMM_SPI_SLAVE_NUM, instr, 4);
+    int stat = spi_read(
+        MMM_SPI_SLAVE_NUM,
+        mmm_instr,
+        4,
+        blk->data,
+        BLK_SIZE
+    );
+    if (stat) { return stat; }
 
     return 0;
 }
@@ -96,19 +113,28 @@ int mmm_load_block(gblk_t *blk)
  * @param blk block object to store
  * 
  * @return status of store operation:
- *              0: ok
- *              
+ *           0: ok
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
+ *          -4: mmm not initialized error
  */
 int mmm_store_block(gblk_t *blk)
 {
-    volatile unsigned char instr[4] = {
-        0x02, mmm_addr[2], mmm_addr[1], mmm_addr[0]
-    };
+    if (!mmm_initialized) { return -4; }
+
+    mmm_instr[0] = 0x02; // WRITE
 
     get_mmm_addr(blk->num);
     
-    spi_write(instr, 4, MMM_SPI_SLAVE_NUM);
-    spi_write(blk->data, BLK_SIZE, MMM_SPI_SLAVE_NUM);
+    int stat = spi_write(
+        MMM_SPI_SLAVE_NUM,
+        mmm_instr,
+        4,
+        blk->data,
+        BLK_SIZE
+    );
+    if (stat) { return stat; }
 
     return 0;
 }
@@ -122,11 +148,11 @@ int mmm_store_block(gblk_t *blk)
  */
 void get_mmm_addr(unsigned int blk_num)
 {
-    mmm_addr[2] = 0; // TODO: handle someday
+    mmm_instr[1] = 0; // TODO: handle someday
 
     // TODO: assumes BLK_SIZE is always 256
-    mmm_addr[1] = blk_num; // block address
-    mmm_addr[0] = 0; // byte address, always block-aligned
+    mmm_instr[2] = blk_num; // block address
+    mmm_instr[3] = 0; // byte address, always block-aligned
 }
 
 //-----------------------------------------------------------------------------

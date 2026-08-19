@@ -40,6 +40,7 @@ volatile unsigned char *rtc_display;
 unsigned char rtc_display_num;
 
 unsigned char rtc_initialized;
+int rtc_error;
 
 
 //-----------------------------------------------------------------------------
@@ -72,20 +73,40 @@ int rtc_init(void)
 
     rtc_display_sel(0);
     
-    //rtc_set(); // TODO: python gui to set system time?
+    //rtc_set(); // TODO: python gui via uart to set system time
 
     rtc_initialized = 1;
 
     // stop clock, set (fake) init time, start clock, get time
     int stat;
-    //stat = rtc_stop();
-    //if (stat) { rtc_initialized = 0; return stat; }
-    //stat = rtc_set();
-    //if (stat) { rtc_initialized = 0; return stat; }
-    //stat = rtc_start();
-    //if (stat) { rtc_initialized = 0; return stat; }
+    stat = rtc_stop();
+    if (stat) {
+        gsys_log("rtc: error stopping:");
+        gsys_log(hex(gabs(stat)));
+        rtc_initialized = 0;
+        return stat;
+    }
+    stat = rtc_set();
+    if (stat) {
+        gsys_log("rtc: error stopping:");
+        gsys_log(hex(gabs(stat)));
+        rtc_initialized = 0;
+        return stat;
+    }
+    stat = rtc_start();
+    if (stat) {
+        gsys_log("rtc: start error:");
+        gsys_log(hex(gabs(stat)));
+        rtc_initialized = 0;
+        return stat;
+    }
     stat = rtc_get();
-    if (stat) { rtc_initialized = 0; return stat; }
+    if (stat) {
+        gsys_log("rtc: start error:");
+        gsys_log(hex(gabs(stat)));
+        rtc_initialized = 0;
+        return stat;
+    }
 
     return 0;
 }
@@ -113,7 +134,10 @@ int rtc_start(void)
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
-    if (stat) { return stat; }
+    if (stat) {
+        rtc_error = stat;
+        return stat;
+    }
     
     ctl_reg &= ~BIT7; // enable oscillator
     
@@ -123,6 +147,7 @@ int rtc_start(void)
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
+    rtc_error = stat;
     return stat;
 }
 
@@ -139,7 +164,10 @@ int rtc_start(void)
  */
 int rtc_stop(void)
 {
-    if (!rtc_initialized) { return -5; }
+    if (!rtc_initialized) {
+        rtc_error = -5;
+        return -5;
+    }
 
     unsigned char ctl_reg;
 
@@ -149,7 +177,10 @@ int rtc_stop(void)
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
-    if (stat) { return stat; }
+    if (stat) {
+        rtc_error = stat;
+        return stat;
+    }
 
     ctl_reg |= BIT7; // disable oscillator
     
@@ -159,6 +190,7 @@ int rtc_stop(void)
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
     );
+    rtc_error = stat;
     return stat;
 }
 
@@ -175,7 +207,10 @@ int rtc_stop(void)
  */
 int rtc_get(void)
 {
-    if (!rtc_initialized) { return -5; }
+    if (!rtc_initialized) {
+        rtc_error = -5;
+        return -5;
+    }
     
     unsigned char dt[7];
 
@@ -185,7 +220,10 @@ int rtc_get(void)
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
     );
-    if (stat) { return stat; }
+    if (stat) {
+        rtc_error = stat;
+        return stat;
+    }
 
     rtc_second = dt[0];
     rtc_minute = dt[1];
@@ -194,6 +232,8 @@ int rtc_get(void)
     rtc_date = dt[4];
     rtc_month = dt[5];
     rtc_year = dt[6];
+
+    rtc_error = 0;
     return 0;
 }
 
@@ -210,7 +250,10 @@ int rtc_get(void)
  */
 int rtc_set(void)
 {
-    if (!rtc_initialized) { return -5; }
+    if (!rtc_initialized) {
+        rtc_error = -5;
+        return -5;
+    }
 
     unsigned char dt[7];
     
@@ -228,6 +271,7 @@ int rtc_set(void)
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
     );
+    rtc_error = stat;
     return stat;
 }
 
@@ -235,19 +279,19 @@ int rtc_set(void)
  * @brief get current rtc date and time and convert to string
  * 
  * @return pointer to string representation of current rtc date and time
- *          null pointer means rtc_get() returned an error
+ *          null pointer means rtc_get() returned an error (read with rtc_error)
  */
 char *rtc_getstr(void)
 {
     int stat = rtc_get();
     if (stat) {
-        // TODO: pass error along
+        rtc_error = stat;
         return (char *) 0;
     }
 
     hex_to_str(rtc_dt_str,      &rtc_month,  1);
     hex_to_str(rtc_dt_str + 3,  &rtc_date,   1);
-    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1); // TODO: NOT WORKING FOR SOME REASON???
+    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1);
     hex_to_str(rtc_dt_str + 11, &rtc_hour,   1);
     hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
     hex_to_str(rtc_dt_str + 17, &rtc_second, 1);

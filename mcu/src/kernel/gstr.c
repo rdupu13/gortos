@@ -166,7 +166,11 @@ void str_to_hex(unsigned char *hex, char *str)
 }
 
 /**
+ * @brief convert an unsigned integer into a hex string
  * 
+ * @param n unsigned integer
+ * 
+ * @return hex string
  */
 char *hex(unsigned int n)
 {

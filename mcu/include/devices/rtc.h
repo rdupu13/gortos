@@ -63,6 +63,7 @@
 
 extern volatile unsigned char *rtc_display; // register currently being displayed
 
+extern int rtc_error;
 
 int rtc_init(void);    // initialize rtc
 
