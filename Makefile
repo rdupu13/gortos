@@ -51,7 +51,6 @@ WARNFLAGS = -Wall \
 CCFLAGS =	-mmcu=$(MCU) \
 			-Os \
 			-fdiagnostics-color=always \
-			-x assembler-with-cpp \
 			$(WARNFLAGS) \
 			-I $(INCDIR) \
 			-I $(TOOLDIR)/include \
@@ -110,7 +109,7 @@ test:
 
 # ASM -------------------------------------------------------------------------
 asm:
-	$(MAKE) SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s
+	@$(MAKE) SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s CCFLAGS="$(CCFLAGS) -x assembler-with-cpp"
 # -----------------------------------------------------------------------------
 
 # FLASH -----------------------------------------------------------------------
@@ -125,7 +124,7 @@ test-flash:
 
 # ASM FLASH -------------------------------------------------------------------
 asm-flash:
-	$(MAKE) flash SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s
+	@$(MAKE) flash SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s CCFLAGS="$(CCFLAGS) -x assembler-with-cpp"
 # -----------------------------------------------------------------------------
 
 # DEBUG -----------------------------------------------------------------------

@@ -52,6 +52,9 @@
 # waveforms project files
 *.dwf3work
 
+# template source files
+mcu/tmp/
+
 # datasheets
 docs/datasheets/
 docs/dwg/
