@@ -59,12 +59,13 @@ int main(void)
         //helloworld("\n");
         //eep(610);
 
-        //int stat = rtc_get();
-        //if (stat) {
-        //    gsys_log("rtc: error");
-        //    helloworld(hex(gabs(stat)));
-        //}
-        //eep(610);
+        int stat = rtc_get();
+        if (stat) {
+            helloworld("rtc: error ");
+            helloworld(hex(gabs(stat)));
+            helloworld("\n");
+        }
+        eep(610);
 
         //eep(610);
         //mmm_init();

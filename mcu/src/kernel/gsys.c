@@ -98,19 +98,14 @@ void gsys_init(void)
     // DEVICES --------------------------------------------
     patterns_init();
 
-    eep(610);
     int rtc_stat = rtc_init(); // i2c
-    
-    helloworld(hex(gabs(rtc_stat)));
-    helloworld("\n");
 
     if (rtc_stat) {
-        gsys_log("rtc: error:");
-        gsys_log(hex(gabs(rtc_stat)));
-
+        helloworld("[ ] rtc: error ");
+        helloworld(hex(gabs(rtc_stat)));
         die("rtc: initialization error :(");
     } else {
-        gsys_log("rtc: initialization successful :)");
+        gsys_log("rtc: initialization successful :)\n");
     }
 
     //pwm_init(); // timer

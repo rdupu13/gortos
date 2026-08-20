@@ -193,7 +193,11 @@ int i2c_wait(void)
         i2c_busy_clear();
         return -3; // 
     }
-    if (i2c_nack) { return -4; } // handle nack error case
+    // handle nack error case
+    if (i2c_nack) { 
+        i2c_nack = 0;
+        return -4;
+    }
     return 0;
 }
 
@@ -237,6 +241,7 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
             UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
 
             UCB1CTLW0 |= UCTXSTP;           // send stop condition
+            while (UCB1CTLW0 & UCTXSTP) {}
             i2c_busy_clear();
             i2c_nack = 1;
             break;
@@ -254,8 +259,9 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
             }
             else if (i2c_cnt == 0)
             {
-                UCB1IFG &= ~UCRXIE0; // clear rx buffer full interrupt flag
+                UCB1IFG &= ~UCRXIFG0; // clear rx buffer full interrupt flag
                 UCB1IE &= ~UCRXIE0; // disable rx buffer full interrupts
+                while (UCB1CTLW0 & UCTXSTP) {}
                 i2c_busy_clear();
             }
             break;
@@ -297,6 +303,7 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
                     UCB1IE &= ~UCTXIE0;     // disable tx complete interrupts
 
                     UCB1CTLW0 |= UCTXSTP; // send stop condition
+                    while (UCB1CTLW0 & UCTXSTP) {}
                     i2c_busy_clear();
                 }
                 else if (i2c_cnt > i2c_len)
