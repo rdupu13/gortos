@@ -74,7 +74,7 @@ void gsys_init(void)
     timer_init();
     adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
-    i2c_init(60000); // timeout = 60000
+    i2c_init(515); // timeout = 60000
     spi_init(60000); // timeout = 60000
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
@@ -98,8 +98,12 @@ void gsys_init(void)
     // DEVICES --------------------------------------------
     patterns_init();
 
-    int rtc_stat = rtc_init(); // i2c
-
+    /**
+     * initialize rtc
+     * 
+     * prereq: i2c
+     */
+    int rtc_stat = rtc_init();
     if (rtc_stat) {
         helloworld("[ ] rtc: error ");
         helloworld(hex(gabs(rtc_stat)));
@@ -129,6 +133,7 @@ void gsys_init(void)
     //gfs_init(); // mmm, (uart, lcd, lora)?
     
     // initialize gort blocks... maybe clunky, but for fun
+    /*
     int i;
     for (i = 0; i < BLK_ALLOC_NUM; i++) {
         int j;
@@ -140,6 +145,7 @@ void gsys_init(void)
             .data = gblks_data[i]
         };
     }
+    */
 
     // print start message (init successful)
     helloworld("\n\n~~~ Gort OS ~~~\n");
@@ -184,10 +190,10 @@ void die(char *last_words)
     __asm__ __volatile__("dint" ::: "memory");
     __asm__ __volatile__("nop");
 
-    led_init(); // nothing but ledbar test pattern
+    led_init(); // nothing but ledbar default pattern (0x3FF)
     //TODO: display error code?
 
-    while (1) {} // dead for infinity
+    while (1) {} // dead for infinity x_x
 }
 
 /**

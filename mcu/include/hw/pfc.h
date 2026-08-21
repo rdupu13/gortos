@@ -46,7 +46,10 @@
 #define I2C_VECTOR      EUSCI_B1_VECTOR
 
 #define I2C_SEL0        P4SEL0
+#define I2C_PORT        P4OUT
 #define I2C_PINS        BIT6 | BIT7
+#define I2C_SDA         BIT6
+#define I2C_SCL         BIT7
 // TODO: peripheral base addr
 // --------------------------------------------------------
 

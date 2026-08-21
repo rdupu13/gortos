@@ -16,6 +16,7 @@
 // drivers
 #include "drivers/adc.h" // testing
 #include "drivers/led.h" // testing
+#include "drivers/i2c.h" // testing
 
 // devices
 #include "devices/mmm.h" // testing
@@ -65,7 +66,11 @@ int main(void)
             helloworld(hex(gabs(stat)));
             helloworld("\n");
         }
-        eep(610);
+        eep(500);
+        
+        //helloworld(hex(i2c_arblost));
+        //helloworld("\n");
+        //eep(610);
 
         //eep(610);
         //mmm_init();

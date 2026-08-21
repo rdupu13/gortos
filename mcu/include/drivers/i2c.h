@@ -66,6 +66,8 @@
 
 void i2c_init(unsigned int timeout); // initialize i2c
 
+extern volatile unsigned int i2c_arblost;
+
 // write an array to an i2c slave
 int i2c_write(
     volatile unsigned char *arr,

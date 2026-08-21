@@ -18,6 +18,9 @@
 // hardware
 #include "hw/pfc.h"
 
+// kernel
+#include "kernel/gsys.h"
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
@@ -34,6 +37,8 @@ volatile unsigned char i2c_reg_addr;
 volatile unsigned char i2c_nack;
 
 unsigned int i2c_timeout;
+
+volatile unsigned int i2c_arblost;
 
 
 //-----------------------------------------------------------------------------
@@ -80,6 +85,8 @@ void i2c_init(unsigned int timeout)
     i2c_reg_addr = 0;
     i2c_timeout = timeout;
     i2c_nack = 0;
+
+    i2c_arblost = 0;
 }
 
 /**
@@ -179,21 +186,49 @@ int i2c_read(
 int i2c_wait(void)
 {
     unsigned int cnt = i2c_timeout;
+    unsigned char i;
 
     // wait until i2c bus not busy or until countdown reaches 0
     while(i2c_busy && (cnt > 0)) { cnt--; }
 
-    if (cnt == 0) {
-        // TODO: figure out how to recover bus properly
-        UCB1CTLW0 |= UCTR;              // put peripheral into tx mode
-        UCB1IFG = 0;                    // clear interrupt flags
-        UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
+    // timeout error case (recover bus and hard reset peripheral)
+    if (cnt == 0)
+    {
+        UCB1CTLW0 |= UCSWRST; // put peripheral into software reset
         
-        UCB1CTLW0 |= UCTXSTP;           // send stop condition
-        i2c_busy_clear();
-        return -3; // 
+        I2C_SEL0 &= ~I2C_PINS; // switch scl and sda to outputs
+        P4DIR |= I2C_PINS;
+        
+        I2C_PORT |= I2C_PINS; // set scl and sda high
+        for (i = 0; i < 18; i++)
+        {
+            __nop();
+            __nop();
+            __nop();
+            __nop();
+            I2C_PORT ^= I2C_SCL;
+        }
+        __nop();
+        __nop();
+        __nop();
+        __nop();
+        I2C_PORT |= I2C_SCL;
+        __nop();
+        __nop();
+        __nop();
+        __nop();
+        I2C_PORT |= I2C_SDA;
+        __nop();
+        __nop();
+        __nop();
+        __nop();
+
+        i2c_init(i2c_timeout);
+
+        return -3;
     }
-    // handle nack error case
+
+    // nack error case
     if (i2c_nack) { 
         i2c_nack = 0;
         return -4;
@@ -233,7 +268,11 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
     switch(UCB1IV)
     {
         case 0x00: break; // no interrupts
-        case 0x02: break; // ALIFG (arbitration lost)
+        case 0x02:
+            // ALIFG (arbitration lost)
+            i2c_arblost++;
+            break;
+
         case 0x04:
             // NACKIFG (no acknowledge received)
             UCB1CTLW0 |= UCTR;              // put peripheral into tx mode
@@ -261,7 +300,7 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
             {
                 UCB1IFG &= ~UCRXIFG0; // clear rx buffer full interrupt flag
                 UCB1IE &= ~UCRXIE0; // disable rx buffer full interrupts
-                while (UCB1CTLW0 & UCTXSTP) {}
+                //while (UCB1CTLW0 & UCTXSTP) {}
                 i2c_busy_clear();
             }
             break;
