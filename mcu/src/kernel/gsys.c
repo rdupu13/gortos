@@ -134,7 +134,6 @@ void gsys_init(void)
     //gfs_init(); // mmm, (uart, lcd, lora)?
     
     // initialize gort blocks... maybe clunky, but for fun
-    /*
     int i;
     for (i = 0; i < BLK_ALLOC_NUM; i++) {
         int j;
@@ -146,7 +145,6 @@ void gsys_init(void)
             .data = gblks_data[i]
         };
     }
-    */
 
     // print start message (init successful)
     helloworld("\n\n~~~ Gort OS ~~~\n");

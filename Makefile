@@ -49,6 +49,7 @@ WARNFLAGS = -Wall \
 # COMPILER FLAGS ------------------------------------------
 CCFLAGS =	-mmcu=$(MCU) \
 			-O0 \
+			-g \
 			-fdiagnostics-color=always \
 			$(WARNFLAGS) \
 			-I $(INCDIR) \
@@ -58,6 +59,7 @@ CCFLAGS =	-mmcu=$(MCU) \
 
 # LINKER FLAGS --------------------------------------------
 LDFLAGS = 	-mmcu=$(MCU) \
+			-Wl,--defsym=__HEAP_SIZE=0 \
 			-L $(TOOLDIR)/msp430-elf/lib \
 			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld
 # ---------------------------------------------------------
