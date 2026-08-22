@@ -102,7 +102,7 @@ void gsys_init(void)
      * initialize rtc
      * 
      * prereq: i2c
-     */
+     *
     int rtc_stat = rtc_init();
     if (rtc_stat) {
         helloworld("[ ] rtc: error ");
@@ -111,6 +111,7 @@ void gsys_init(void)
     } else {
         gsys_log("rtc: initialization successful :)\n");
     }
+    */
 
     //pwm_init(); // timer
     //dial_init(); // led, switch
@@ -150,8 +151,8 @@ void gsys_init(void)
     // print start message (init successful)
     helloworld("\n\n~~~ Gort OS ~~~\n");
     helloworld("(c) rdupu13 2026\n\n");
-    helloworld("Current time: ");
-    print_systime();
+    //helloworld("Current time: ");
+    //print_systime();
     helloworld("\n\n");
     // ------------------------------------------------------------------------
 }

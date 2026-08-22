@@ -60,13 +60,13 @@ int main(void)
         //helloworld("\n");
         //eep(610);
 
-        int stat = rtc_get();
-        if (stat) {
-            helloworld("rtc: error ");
-            helloworld(hex(gabs(stat)));
-            helloworld("\n");
-        }
-        eep(500);
+        //int stat = rtc_get();
+        //if (stat) {
+        //    helloworld("rtc: error ");
+        //    helloworld(hex(gabs(stat)));
+        //    helloworld("\n");
+        //}
+        //eep(500);
         
         //helloworld(hex(i2c_arblost));
         //helloworld("\n");

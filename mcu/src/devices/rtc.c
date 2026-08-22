@@ -107,6 +107,13 @@ int rtc_init(void)
         rtc_initialized = 0;
         return stat;
     }
+    stat = rtc_get();
+    if (stat) {
+        gsys_log("rtc: start error:");
+        gsys_log(hex(gabs(stat)));
+        rtc_initialized = 0;
+        return stat;
+    }
 
     return 0;
 }
