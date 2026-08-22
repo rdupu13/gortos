@@ -6,7 +6,7 @@
 
 # TOGGLE FOR YOUR PLATFORM: -----------
 PLATFORM = wsl
-MCU = msp430fr2153
+MCU = msp430fr2355
 # -------------------------------------
 
 
