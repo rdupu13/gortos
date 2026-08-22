@@ -26,7 +26,7 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define INIT_EEP_PERIOD_MS 2000
+#define INIT_GORT_NAP_MS 1000
 
 #define DELAY_LOOP_MS 103
 

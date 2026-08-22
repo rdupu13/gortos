@@ -280,7 +280,6 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
             UCB1IE &= ~(UCTXIE0 | UCRXIE0); // disable tx/rx interrupts
 
             UCB1CTLW0 |= UCTXSTP;           // send stop condition
-            while (UCB1CTLW0 & UCTXSTP) {}
             i2c_busy_clear();
             i2c_nack = 1;
             break;
@@ -300,7 +299,6 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
             {
                 UCB1IFG &= ~UCRXIFG0; // clear rx buffer full interrupt flag
                 UCB1IE &= ~UCRXIE0; // disable rx buffer full interrupts
-                //while (UCB1CTLW0 & UCTXSTP) {}
                 i2c_busy_clear();
             }
             break;
@@ -326,11 +324,11 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
                     UCB1CTLW0 |= UCTXSTT; // send repeated start + slave addr
                     
                     // stupid special case for 1-byte reads (super lame, texas instruments!)
-                    if (i2c_len == 1)
-                    {
-                        while (UCB1CTLW0 & UCTXSTT) {}  // wait for repeated start + slave addr
-                        UCB1CTLW0 |= UCTXSTP;           // prepare to stop early
-                    }
+                    //if (i2c_len == 1)
+                    //{
+                    //    while (UCB1CTLW0 & UCTXSTT) {}  // wait for repeated start + slave addr
+                    //    UCB1CTLW0 |= UCTXSTP;           // prepare to stop early
+                    //}
                 }
             }
             else
@@ -342,7 +340,6 @@ void __attribute__((interrupt(I2C_VECTOR))) isr_i2c(void)
                     UCB1IE &= ~UCTXIE0;     // disable tx complete interrupts
 
                     UCB1CTLW0 |= UCTXSTP; // send stop condition
-                    while (UCB1CTLW0 & UCTXSTP) {}
                     i2c_busy_clear();
                 }
                 else if (i2c_cnt > i2c_len)

@@ -77,7 +77,7 @@ void gsys_init(void)
     i2c_init(515); // timeout = 60000
     spi_init(60000); // timeout = 60000
     
-    eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
+    eep(INIT_GORT_NAP_MS); // eep for a lil to let clockies warm up
     
     // globally enable interrupts
     __asm__ __volatile__("nop");
@@ -158,9 +158,13 @@ void gsys_init(void)
     // test i2c
     
     int test_res = i2c_test(RTC_SLAVE_ADDR, 7);
-    helloworld("i2c test: ");
-    helloworld(hex((unsigned int) test_res));
-    helloworld("\n");
+    if (test_res) {
+        helloworld("i2c test: error ");
+        helloworld(hex((unsigned int) test_res));
+        helloworld("\n");
+    } else {
+        helloworld("i2c test passed :)\n");
+    }
 
     // ------------------------------------------------------------------------
 }
@@ -185,7 +189,7 @@ int i2c_test(unsigned int slave_addr, unsigned int len)
     int stat;
 
     volatile unsigned char test_buf[len];
-    unsigned char reg_addr;
+    unsigned char reg_addr = 0;
 
     for (i = 1; i < len + 1; i++) {
         stat = i2c_write(
@@ -244,6 +248,8 @@ int i2c_test(unsigned int slave_addr, unsigned int len)
         );
         if (stat) { return (-stat + 4); }
     }
+
+    return 0;
 }
 
 /**
