@@ -78,6 +78,10 @@
 ; send byte and read ack ----------------------------------
 ; R4: counter
 i2c_tx_byte:
+        ; if nack previously received, don't do anything
+        tst.b   &i2c_nack
+        jnz     end_tx_byte
+
         mov.w   #8, R4
 byte_loop:
         ; left shift byte, set/clear sda according to carry
@@ -117,15 +121,19 @@ toggle_scl:
 
         ; if nack received, send stop
         tst.b   &i2c_sda_rx
-        jz      rx_ack
+        jz      end_tx_byte
         call    #i2c_tx_stop
-rx_ack:
+        mov.b   #1, &i2c_nack
+end_tx_byte:
         ret
 ; ---------------------------------------------------------
 
 ; send start condition + slave address --------------------
 ; R5: tmp
 i2c_tx_start:
+        ; reset nack for retry
+        mov.b   #0, &i2c_nack
+
         ; send start condition
         clear_sda
         i2c_delay
@@ -173,6 +181,16 @@ main:
 
 loop:
         call    #i2c_tx_start   ; send start condition + slave addr
+
+        mov.b   #0xAA, &i2c_byte
+        call    #i2c_tx_byte
+        
+        mov.b   #0xBB, &i2c_byte
+        call    #i2c_tx_byte
+
+        mov.b   #0xCC, &i2c_byte
+        call    #i2c_tx_byte
+
         call    #i2c_tx_stop    ; send stop condition
 
         ; long delay ------------------
@@ -198,6 +216,8 @@ delay:
 i2c_byte:
         .skip 1
 i2c_sda_rx:
+        .skip 1
+i2c_nack:
         .skip 1
 
         .section .data
