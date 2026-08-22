@@ -74,7 +74,7 @@ void gsys_init(void)
     timer_init();
     adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
-    i2c_init(515); // timeout = 60000
+    i2c_init(515); // timeout = 515
     spi_init(60000); // timeout = 60000
     
     eep(INIT_GORT_NAP_MS); // eep for a lil to let clockies warm up
@@ -155,17 +155,8 @@ void gsys_init(void)
     //print_systime();
     helloworld("\n\n");
 
-    // test i2c
     
-    int test_res = i2c_test(RTC_SLAVE_ADDR, 7);
-    if (test_res) {
-        helloworld("i2c test: error ");
-        helloworld(hex((unsigned int) test_res));
-        helloworld("\n");
-    } else {
-        helloworld("i2c test passed :)\n");
-    }
-
+    
     // ------------------------------------------------------------------------
 }
 
@@ -191,6 +182,7 @@ int i2c_test(unsigned int slave_addr, unsigned int len)
     volatile unsigned char test_buf[len];
     unsigned char reg_addr = 0;
 
+    /*
     for (i = 1; i < len + 1; i++) {
         stat = i2c_write(
             test_buf,
@@ -210,7 +202,9 @@ int i2c_test(unsigned int slave_addr, unsigned int len)
     }
 
     eep(10);
-    
+    */
+
+    /*
     for (i = 1; i < len + 1; i++) {
         stat = i2c_write(
             test_buf,
@@ -228,7 +222,9 @@ int i2c_test(unsigned int slave_addr, unsigned int len)
         );
         if (stat) { return (-stat); }
     }
+    */
 
+    /*
     eep(10);
 
     for (i = 1; i < len + 1; i++) {
@@ -248,6 +244,10 @@ int i2c_test(unsigned int slave_addr, unsigned int len)
         );
         if (stat) { return (-stat + 4); }
     }
+    */
+
+    stat = i2c_read(test_buf, 7, slave_addr, 0); if (stat) { return -stat + 4; }
+    //stat = i2c_read(test_buf, 7, slave_addr, 0); if (stat) { return -stat + 4; }
 
     return 0;
 }

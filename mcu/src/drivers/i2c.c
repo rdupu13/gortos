@@ -194,6 +194,7 @@ int i2c_wait(void)
     // timeout error case (recover bus and hard reset peripheral)
     if (cnt == 0)
     {
+        /*
         UCB1CTLW0 |= UCSWRST; // put peripheral into software reset
         
         I2C_SEL0 &= ~I2C_PINS; // switch scl and sda to outputs
@@ -224,6 +225,9 @@ int i2c_wait(void)
         __nop();
 
         i2c_init(i2c_timeout);
+        */
+
+        i2c_busy_clear();
 
         return -3;
     }
