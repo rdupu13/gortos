@@ -134,6 +134,7 @@ void gsys_init(void)
     //gfs_init(); // mmm, (uart, lcd, lora)?
     
     // initialize gort blocks... maybe clunky, but for fun
+    /*
     int i;
     for (i = 0; i < BLK_ALLOC_NUM; i++) {
         int j;
@@ -145,6 +146,7 @@ void gsys_init(void)
             .data = gblks_data[i]
         };
     }
+    */
 
     // print start message (init successful)
     helloworld("\n\n~~~ Gort OS ~~~\n");
@@ -152,7 +154,96 @@ void gsys_init(void)
     //helloworld("Current time: ");
     //print_systime();
     helloworld("\n\n");
+
+    // test i2c
+    
+    int test_res = i2c_test(RTC_SLAVE_ADDR, 7);
+    helloworld("i2c test: ");
+    helloworld(hex((unsigned int) test_res));
+    helloworld("\n");
+
     // ------------------------------------------------------------------------
+}
+
+/**
+ * @brief test the functionality of i2c
+ * 
+ * @return 
+ *          0: passed
+ *          1: i2c_write bus busy
+ *          2: i2c_write 0 length error
+ *          3: i2c_write timeout error
+ *          4: i2c_write nack error
+ *          5: i2c_read bus busy
+ *          6: i2c_read 0 length error
+ *          7: i2c_read timeout error
+ *          8: i2c_read nack error
+ */
+int i2c_test(unsigned int slave_addr, unsigned int len)
+{
+    unsigned int i;
+    int stat;
+
+    volatile unsigned char test_buf[len];
+    unsigned char reg_addr;
+
+    for (i = 1; i < len + 1; i++) {
+        stat = i2c_write(
+            test_buf,
+            i,
+            slave_addr,
+            reg_addr
+        );
+        if (stat) { return (-stat); }
+
+        stat = i2c_read(
+            test_buf,
+            len - i,
+            slave_addr,
+            reg_addr
+        );
+        if (stat) { return (-stat + 4); }
+    }
+
+    eep(10);
+    
+    for (i = 1; i < len + 1; i++) {
+        stat = i2c_write(
+            test_buf,
+            i,
+            slave_addr,
+            reg_addr
+        );
+        if (stat) { return (-stat); }
+
+        stat = i2c_write(
+            test_buf,
+            len + 1 - i,
+            slave_addr,
+            reg_addr
+        );
+        if (stat) { return (-stat); }
+    }
+
+    eep(10);
+
+    for (i = 1; i < len + 1; i++) {
+        stat = i2c_read(
+            test_buf,
+            i,
+            slave_addr,
+            reg_addr
+        );
+        if (stat) { return (-stat + 4); }
+
+        stat = i2c_read(
+            test_buf,
+            len + 1 - i,
+            slave_addr,
+            reg_addr
+        );
+        if (stat) { return (-stat + 4); }
+    }
 }
 
 /**

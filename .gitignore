@@ -55,3 +55,8 @@
 # datasheets
 docs/datasheets/
 docs/dwg/
+
+# other build & debugging artifacts
+diff.txt
+ram.bin
+ram.txt
