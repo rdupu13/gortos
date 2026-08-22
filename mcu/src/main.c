@@ -51,16 +51,6 @@ int main(void)
 
     //int gsh = main_gsh(); // launch gort shell
 
-    // test i2c
-        int test_res = i2c_test(RTC_SLAVE_ADDR, 7);
-        if (test_res) {
-            helloworld("i2c test: error ");
-            helloworld(hex((unsigned int) test_res));
-            helloworld("\n");
-        } else {
-            helloworld("i2c test passed :)\n");
-        }
-        eep(340);
         
     while (1)
     {
@@ -85,8 +75,17 @@ int main(void)
 
         //eep(610);
         //mmm_init();
-
         
+        // test i2c
+        int test_res = i2c_test(RTC_SLAVE_ADDR, 7);
+        if (test_res) {
+            helloworld("i2c test: error ");
+            helloworld(hex((unsigned int) test_res));
+            helloworld("\n");
+        } else {
+            helloworld("i2c test passed :)\n");
+        }
+        eep(340);
         
     } // halt / loop forever
     return 0;

@@ -4,18 +4,19 @@
 # created by rdupu13
 # =============================================================================
 
+# TOGGLE FOR YOUR PLATFORM: -----------
+PLATFORM = linux
+MCU = msp430fr2153
+# -------------------------------------
+
+# BUILD CONFIGURATION ---------------------------------------------------------
+
+TARGET = gort
+
 # COMPILER & TOOLCHAIN ------------------------------------
 CC = msp430-elf-gcc
 TOOLDIR = /opt/msp430-gcc
 # ---------------------------------------------------------
-
-# BUILD CONFIGURATION ---------------------------------------------------------
-
-# TOGGLE FOR YOUR PLATFORM: -----------
-PLATFORM = wsl
-MCU = msp430fr2153
-TARGET = gort
-# -------------------------------------
 
 # FILES & DIRECTORIES------------------
 INCDIR = mcu/include
@@ -23,7 +24,7 @@ INCDIR = mcu/include
 SRCDIR = mcu/src
 SRCEXT = c
 TEST_SRCDIR = mcu/test
-ASM_SRCDIR = mcu/asm
+wASM_SRCDIR = mcu/asm
 
 EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
@@ -90,6 +91,7 @@ all: $(TARGET).out
 
 $(TARGET).out: $(SRCS)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $(SRCS)
+	msp430-elf-nm -n -S $(TARGET).out > $(TARGET).symbols
 # =========================================================
 
 # USBIPD ATTACH FET ---------------------------------------
