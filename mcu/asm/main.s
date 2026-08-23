@@ -75,60 +75,6 @@
 ; SUBROUTINES
 ;------------------------------------------------------------------------------
 
-; tx byte and read ack ------------------------------------
-; R4: counter
-i2c_tx_byte:
-        ; if nack previously received, don't do anything
-        tst.b   &i2c_nack
-        jnz     end_tx_byte
-
-        ; clock 8 bits of data ----------------------------
-        mov.b   #8, R4
-byte_loop:
-        ; left shift byte, set/clear sda according to carry
-        rlc.b   &i2c_byte
-        jnc     tx_0
-tx_1:
-        set_sda
-        jmp     toggle_scl
-tx_0:
-        clear_sda
-
-toggle_scl:
-        i2c_delay
-        set_scl
-        scl_high_delay
-        clear_scl
-        i2c_delay
-
-        dec.b   R4
-        jnz     byte_loop
-        ; -------------------------------------------------
-
-        ; read sda for ack/nack
-        sda_input
-        set_sda
-
-        i2c_delay
-        set_scl
-        scl_high_delay
-
-        sda_rx
-
-        clear_scl
-        i2c_delay
-
-        init_sda
-
-        ; if nack received, send stop
-        tst.b   &i2c_sda_rx
-        jz      end_tx_byte
-        call    #i2c_tx_stop
-        mov.b   #1, &i2c_nack
-end_tx_byte:
-        ret
-; ---------------------------------------------------------
-
 ; send start condition + slave address --------------------
 ; R5: tmp
 i2c_tx_start:
@@ -170,6 +116,108 @@ end_tx_stop:
         ret
 ; ---------------------------------------------------------
 
+; tx byte and read ack ------------------------------------
+; R4: counter
+i2c_tx_byte:
+        ; if nack previously received, don't do anything
+        tst.b   &i2c_nack
+        jnz     end_tx_byte
+
+        ; clock 8 bits of data ----------------------------
+        mov.b   #8, R4
+tx_byte_loop:
+        ; left shift byte, set/clear sda according to carry
+        rlc.b   &i2c_byte
+        jnc     tx_0
+tx_1:
+        set_sda
+        jmp     toggle_scl
+tx_0:
+        clear_sda
+
+toggle_scl:
+        i2c_delay
+        set_scl
+        scl_high_delay
+        clear_scl
+        i2c_delay
+
+        dec.b   R4
+        jnz     tx_byte_loop
+        ; -------------------------------------------------
+
+        ; read sda for ack/nack
+        sda_input
+        set_sda
+
+        i2c_delay
+        set_scl
+        scl_high_delay
+
+        sda_rx
+
+        clear_scl
+        i2c_delay
+
+        init_sda
+
+        ; if nack received, send stop
+        tst.b   &i2c_sda_rx
+        jz      end_tx_byte
+        call    #i2c_tx_stop
+        mov.b   #1, &i2c_nack
+end_tx_byte:
+        ret
+; ---------------------------------------------------------
+
+; rx byte and send ack ------------------------------------
+; R4: counter
+i2c_rx_byte:
+        ; if nack previously received, don't do anything
+        tst.b   &i2c_nack
+        jnz     end_tx_byte
+
+        sda_input
+
+        ; clock 8 bits of data ----------------------------
+        mov.b   #8, R4
+rx_byte_loop:
+        i2c_delay
+        set_scl
+        i2c_delay
+
+        sda_rx
+
+        clear_scl
+        i2c_delay
+
+        ; 
+        tst.b   &i2c_sda_rx
+        jz      rx_0
+rx_1:
+        bis.w   #BIT0, SR       ; set carry flag
+        jmp     rs_byte
+rx_0:
+        bic.w   #BIT0, SR       ; clear carry flag
+rs_byte:
+        rlc.b   &i2c_byte
+
+        dec.b   R4
+        jnz     rx_byte_loop
+        ; -------------------------------------------------
+
+        init_sda
+
+        clear_sda       ; ack
+
+        i2c_delay
+        set_scl
+        scl_high_delay
+        clear_scl
+        i2c_delay
+        ret
+; ---------------------------------------------------------
+
 ; write an array to an i2c slave --------------------------
 ; R4: counter
 ; R5: tmp
@@ -196,6 +244,36 @@ write_loop:
         ret
 ; ---------------------------------------------------------
 
+; read an array from an i2c slave -------------------------
+; R4: counter
+; R5: tmp
+; R6: counter
+; R7: tx ptr
+i2c_read:
+        mov.w   #i2c_rx_buf, R7 ; load pointer to tx buffer
+        mov.w   &i2c_len, R6    ; start counter
+
+        mov.b   #0, &i2c_mode   ; write mode
+        call    #i2c_tx_start   ; send start condition + slave addr
+
+        mov.b   &i2c_reg_addr, &i2c_byte
+        call    #i2c_tx_byte    ; send register address within slave
+
+        set_scl
+        mov.w   #1, &i2c_mode   ; read mode
+        call    #i2c_tx_start   ; repeated start
+read_loop:
+        call    #i2c_rx_byte
+        mov.b   &i2c_byte, 0(R7)
+        inc.w   R7
+
+        dec.w   R6
+        jnz     read_loop
+
+        call    #i2c_tx_stop    ; send stop condition
+        ret
+; ---------------------------------------------------------
+
 ;------------------------------------------------------------------------------
 ; MAIN LOOP
 ;------------------------------------------------------------------------------
@@ -213,7 +291,7 @@ main:
 
 main_loop:
 
-        call    #i2c_write
+        call    #i2c_read
         
         ; long delay ------------------
         mov.w #0xFFFF, R4
@@ -243,6 +321,8 @@ i2c_sda_rx:
         .skip 1
 i2c_nack:
         .skip 1
+i2c_rx_buf:
+        .skip 32
 
         .section .data
 i2c_slave_addr:
