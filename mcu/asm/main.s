@@ -75,14 +75,15 @@
 ; SUBROUTINES
 ;------------------------------------------------------------------------------
 
-; send byte and read ack ----------------------------------
+; tx byte and read ack ------------------------------------
 ; R4: counter
 i2c_tx_byte:
         ; if nack previously received, don't do anything
         tst.b   &i2c_nack
         jnz     end_tx_byte
 
-        mov.w   #8, R4
+        ; clock 8 bits of data ----------------------------
+        mov.b   #8, R4
 byte_loop:
         ; left shift byte, set/clear sda according to carry
         rlc.b   &i2c_byte
@@ -93,7 +94,6 @@ tx_1:
 tx_0:
         clear_sda
 
-        ; clock data
 toggle_scl:
         i2c_delay
         set_scl
@@ -101,8 +101,9 @@ toggle_scl:
         clear_scl
         i2c_delay
 
-        dec.w   R4
+        dec.b   R4
         jnz     byte_loop
+        ; -------------------------------------------------
 
         ; read sda for ack/nack
         sda_input
@@ -145,8 +146,8 @@ i2c_tx_start:
         rla.b   R5
         bis.b   &i2c_mode, R5
 
-        ; send slave address
-        mov.w   R5, &i2c_byte
+        ; send slave address + r/w bit
+        mov.b   R5, &i2c_byte
         call    #i2c_tx_byte
 
         ret
@@ -154,15 +155,46 @@ i2c_tx_start:
 
 ; send stop condition -------------------------------------
 i2c_tx_stop:
+        ; if nack previously received, don't do anything
+        tst.b   &i2c_nack
+        jnz     end_tx_stop
+
         clear_sda
         i2c_delay
         set_scl
         i2c_delay
         set_sda
         i2c_delay
+
+end_tx_stop:
         ret
 ; ---------------------------------------------------------
 
+; write an array to an i2c slave --------------------------
+; R4: counter
+; R5: tmp
+; R6: counter
+; R7: tx ptr
+i2c_write:
+        mov.w   #i2c_tx_buf, R7 ; load pointer to tx buffer
+        mov.w   &i2c_len, R6    ; start counter
+        mov.b   #0, &i2c_mode   ; write mode
+
+        call    #i2c_tx_start   ; send start condition + slave addr
+
+        mov.b   &i2c_reg_addr, &i2c_byte
+        call    #i2c_tx_byte    ; send register address within slave
+
+write_loop:
+        mov.b   @R7+, &i2c_byte
+        call    #i2c_tx_byte
+
+        dec.w   R6
+        jnz     write_loop
+
+        call    #i2c_tx_stop    ; send stop condition
+        ret
+; ---------------------------------------------------------
 
 ;------------------------------------------------------------------------------
 ; MAIN LOOP
@@ -179,20 +211,10 @@ main:
         init_scl
         init_sda
 
-loop:
-        call    #i2c_tx_start   ; send start condition + slave addr
+main_loop:
 
-        mov.b   #0xAA, &i2c_byte
-        call    #i2c_tx_byte
+        call    #i2c_write
         
-        mov.b   #0xBB, &i2c_byte
-        call    #i2c_tx_byte
-
-        mov.b   #0xCC, &i2c_byte
-        call    #i2c_tx_byte
-
-        call    #i2c_tx_stop    ; send stop condition
-
         ; long delay ------------------
         mov.w #0xFFFF, R4
 delay:
@@ -205,7 +227,7 @@ delay:
             
         xor.b   #BIT0, &P1OUT   ; toggle heartbeat led
 
-        jmp     loop
+        jmp     main_loop
         ret
 
 ;------------------------------------------------------------------------------
@@ -213,6 +235,8 @@ delay:
 ;------------------------------------------------------------------------------
 
         .section .bss
+i2c_mode:
+        .skip 1
 i2c_byte:
         .skip 1
 i2c_sda_rx:
@@ -223,8 +247,12 @@ i2c_nack:
         .section .data
 i2c_slave_addr:
         .byte 0x68      ; rtc slave address
-i2c_mode:
-        .byte 0         ; write mode
+i2c_reg_addr:
+        .byte 0x00      ; rtc seconds register
+i2c_len:
+        .word 7         ; 7 bytes
+i2c_tx_buf:
+        .byte 0x18, 0x24, 0x12, 0x06, 0x23, 0x12, 0x05
 
 ;------------------------------------------------------------------------------
 ; END OF CODE
