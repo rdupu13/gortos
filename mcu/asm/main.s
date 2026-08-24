@@ -190,9 +190,10 @@ i2c_rx_byte:
 rx_byte_loop:
         i2c_delay
         set_scl
-        i2c_delay
 
+        i2c_delay
         sda_rx
+        i2c_delay
 
         clear_scl
         i2c_delay
@@ -274,31 +275,29 @@ i2c_read:
         mov.b   &i2c_reg_addr, &i2c_byte
         call    #i2c_tx_byte    ; send register address within slave
 
-;        call    #i2c_tx_stop
-
-        i2c_delay
-        i2c_delay
+        ; skip repeated start if nack received
+        tst.b   &i2c_nack
+        jnz      end_rx
 
         mov.w   #1, &i2c_mode   ; read mode
         call    #i2c_tx_start   ; repeated start
 
-        call    #i2c_rx_byte
-        call    #i2c_rx_byte
-
+read_loop:
+        cmp.w   #1, R6
+        jnz     not_last_byte
         mov.b   #1, &i2c_end_rx
+        
+not_last_byte:
         call    #i2c_rx_byte
+        mov.b   &i2c_byte, 0(R7)
+        inc.w   R7
 
-;read_loop:
-;        call    #i2c_rx_byte
-;        mov.b   &i2c_byte, 0(R7)
-;        inc.w   R7
-;
-;        dec.w   R6
-;        jnz     read_loop
+        dec.w   R6
+        jnz     read_loop
 
         call    #i2c_tx_stop    ; send stop condition
 
-        init_sda
+end_rx:
         ret
 ; ---------------------------------------------------------
 
@@ -316,9 +315,15 @@ main:
 
         init_scl
         init_sda
+        
+        mov.b   #0x00, &i2c_reg_addr
+        mov.w   #7, &i2c_len
+        call    #i2c_write
 
 main_loop:
 
+        mov.b   #0x00, &i2c_reg_addr
+        mov.w   #7, &i2c_len
         call    #i2c_read
         
         ; long delay ------------------
@@ -351,18 +356,18 @@ i2c_nack:
         .skip 1
 i2c_end_rx:
         .skip 1
+i2c_reg_addr:
+        .skip 1
+i2c_len:
+        .skip 2
 i2c_rx_buf:
         .skip 32
 
         .section .data
 i2c_slave_addr:
-        .byte 0x68      ; rtc slave address
-i2c_reg_addr:
-        .byte 0x00      ; rtc seconds register
-i2c_len:
-        .word 7         ; 7 bytes
+        .byte 0x6F      ; MCP7940N slave address
 i2c_tx_buf:
-        .byte 0x18, 0x24, 0x12, 0x06, 0x23, 0x12, 0x05
+        .byte 0x80, 0x18, 0x14, 0x02, 0x24, 0x08, 0x26
 
 ;------------------------------------------------------------------------------
 ; END OF CODE
