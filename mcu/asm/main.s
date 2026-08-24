@@ -81,6 +81,11 @@ i2c_tx_start:
         ; reset nack for retry
         mov.b   #0, &i2c_nack
 
+        ; make sure scl and sda start high
+        init_scl
+        init_sda
+        i2c_delay
+
         ; send start condition
         clear_sda
         i2c_delay
@@ -152,9 +157,10 @@ toggle_scl:
 
         i2c_delay
         set_scl
-        scl_high_delay
-
+        
+        i2c_delay
         sda_rx
+        i2c_delay
 
         clear_scl
         i2c_delay
@@ -208,8 +214,17 @@ rs_byte:
 
         init_sda
 
-        clear_sda       ; ack
+        ; send ack or nack (depending on if last byte)
+        tst.b   &i2c_end_rx
+        jz      tx_ack
+tx_nack:
+        set_sda
+        mov.b   #0, &i2c_end_rx
+        jmp     clk_ack
+tx_ack:
+        clear_sda
 
+clk_ack:
         i2c_delay
         set_scl
         scl_high_delay
@@ -226,8 +241,8 @@ rs_byte:
 i2c_write:
         mov.w   #i2c_tx_buf, R7 ; load pointer to tx buffer
         mov.w   &i2c_len, R6    ; start counter
-        mov.b   #0, &i2c_mode   ; write mode
 
+        mov.b   #0, &i2c_mode   ; write mode
         call    #i2c_tx_start   ; send start condition + slave addr
 
         mov.b   &i2c_reg_addr, &i2c_byte
@@ -259,18 +274,31 @@ i2c_read:
         mov.b   &i2c_reg_addr, &i2c_byte
         call    #i2c_tx_byte    ; send register address within slave
 
-        set_scl
+;        call    #i2c_tx_stop
+
+        i2c_delay
+        i2c_delay
+
         mov.w   #1, &i2c_mode   ; read mode
         call    #i2c_tx_start   ; repeated start
-read_loop:
-        call    #i2c_rx_byte
-        mov.b   &i2c_byte, 0(R7)
-        inc.w   R7
 
-        dec.w   R6
-        jnz     read_loop
+        call    #i2c_rx_byte
+        call    #i2c_rx_byte
+
+        mov.b   #1, &i2c_end_rx
+        call    #i2c_rx_byte
+
+;read_loop:
+;        call    #i2c_rx_byte
+;        mov.b   &i2c_byte, 0(R7)
+;        inc.w   R7
+;
+;        dec.w   R6
+;        jnz     read_loop
 
         call    #i2c_tx_stop    ; send stop condition
+
+        init_sda
         ret
 ; ---------------------------------------------------------
 
@@ -320,6 +348,8 @@ i2c_byte:
 i2c_sda_rx:
         .skip 1
 i2c_nack:
+        .skip 1
+i2c_end_rx:
         .skip 1
 i2c_rx_buf:
         .skip 32
