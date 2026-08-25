@@ -1,8 +1,9 @@
 ;------------------------------------------------------------------------------
-; asm/main.s — MSP430 assembly for msp430-elf-gcc
+; main.s — MSP430 assembly for msp430-elf-gcc
 ;
 ; GORTOS: I2C BIT-BANGER
 ; created by rdupu13
+; 8/24/2026
 ;------------------------------------------------------------------------------
 #include <msp430.h>
 

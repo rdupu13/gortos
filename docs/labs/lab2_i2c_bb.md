@@ -9,6 +9,8 @@ In this lab, I "bit-banged" the Inter-integrated Circuit (I2C) serial protocol. 
 
 The bit-banger was tested through an Analog Discovery 2 (AD2) that monitored the protocol, along with 2 different Real-Time Clocks (RTCs). The clocks were seen telling the time and retaining register values.
 
+The source file is located here: [mcu/asm/main.s](../../mcu/asm/main.s)
+
 
 ## Start/Stop Conditions and Byte Transmission
 

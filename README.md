@@ -1,46 +1,57 @@
-# GORTOS
+# Gort OS - an Embedded Operating System
+#### Author: [Ryan Dupuis](https://github.com/rdupu13)
 
-an embedded operating system
+## Platforms:
+* **TI MSP430FR2153 microcontroller unit**
 
-### platform: TI MSP430FR2153 microcontroller unit
-#### author: ryan dup
-
+---
+```
 MSP430FR2153 needs an operating system, and gort is up to the task!
 
 no one could ever fathom that gort would ever have an os
 
-and then she did
-
 behold, GORTOS!
+```
+---
 
-gort os is fully functional with driver support for the following peripherals:
+## [Features](docs/gortos.md)
+Gort OS is fully functional with driver support for the following peripherals:
 
-* ON-CHIP
-    - 4 timer modules (TIMER)
-    - universal asynchronous receiver-transmitter (UART)
-    - inter-integrated circuit (I2C)
-    - serial peripheral protocol (SPI)
-    - analog-to-digital converter (ADC)
-    - 26 reconfigurable general-purpose I/O pins (SWITCH, LED)
-    - general-purpose pattern generator (PATTERNS)
-    - pulse-width modulation (PWM, coming soon)
+* 4 timer modules (TIMER)
+* universal asynchronous receiver-transmitter (UART)
+* inter-integrated circuit (I2C)
+* serial peripheral protocol (SPI)
+* analog-to-digital converter (ADC)
+* 26 reconfigurable general-purpose I/O pins (SWITCH, LED)
+* general-purpose pattern generator (PATTERNS)
+* pulse-width modulation (PWM, coming soon)
 
-gort os supports a variety of off-chip modules, suitable for any embedded project:
+Gort OS supports a variety of breadboard modules, suitable for nearly any embedded project:
 
-* ON-BOARD
-    - CP2102N USB-to-UART
-    - MCP7940N real-time clock module (RTC)
-    - 23LC1024 128KB serial mini memory manager (MMM)
-    - 
+* CP2102N USB-to-UART
+* MCP7940N real-time clock module (RTC)
+* 23LC1024 128KB serial mini memory manager (MMM)
+* more soon...
 
----------------------------------------
 
-## circuit diagram
+## Development
+
+Follow instructions [[here](https://github.com/rdupu13/msp430-dev/blob/main/msp430_dev_setup.md)] for how to setup your own MSP430 development environment on Linux or WSL. No Code Composer Studio required!
+
+## EELE 465
+
+This project was created in part to fulfill the requirements of the MSU course [EELE 465 - Microcontroller Applications](https://catalog.montana.edu/coursedescriptions/eele/). Below are reports detailing the development and testing of several components of the Gort System:
+
+* Lab 0 - [Heartbeat LED](mcu/test/main.c)
+* Lab 2 - [I2C Bit-Banging](docs/labs/lab2_i2c_bb.md) (8/24/2026)
+
+[Course BOM](docs/eele465_bom.md)
+
+## Circuit Diagram
 ![Gort OS Circuit Diagram](docs/assets/gortos_circuit.svg)
 
-## software architecture
+## Software Architecture
 ![Gort OS Software Architecture](docs/assets/gortos_softarch.svg)
 
----------------------------------------
-
+---
 P.S. gorb is my bb <3

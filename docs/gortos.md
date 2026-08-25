@@ -1,6 +1,6 @@
-# HARDWARE ====================================================================
+# HARDWARE
 
-## MSP430FR2153 -----------------------
+## MSP430FR2153
 - power
     - VCC (+3.3v)
     - GND
@@ -45,9 +45,9 @@
     - P1.5 - MOSI
     - P1.6 - CLK
     - P1.7 - CS0
----------------------------------------
+---
 
-## embedded system: -------------------
+## embedded system
 - led bar 10
 - led mux bar 12 (coming soon)
 - led spi bar ? (coming soon)
@@ -56,11 +56,11 @@
 - 1 Mbit ram (coming soon)
 - lcd display (coming soon)
 - dial pad (coming soon)
----------------------------------------
+---
 
-# SOFTWARE ====================================================================
+# SOFTWARE
 
-## drivers ----------------------------
+## drivers
 - `adc`
 - `i2c`
 - `led`
@@ -68,9 +68,9 @@
 - `switch`
 - `timer`
 - `uart`
----------------------------------------
+---
 
-## devices ----------------------------
+## devices
 - `dial` (coming soon)
 - `lcd` (coming soon)
 - `lora` (coming soon)
@@ -78,16 +78,16 @@
 - `patterns`
 - `pwm` (coming soon)
 - `rtc`
----------------------------------------
+---
 
-## kernel -----------------------------
+## kernel
 - `gfs` (coming soon)
 - `gio`
 - `gstr`
 - `gsys`
----------------------------------------
+---
 
-## system variables -------------------
+## system variables
 - `gtime_t gsystime`
 - `gtime_t guptime`
 - `unsigned char guid`
@@ -96,9 +96,9 @@
 - `gfile_t *gin` --> `/dev/tty`
 - `gfile_t *gout` --> `/dev/tty`
 - `unsigned char display_mode`
----------------------------------------
+---
 
-## time format ------------------------
+## time format
 ### `gtime_t`
 - `unsigned char second`
 - `unsigned char minute`
@@ -108,9 +108,9 @@
 - `unsigned char month`
 - `unsigned int year`
 - string: `"10-13-2003 03:42:00"`
----------------------------------------
+---
 
-## file format ------------------------
+## file format
 ### `gfile_t`
 - `unsigned char mode`
     - device? (if type = device) (7:5)
@@ -138,9 +138,9 @@
 	- normal: `unsigned char[size]`
 	- directory: `*gfile_t[size]`
 	- stream: null pointer?
----------------------------------------
+---
 
-## filesystem -------------------------
+## filesystem
 ### `/`
 - `/bin/`
 	- `/bin/cat`
@@ -175,13 +175,13 @@
 - `/proc/`
     - `/proc/0`
     - `/proc/...`
----------------------------------------
+---
 
-# APPLICATIONS ================================================================
-## advanced apps ----------------------
+# APPLICATIONS
+## advanced apps
 - `gsh` - gort shell
 
-c```
+```c
 	const char prompt = '$';
 	char cmd_buf = [];
 	char c;
@@ -207,9 +207,9 @@ c```
 - `gdb` - gort debugger?
 - `gar` - gort archiver?
 - `gapt` - gort advanced package tool?
----------------------------------------
+---
 
-## utilities --------------------------
+## utilities
 - `cat` - Print the contents of a file path $1 to stdout
 - `clear` - Clear stdout
 - `cd` - Change DIR to path $1
@@ -260,5 +260,10 @@ c```
 - `umount` - 
 - `who` - 
 - `xxd` - 
----------------------------------------
-===============================================================================
+---
+
+## Early Development
+#### July 2026
+
+![](assets/msp430fr2153_pinout_colored.jpg)
+![](assets/gortos_old_softarch.jpg)
