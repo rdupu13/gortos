@@ -4,21 +4,27 @@
 # created by rdupu13
 # =============================================================================
 
-# COMPILER & TOOLCHAIN ------------------------------------
-CC = msp430-elf-gcc
-TOOLDIR = /opt/msp430-gcc
-# ---------------------------------------------------------
-
-# BUILD CONFIGURATION ---------------------------------------------------------
-
 # TOGGLE FOR YOUR PLATFORM: -----------
 PLATFORM = wsl
 MCU = msp430fr2153
 # -------------------------------------
 
+
+# BUILD CONFIGURATION ---------------------------------------------------------
+TARGET = gort
+
+# COMPILER & TOOLCHAIN ------------------------------------
+CC = msp430-elf-gcc
+TOOLDIR = /opt/msp430-gcc
+# ---------------------------------------------------------
+
+# FILES & DIRECTORIES------------------
 INCDIR = mcu/include
+
 SRCDIR = mcu/src
+SRCEXT = c
 TEST_SRCDIR = mcu/test
+ASM_SRCDIR = mcu/asm
 
 EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
@@ -30,33 +36,42 @@ EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/devices/lora.h \
 			mcu/src/devices/pwm.c \
 			mcu/include/devices/pwm.h
+# -------------------------------------
 
+# WARNING OPTIONS ---------------------
 WARNFLAGS = -Wall \
 			-Wno-builtin-declaration-mismatch \
 			-Wno-unknown-pragmas \
 			-Wno-implicit-function-declaration \
 			-Wno-missing-braces \
 			-Wno-comment
+# -------------------------------------
 
+# COMPILER FLAGS ------------------------------------------
 CCFLAGS =	-mmcu=$(MCU) \
 			-Os \
+			-g \
 			-fdiagnostics-color=always \
 			$(WARNFLAGS) \
 			-I $(INCDIR) \
 			-I $(TOOLDIR)/include \
 			-I $(TOOLDIR)/msp430-elf/include
+# ---------------------------------------------------------
 
+# LINKER FLAGS --------------------------------------------
 LDFLAGS = 	-mmcu=$(MCU) \
 			-L $(TOOLDIR)/msp430-elf/lib \
 			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld
+# ---------------------------------------------------------
 
+# SOURCE CODE SEARCH ------------------
 SRCS =		$(filter-out $(EXCLUDE), \
-			$(shell find $(SRCDIR) -name '*.c'))
+			$(shell find $(SRCDIR) -name '*.$(SRCEXT)'))
+# -------------------------------------
 
-TARGET = gort
 # -----------------------------------------------------------------------------
 
-# WSL-ONLY ----------------------------
+# USBIPD FOR WSL ONLY -----------------
 ifeq ($(PLATFORM), wsl)
 USBIPD = usbipd.exe
 MSP_VIDPID = 2047:0013
@@ -70,8 +85,9 @@ ATTACH =
 endif
 # -------------------------------------
 
-# COMPILE GORT! ===========================================
+# COMPILE! ================================================
 all: $(TARGET).out
+
 $(TARGET).out: $(SRCS)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $(SRCS)
 # =========================================================
@@ -89,7 +105,12 @@ attach-fet:
 
 # TEST ------------------------------------------------------------------------
 test:
-	@$(MAKE) SRCDIR=$(TEST_SRCDIR) TARGET=test
+	$(MAKE) SRCDIR=$(TEST_SRCDIR) TARGET=test
+# -----------------------------------------------------------------------------
+
+# ASM -------------------------------------------------------------------------
+asm:
+	@$(MAKE) SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s CCFLAGS="$(CCFLAGS) -x assembler-with-cpp"
 # -----------------------------------------------------------------------------
 
 # FLASH -----------------------------------------------------------------------
@@ -99,7 +120,12 @@ flash: $(TARGET).out $(ATTACH)
 
 # TEST FLASH ------------------------------------------------------------------
 test-flash:
-	@$(MAKE) flash SRCDIR=$(TEST_SRCDIR) TARGET=test
+	$(MAKE) flash SRCDIR=$(TEST_SRCDIR) TARGET=test
+# -----------------------------------------------------------------------------
+
+# ASM FLASH -------------------------------------------------------------------
+asm-flash:
+	@$(MAKE) flash SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s CCFLAGS="$(CCFLAGS) -x assembler-with-cpp"
 # -----------------------------------------------------------------------------
 
 # DEBUG -----------------------------------------------------------------------
