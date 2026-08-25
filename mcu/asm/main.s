@@ -1,5 +1,8 @@
 ;------------------------------------------------------------------------------
 ; asm/main.s — MSP430 assembly for msp430-elf-gcc
+;
+; GORTOS: I2C BIT-BANGER
+; created by rdupu13
 ;------------------------------------------------------------------------------
 #include <msp430.h>
 
@@ -316,12 +319,14 @@ main:
         init_scl
         init_sda
         
+        ; set date & time and enable oscillator
         mov.b   #0x00, &i2c_reg_addr
         mov.w   #7, &i2c_len
         call    #i2c_write
 
 main_loop:
 
+        ; read date & time
         mov.b   #0x00, &i2c_reg_addr
         mov.w   #7, &i2c_len
         call    #i2c_read
@@ -367,7 +372,7 @@ i2c_rx_buf:
 i2c_slave_addr:
         .byte 0x6F      ; MCP7940N slave address
 i2c_tx_buf:
-        .byte 0x80, 0x18, 0x14, 0x02, 0x24, 0x08, 0x26
+        .byte 0x80, 0x18, 0x14, 0x02, 0x24, 0x08, 0x26 ; 08-24-2026 14:18:00
 
 ;------------------------------------------------------------------------------
 ; END OF CODE

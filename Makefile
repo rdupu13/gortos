@@ -6,7 +6,7 @@
 
 # TOGGLE FOR YOUR PLATFORM: -----------
 PLATFORM = wsl
-MCU = msp430fr2355
+MCU = msp430fr2153
 # -------------------------------------
 
 
@@ -50,6 +50,7 @@ WARNFLAGS = -Wall \
 # COMPILER FLAGS ------------------------------------------
 CCFLAGS =	-mmcu=$(MCU) \
 			-Os \
+			-g \
 			-fdiagnostics-color=always \
 			$(WARNFLAGS) \
 			-I $(INCDIR) \
