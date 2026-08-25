@@ -48,7 +48,7 @@ int main(void)
 {
     gsys_init(); // initialize gort system
 
-    //int gsh = main_gsh(); // launch gort shell
+    int gsh = main_gsh(); // launch gort shell
 
     while (1)
     {
@@ -66,8 +66,8 @@ int main(void)
         //}
         //eep(610);
 
-        eep(610);
-        mmm_init();
+        //eep(610);
+        //mmm_init();
         
     } // halt / loop forever
     return 0;

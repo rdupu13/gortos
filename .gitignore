@@ -52,7 +52,7 @@
 # waveforms project files
 *.dwf3work
 
-# datasheets
+# datasheets and diagrams
 docs/datasheets/
 docs/dwg/
 

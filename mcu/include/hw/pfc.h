@@ -131,7 +131,7 @@
 
 // board configuration ------------------------------------
 // rtc (i2c)
-#define RTC_DS32318N
+#define RTC_MCP7940N
 
 // mmm (spi)
 #define MMM_23LC1024

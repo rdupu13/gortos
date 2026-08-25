@@ -70,7 +70,8 @@ int rtc_init(void)
     //rtc_set(); // TODO: python gui to set system time?
 
     // sets fake init time TODO: maybe get time from internet (AFTER this init function?)
-    int stat = rtc_stop();
+    int stat;
+    stat = rtc_stop();
     if (stat) { return stat; }
     stat = rtc_set();
     if (stat) { return stat; }
@@ -99,7 +100,7 @@ int rtc_start(void)
     );
     if (stat) { return stat; }
     
-    ctl_reg &= ~BIT7; // enable oscillator
+    ctl_reg |= RTC_OSC_EN_BIT; // enable oscillator
     
     stat = i2c_write(
         (volatile unsigned char *) &ctl_reg,
@@ -127,7 +128,7 @@ int rtc_stop(void)
     );
     if (stat) { return stat; }
 
-    ctl_reg |= BIT7; // disable oscillator
+    ctl_reg &= ~RTC_OSC_EN_BIT; // disable oscillator
     
     stat = i2c_write(
         &ctl_reg,
@@ -155,6 +156,9 @@ int rtc_get(void)
     );
     if (stat) { return stat; }
 
+    if (RTC_REG_CTL == RTC_REG_SEC) {
+        dt[0] &= ~RTC_OSC_EN_BIT;
+    }
     rtc_second = dt[0];
     rtc_minute = dt[1];
     rtc_hour = dt[2];

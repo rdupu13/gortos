@@ -43,11 +43,12 @@
 
 // mcp7940n ---------------------------
 #ifdef RTC_MCP7940N
-#define RTC_SLAVE_ADDR      0x0068
-#define RTC_REG_SEC         0x03
+#define RTC_SLAVE_ADDR      0x006F
+#define RTC_REG_SEC         0x00
 #define RTC_REG_CTL         0x00
-#define RTC_WEEKDAY_0       ?
-#define RTC_SWAP_WEEKDAY    ?
+#define RTC_OSC_EN_BIT      BIT7
+#define RTC_WEEKDAY_0       1
+#define RTC_SWAP_WEEKDAY    0
 #endif
 // ------------------------------------
 // --------------------------------------------------------
