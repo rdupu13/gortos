@@ -202,7 +202,7 @@ rx_byte_loop:
         clear_scl
         i2c_delay
 
-        ; 
+        ; set/clear carry flag based on sda
         tst.b   &i2c_sda_rx
         jz      rx_0
 rx_1:
@@ -211,6 +211,7 @@ rx_1:
 rx_0:
         bic.w   #BIT0, SR       ; clear carry flag
 rs_byte:
+        ; shift carry into byte
         rlc.b   &i2c_byte
 
         dec.b   R4

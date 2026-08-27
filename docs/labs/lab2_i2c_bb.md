@@ -14,14 +14,15 @@ The source file is located here: [mcu/asm/main.s](../../mcu/asm/main.s)
 
 ## Start/Stop Conditions and Byte Transmission
 
-I initialized the GPIO pins **P3.1 (SCL)** and **P3.5 (SDA)**, which are separated from any serial peripheral. I then configured them to send an I2C start condition. After verifying that, I created an `i2c_tx_byte` subroutine that drives SCL and SDA. Finally, I made the MCU read from SDA to interpret a NACK/ACK and trigger a stop condition.
+I initialized the GPIO pins **P3.1 (SCL)** and **P3.5 (SDA)**, which are separated from any serial peripheral (not cheating). I then configured them to send an I2C start condition. After verifying that, I created an `i2c_tx_byte` subroutine that drives SCL and SDA. Finally, I made the MCU read from SDA to interpret a NACK/ACK and trigger a stop condition.
 
-Transmitting a byte bit-by-bit involves left-shifting the byte to be sent and deciding based on the carry flag whether to drive SDA high or low. This occurs at the top of every SCL pulse and repeated 8 times for 1 byte. Then, SDA must be reconfigured to be an input and an ACK (low) or NACK (high) is read from the slave on a 9th SCL pulse.
+Transmitting a byte bit-by-bit involves left-shifting it and deciding based on the carry flag whether to drive SDA high or low. This occurs at the top of every SCL pulse and is repeated 8 times for 1 byte. Then, SDA must be reconfigured to be an input and an ACK (low) or NACK (high) is read from the slave on a 9th SCL pulse.
 
+![Flowchart 1](../assets/i2cbb_flowchart1.svg)
 ![Waveform of start condition + ACK](../assets/i2cbb_start_ack_wave.png)
 ![AD2 Interpretation of start condition + ACK](../assets/i2cbb_start_ack_protocol.png)
 
-During a NACK, when the AD2 or RTC aren't responding, the bit-banger will automatically trigger a stop condition immediately after.
+During a NACK, when the AD2 or RTC don't respond, the bit-banger will automatically trigger a stop condition immediately after.
 
 ![Waveform of start condition + NACK](../assets/i2cbb_start_nack_wave.png)
 
@@ -32,6 +33,7 @@ Either way, an I2C stop condition was set to be triggered at the end of every tr
 
 I was able to send a start condition, slave address, R/W bit, and multiple subsequent bytes with a generic `i2c_write` subroutine. The caller must specify the length in bytes (`i2c_len`) of the transmission and a register address (`i2c_reg_addr`). The slave address (`i2c_slave_addr`) and data to be sent (`i2c_tx_buf`) where hard-coded for this lab, but could easily be made integer and pointer function arguments.
 
+![Flowchart 2](../assets/i2cbb_flowchart2.svg)
 ![Waveform of multi-byte tx](../assets/i2cbb_tx_bytes_wave.png)
 
 The AD2, configured as a slave (at address 0x68) in protocol mode, interpreted the transmission correctly:
@@ -45,6 +47,7 @@ Though the screenshots don't show a register selection being sent, I later added
 
 The `i2c_read` subroutine is very similar to `i2c_write`. The `i2c_tx_byte` subroutine was copied and modified to create the `i2c_rx_byte` subroutine, used here. It essentially does what its counterpart does in reverse: read a byte bit-by-bit, left-shift it into memory, then drive SDA high (NACK) or low (ACK). Reading from a register in I2C also involves a repeated start condition and slave address.
 
+![Flowchart 3](../assets/i2cbb_flowchart3.svg)
 ![Waveform of multi-byte rx](../assets/i2cbb_rx_bytes_wave.png)
 
 
