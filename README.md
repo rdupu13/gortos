@@ -42,8 +42,15 @@ Follow instructions [[here](https://github.com/rdupu13/msp430-dev/blob/main/msp4
 
 This project was created in part to fulfill the requirements of the MSU course [EELE 465 - Microcontroller Applications](https://catalog.montana.edu/coursedescriptions/eele/). Below are reports detailing the development and testing of several components of the Gort System:
 
-* Lab 0 - [Heartbeat LED](mcu/test/main.c)
-* Lab 2 - [I2C Bit-Banging](docs/labs/lab2_i2c_bb.md) (8/24/2026)
+* Lab 0: [Heartbeat LED](mcu/test/main.c)
+* Lab 1: GitHub and Markdown
+* Lab 2: [I2C Bit-Banging](docs/labs/lab2_i2c_bb.md) (8/24/2026)
+* Lab 3: [RTC and LED Patterns](docs/labs/lab3_rtc_patterns.md) (~7/26/2026)
+* Lab 4: ADC and SPI
+* Lab 5: LCD and DAC
+* Lab 6: Dial and Menu
+* Lab 7: Thermoelectric Cooler System
+* Final Project: Gort OS
 
 [Course BOM](docs/eele465_bom.md)
 

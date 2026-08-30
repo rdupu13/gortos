@@ -63,7 +63,7 @@ int rtc_init(void)
     rtc_month = 0x12;
     rtc_year = 0x05;
 
-    gopy(rtc_dt_str, RTC_INIT_DT_STR, girth(RTC_INIT_DT_STR) + 1);
+    gstr_copy(rtc_dt_str, RTC_INIT_DT_STR, gstr_len(RTC_INIT_DT_STR) + 1);
 
     rtc_display_sel(0);
     
@@ -209,7 +209,7 @@ char *rtc_getstr(void)
 
     hex_to_str(rtc_dt_str,      &rtc_month,  1);
     hex_to_str(rtc_dt_str + 3,  &rtc_date,   1);
-    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1); // TODO: NOT WORKING FOR SOME REASON???
+    hex_to_str(rtc_dt_str + 8,  &rtc_year,   1);
     hex_to_str(rtc_dt_str + 11, &rtc_hour,   1);
     hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
     hex_to_str(rtc_dt_str + 17, &rtc_second, 1);

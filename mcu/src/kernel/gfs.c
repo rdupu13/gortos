@@ -52,7 +52,7 @@ void gfs_init(void)
     uart.mode = 0b00011010;
     uart.size = 0;
     uart.loaded = 1;
-    gopy(uart.name, "uart", 5);
+    gstr_copy(uart.name, "uart", 5);
     uart.blk = 0;
     // --------------------------------
 

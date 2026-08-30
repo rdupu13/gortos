@@ -37,42 +37,93 @@ char dec_str[] = "00000";
  * 
  * @return none
  */
-void gopy(char *dst, char *src, int len)
+void gstr_copy(char *dst, char *src, int len)
 {
     int i;
     for (i = 0; i < len; i++)
     {
-        *dst++ = *src++;        
+        dst[i] = src[i];
     }
 }
 
 /**
- * @brief get the length of an array
+ * @brief get the length of a string
  * 
- * @param arr array to get the length of
+ * @param arr string to get the length of
  * 
- * @return length of given array
+ * @return length of given string
  */
-unsigned int girth(char *arr)
+unsigned int gstr_len(char *arr)
 {
     unsigned int i;
     for (i = 0; arr[i] != '\0'; i++) {}
     return i;
 }
 
-/**
- * @brief 
- *
-void gsplits(char *arr, char delim)
+/* need malloc, array changes in size:
+void insc(char *arr, char c, unsigned int x)
 {
     int i;
-    while ((arr[i] != delim) )
-    {
-        i++;
-    }
+    char nc;
+    unsigned int len = girth(arr);
+    char oc = arr[x];
 
+    arr[x] = c;
+    for (i = x + 1; i < len + 1; i++)
+    {
+        if (i == len)
+        {
+            arr[]
+            break;
+        }
+
+        nc = arr[i];
+        arr[i] = oc;
+        oc = nc;
+    }
 }
 */
+
+/**
+ * @brief split a string
+ * 
+ * @param strptr_arr array of strings
+ * @param arr string to be split up
+ * @param delim delimiter character
+ * 
+ * @return none
+ */
+void gstr_split(char **strptr_arr, char *arr, char delim)
+{
+    unsigned int i;
+    unsigned int j = 1;
+    strptr_arr[0] = arr;
+    
+    for (i = 0; i < gstr_len(arr); i++)
+    {
+        if (arr[i] == delim) {
+            arr[i] = '\0';
+            strptr_arr[j++] = &arr[i + 1];
+        }
+
+        //if(j == MAX_PTRS) { break; }
+    }
+
+    strptr_arr[j] = (char *) 0;
+}
+
+/**
+ * 
+ */
+unsigned char gstr_cmp(char *dst, char *src)
+{
+    unsigned int i;
+    for (i = 0; i < gstr_len(src); i++)
+    {
+        if (dst[i] != src[i]) { return 0; }
+    }
+    return 1;
+}
 
 /**
  * @brief convert hexadecimal to string representation

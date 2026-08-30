@@ -11,6 +11,9 @@ The bit-banger was tested through an Analog Discovery 2 (AD2) that monitored the
 
 The source file is located here: [mcu/asm/main.s](../../mcu/asm/main.s)
 
+## Circuit Diagram
+![Lab 2 Circuit Diagram](../assets/i2cbb_circuit.svg)
+
 
 ## Start/Stop Conditions and Byte Transmission
 
