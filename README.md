@@ -54,6 +54,9 @@ This project was created in part to fulfill the requirements of the MSU course [
 
 [Course BOM](docs/eele465_bom.md)
 
+## Breadboard
+![Gort OS Breadboard](docs/assets/board4.jpg)
+
 ## Circuit Diagram
 ![Gort OS Circuit Diagram](docs/assets/gortos_circuit.svg)
 
