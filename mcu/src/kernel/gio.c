@@ -54,7 +54,7 @@ int helloworld(char *arr)
             // TODO: handle errors
             uart_tx(
                 (volatile unsigned char *) arr,
-                girth(arr)
+                gstr_len(arr)
             );
             break;
         

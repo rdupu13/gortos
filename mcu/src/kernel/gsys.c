@@ -96,7 +96,7 @@ void gsys_init(void)
     glear();
 
     // DEVICES --------------------------------------------
-    patterns_init(); // timer sort of
+    patterns_init();
 
     int rtc_stat = rtc_init();
     if (rtc_stat) {

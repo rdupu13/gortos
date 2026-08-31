@@ -28,14 +28,14 @@
 
 
 
-
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void gopy(char *src, char *dst, int len);   // copy an array to another array
-unsigned int girth(char *arr);              // get the length of an array
-//void gsplits(char *arr, char delim);
+void gstr_copy(char *src, char *dst, int len);   // copy an array to another array
+unsigned int gstr_len(char *arr);              // get the length of an array
+void gstr_split(char **strptr_arr, char *arr, char delim);
+unsigned char gstr_cmp(char *dst, char *src);
 
 void hex_to_str(char *str, unsigned char *hex, unsigned int len);
 void str_to_hex(unsigned char *hex, char *str);
