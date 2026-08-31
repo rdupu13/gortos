@@ -14,7 +14,7 @@ behold, GORTOS!
 ```
 ---
 
-## [Features](docs/gortos.md)
+## [Features](docs/planning/gortos.md)
 Gort OS is fully functional with driver support for the following peripherals:
 
 * 4 timer modules (TIMER)
@@ -52,10 +52,10 @@ This project was created in part to fulfill the requirements of the MSU course [
 * Lab 7: Thermoelectric Cooler System
 * Final Project: Gort OS
 
-[Course BOM](docs/eele465_bom.md)
+[Course BOM](docs/planning/eele465_bom.md)
 
 ## Breadboard
-![Gort OS Breadboard](docs/assets/board4.jpg)
+![Gort OS Breadboard](docs/assets/photo/board4.jpg)
 
 ## Circuit Diagram
 ![Gort OS Circuit Diagram](docs/assets/gortos_circuit.svg)

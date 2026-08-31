@@ -12,7 +12,7 @@ The bit-banger was tested through an Analog Discovery 2 (AD2) that monitored the
 The source file is located here: [mcu/asm/main.s](../../mcu/asm/main.s)
 
 ## Circuit Diagram
-![Lab 2 Circuit Diagram](../assets/i2cbb_circuit.svg)
+![Lab 2 Circuit Diagram](../assets/lab2/i2cbb_circuit.svg)
 
 
 ## Start/Stop Conditions and Byte Transmission
@@ -21,13 +21,13 @@ I initialized the GPIO pins **P3.1 (SCL)** and **P3.5 (SDA)**, which are separat
 
 Transmitting a byte bit-by-bit involves left-shifting it and deciding based on the carry flag whether to drive SDA high or low. This occurs at the top of every SCL pulse and is repeated 8 times for 1 byte. Then, SDA must be reconfigured to be an input and an ACK (low) or NACK (high) is read from the slave on a 9th SCL pulse.
 
-![Flowchart 1](../assets/i2cbb_flowchart1.svg)
-![Waveform of start condition + ACK](../assets/i2cbb_start_ack_wave.png)
-![AD2 Interpretation of start condition + ACK](../assets/i2cbb_start_ack_protocol.png)
+![Flowchart 1](../assets/lab2/i2cbb_flowchart1.svg)
+![Waveform of start condition + ACK](../assets/lab2/i2cbb_start_ack_wave.png)
+![AD2 Interpretation of start condition + ACK](../assets/lab2/i2cbb_start_ack_protocol.png)
 
 During a NACK, when the AD2 or RTC don't respond, the bit-banger will automatically trigger a stop condition immediately after.
 
-![Waveform of start condition + NACK](../assets/i2cbb_start_nack_wave.png)
+![Waveform of start condition + NACK](../assets/lab2/i2cbb_start_nack_wave.png)
 
 Either way, an I2C stop condition was set to be triggered at the end of every transaction so as to not jam the bus during development.
 
@@ -36,12 +36,12 @@ Either way, an I2C stop condition was set to be triggered at the end of every tr
 
 I was able to send a start condition, slave address, R/W bit, and multiple subsequent bytes with a generic `i2c_write` subroutine. The caller must specify the length in bytes (`i2c_len`) of the transmission and a register address (`i2c_reg_addr`). The slave address (`i2c_slave_addr`) and data to be sent (`i2c_tx_buf`) where hard-coded for this lab, but could easily be made integer and pointer function arguments.
 
-![Flowchart 2](../assets/i2cbb_flowchart2.svg)
-![Waveform of multi-byte tx](../assets/i2cbb_tx_bytes_wave.png)
+![Flowchart 2](../assets/lab2/i2cbb_flowchart2.svg)
+![Waveform of multi-byte tx](../assets/lab2/i2cbb_tx_bytes_wave.png)
 
 The AD2, configured as a slave (at address 0x68) in protocol mode, interpreted the transmission correctly:
 
-![AD2 Interpretation of multi-byte tx](../assets/i2cbb_tx_bytes_protocol.png)
+![AD2 Interpretation of multi-byte tx](../assets/lab2/i2cbb_tx_bytes_protocol.png)
 
 Though the screenshots don't show a register selection being sent, I later added functionality for it to preceed the contents of `i2c_tx_buf`.
 
@@ -50,15 +50,15 @@ Though the screenshots don't show a register selection being sent, I later added
 
 The `i2c_read` subroutine is very similar to `i2c_write`. The `i2c_tx_byte` subroutine was copied and modified to create the `i2c_rx_byte` subroutine, used here. It essentially does what its counterpart does in reverse: read a byte bit-by-bit, left-shift it into memory, then drive SDA high (NACK) or low (ACK). Reading from a register in I2C also involves a repeated start condition and slave address.
 
-![Flowchart 3](../assets/i2cbb_flowchart3.svg)
-![Waveform of multi-byte rx](../assets/i2cbb_rx_bytes_wave.png)
+![Flowchart 3](../assets/lab2/i2cbb_flowchart3.svg)
+![Waveform of multi-byte rx](../assets/lab2/i2cbb_rx_bytes_wave.png)
 
 
 ## Read RTC date and time
 
 I successfully read the full date and time from a DS32318N RTC. During continuous reading, the seconds register would increment over time, verifying that the bit-banger works with real ICs.
 
-![Waveform of reading RTC time](../assets/i2cbb_read_rtc_time_wave.png)
+![Waveform of reading RTC time](../assets/lab2/i2cbb_read_rtc_time_wave.png)
 
 
 ## Set/Save RTC date and time

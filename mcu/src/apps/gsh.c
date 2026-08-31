@@ -29,6 +29,7 @@
 #define CMD_LEN     64
 
 char gsh_cmd[CMD_LEN];
+char *args[MAX_ARGS];
 
 char cur_user[] = "gort";
 char cur_path[] = "/home/gort";
@@ -71,7 +72,6 @@ int main_gsh(void)
         // ------------------------------------------------
         
         // split command by spaces
-        char *args[MAX_ARGS];
         gstr_split(args, gsh_cmd, ' ');
 
         // time command
