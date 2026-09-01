@@ -1,53 +1,45 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * temperature sensor driver
+ * temperature sensor driver library
  * 
  * created by rdupu13
  * 
- * @file temp.c
+ * @file temp.h
  *
 ----------------------------------------------------------------------------- */
+
+//-----------------------------------------------------------------------------
+//  HEADER DEFINITION
+//-----------------------------------------------------------------------------
+
+#ifndef PWM_H
+#define PWM_H
+
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-#include "devices/temp.h"
-
-// drivers
-#include "drivers/adc.h"
 
 
 
 //-----------------------------------------------------------------------------
-//  GLOBAL VARIABLES
+//  MACROS
 //-----------------------------------------------------------------------------
 
+#define TEMP_OFFSET     85
 
 
 //-----------------------------------------------------------------------------
-//  FUNCTIONS
+//  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-/**
- * @brief convert an analog temperature reading into degrees celsius
- * 
- * @param analog adc value from temperature sensor
- * 
- * @return temperature in celsius
- */
-int temp_analog(unsigned int analog)
-{
-    unsigned int masked = (analog & 0x7FF);
-
-    masked = ((masked >> 5) + (masked >> 6));   // magic division
-    int temp = -masked + TEMP_OFFSET;           // magic number
-
-    return temp;
-}
+int temp_analog(unsigned int analog);
 
 
+
+#endif
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

@@ -20,6 +20,7 @@
 // devices
 #include "devices/mmm.h" // testing
 #include "devices/rtc.h" // testing
+#include "devices/temp.h" // testing
 
 // kernel
 #include "kernel/gsys.h"
@@ -54,12 +55,12 @@ int main(void)
 
     while (1)
     {
-        helloworld("temperature: ");
-        helloworld(hex(adc_read(0)));
-        helloworld("\nspeed: ");
+        helloworld("current temperature: ");
+        helloworld(hex(temp_analog(adc_read(0))));
+        helloworld(" C");
+        helloworld("\patterns speed: ");
         helloworld(hex(adc_read(1)));
         helloworld("\n");
-
 
         eep(500);
     } // halt / loop forever
