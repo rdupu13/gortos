@@ -28,16 +28,16 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define TEMP_OFFSET     85
-
+#define TEMP_OFFSET         85
+#define INIT_WINDOW_SIZE    5
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
 int temp_analog(unsigned int analog);
-
-
+int temp_analog_avg(unsigned int analog);
+void temp_window_set_size(unsigned int size);
 
 #endif
 //-----------------------------------------------------------------------------

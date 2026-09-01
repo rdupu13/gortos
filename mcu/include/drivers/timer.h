@@ -43,10 +43,16 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+extern volatile unsigned int timer_qcnt;
+
 void timer_init(void); // initialize timers
 
 void wdt_stop(void); // stop watchdog timer
-
+void timer_ccr_set(
+    unsigned char timer,
+    unsigned char ccr,
+    unsigned int val
+);
 
 #endif
 //-----------------------------------------------------------------------------

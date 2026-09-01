@@ -14,18 +14,16 @@
 //-----------------------------------------------------------------------------
 
 // drivers
-#include "drivers/adc.h" // testing
-#include "drivers/led.h" // testing
+
 
 // devices
-#include "devices/mmm.h" // testing
-#include "devices/rtc.h" // testing
-#include "devices/temp.h" // testing
+
 
 // kernel
-#include "kernel/gsys.h"
-#include "kernel/gio.h" // testing
-#include "kernel/gstr.h" // testing
+#include "kernel/gstr.h"
+#include "kernel/gio.h"
+#include "kernel/gsys.h" // initialization
+
 
 // applications
 #include "apps/gsh.h"
@@ -49,20 +47,13 @@ int main(void)
 {
     gsys_init(); // initialize gort system
 
-    //int gsh = main_gsh(); // launch gort shell
-    //gsys_log("gsh: exited with code:");
-    //gsys_log(hex(gabs(gsh)));
+    int gsh = main_gsh(); // launch gort shell
+    gsys_log("gsh: exited with code:");
+    gsys_log(hex(gabs(gsh)));
 
     while (1)
     {
-        helloworld("current temperature: ");
-        helloworld(hex(temp_analog(adc_read(0))));
-        helloworld(" C");
-        helloworld("\patterns speed: ");
-        helloworld(hex(adc_read(1)));
-        helloworld("\n");
-
-        eep(500);
+        gsys_update();
     } // halt / loop forever
     return 0;
 }

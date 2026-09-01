@@ -51,6 +51,10 @@ volatile unsigned char display_mode;
 volatile gblk_t gblks[BLK_ALLOC_NUM];
 volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
 
+unsigned int cur_qcnt;
+int cur_temp;
+unsigned int cur_speed;
+    
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -135,6 +139,42 @@ void gsys_init(void)
     print_systime();
     helloworld("\n\n");
     // ------------------------------------------------------------------------
+}
+
+/**
+ * 
+ */
+void gsys_update()
+{
+    unsigned int div = 1;
+    unsigned int mask = ~(div - 1);
+    while ((cur_qcnt & mask) == (timer_qcnt & mask))
+    {
+        cur_speed = (((adc_read(1) & 0xF00) >> 8)*1843) + 3276;
+        timer_ccr_set(0, 0, cur_speed);
+        
+        cur_temp = temp_analog_avg(adc_read(0));
+    }
+    cur_qcnt = timer_qcnt;
+
+    if ((timer_qcnt & 3) == 0)
+    {
+        helloworld("current time: ");
+        print_systime();
+        helloworld("\n");
+
+        helloworld("current temperature: ");
+        helloworld(hex(cur_temp));
+        helloworld("h degrees C");
+        
+        helloworld("\npatterns speed: ");
+        helloworld(hex(cur_speed));
+        helloworld("h\n\n");
+    }
+    else
+    {
+        rtc_get();
+    }
 }
 
 /**

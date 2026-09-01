@@ -50,7 +50,7 @@ void timer_init(void)
     TB0CTL |= TIMER_B0_LEN;     // set length
     TB0CTL |= TIMER_B0_MODE;    // set mode
     #if TIMER_B0_INT
-        TB0CCR0 = TIMER_B0_CCR0;    // set ccr0
+        timer_ccr_set(0, 0, TIMER_B0_CCR0);    // set ccr0
         TB0CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
         TB0CCTL0 |= CCIE;           // enable ccr0 interrupts
     #else
@@ -117,6 +117,27 @@ void timer_init(void)
 void wdt_stop(void)
 {
     WDTCTL = WDTPW | WDTHOLD; // stop watchdog timer
+}
+
+/**
+ * 
+ */
+void timer_ccr_set(
+    unsigned char timer,
+    unsigned char ccr,
+    unsigned int val
+) {
+    switch(timer)
+    {
+        case 0:
+            switch(ccr)
+            {
+                case 0: TB0CCR0 = val; break;
+                default: break;
+            }
+            break;
+        default: break;
+    }
 }
 
 
