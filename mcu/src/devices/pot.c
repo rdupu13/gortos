@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * gort kernel
+ * potentiometer driver
  * 
  * created by rdupu13
  * 
- * @file main.c
+ * @file pot.c
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,21 +13,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
-// drivers
-#include "drivers/adc.h" // testing
-#include "drivers/led.h" // testing
+#include "drivers/adc.h"
 
-// devices
-#include "devices/mmm.h" // testing
-#include "devices/rtc.h" // testing
-
-// kernel
-#include "kernel/gsys.h"
-#include "kernel/gio.h" // testing
-#include "kernel/gstr.h" // testing
-
-// applications
-#include "apps/gsh.h"
 
 
 //-----------------------------------------------------------------------------
@@ -35,36 +22,14 @@
 //-----------------------------------------------------------------------------
 
 
+
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
-/**
- * @brief gort kernel!
- * 
- * @return never!
- */
-int main(void)
-{
-    gsys_init(); // initialize gort system
-
-    //int gsh = main_gsh(); // launch gort shell
-    //gsys_log("gsh: exited with code:");
-    //gsys_log(hex(gabs(gsh)));
-
-    while (1)
-    {
-        helloworld("temperature: ");
-        helloworld(hex(adc_read(0)));
-        helloworld("\nspeed: ");
-        helloworld(hex(adc_read(1)));
-        helloworld("\n");
 
 
-        eep(500);
-    } // halt / loop forever
-    return 0;
-}
+
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------

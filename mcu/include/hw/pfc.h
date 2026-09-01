@@ -33,12 +33,63 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
+/*-------------------------------------
+MSP430FR2153 PIN ASSIGNMENTS
+LHS:
+1)  P3.2 = 
+2)  P3.1 = 
+3)  P3.0 = 
+4)  P1.3 = 
+5)  P1.2 = 
+6)  P1.1 = LED_TEST0
+7)  P1.0 = LED_HEARTBEAT
+8)  SBWTCK
+9)  SBWTDIO
+10) DVCC = 3.3v (max 4.1v, max 50 mA)
+11) DVSS = 0v
+12) P2.7 = LEDBAR_BIT7
+13) P2.6 = LEDBAR_BIT6
+14) P2.5 = LEDBAR_BIT5
+15) P2.4 = LEDBAR_BIT4
+16) P4.7 = UCB1SCL
+17) P4.6 = UCB1SDA
+18) P4.5 = LED_TEST1
+19) P4.4 = LED_TEST2
+---------------------------------------
+RHS:
+38) P3.3 = 
+37) P5.0 = ADC_CH0
+36) P5.1 = ADC_CH1
+35) P3.4 = 
+34) P3.5 = 
+33) P3.6 = SWITCH1
+32) P3.7 = SWITCH0
+31) P1.4 = SPI_CS0
+30) P1.5 = UCA0CLK
+29) P1.6 = UCA0MISO
+28) P1.7 = UCA0MOSI
+27) P2.0 = LEDBAR_BIT0
+26) P2.1 = LEDBAR_BIT1
+25) P2.2 = LEDBAR_BIT2
+24) P2.3 = LEDBAR_BIT3
+23) P4.0 = LEDBAR_BIT8
+22) P4.1 = LEDBAR_BIT9
+21) P4.2 = UCA1RXD
+20) P4.3 = UCA1TXD
+---------------------------------------
+*/
+
 // adc ----------------------------------------------------
-// channel 0 = A2
-#define ADC_CH0_SEL0    P1SEL0
-#define ADC_CH0_SEL1    P1SEL1
-#define ADC_CH0_PIN     BIT2
-#define ADC_CH0_INCH    ADCINCH_2
+// channel 0 (A8)
+#define ADC_CH0_SEL0    P5SEL0
+#define ADC_CH0_SEL1    P5SEL1
+#define ADC_CH0_PIN     BIT0
+#define ADC_CH0_INCH    ADCINCH_8
+// channel 1 (A9)
+#define ADC_CH1_SEL0    P5SEL0
+#define ADC_CH1_SEL1    P5SEL1
+#define ADC_CH1_PIN     BIT1
+#define ADC_CH1_INCH    ADCINCH_9
 // TODO: peripheral base addr
 // --------------------------------------------------------
 
@@ -143,9 +194,8 @@
 // --------------------------------------------------------
 
 // lora ---------------------------------------------------
-// TODO: force to use led
-#define LORA_RESET_PORT         P3OUT
-#define LORA_RESET_PIN          BIT5
+//#define LORA_RESET_PORT         P3OUT
+//#define LORA_RESET_PIN          BIT5
 // --------------------------------------------------------
 
 //-----------------------------------------------------------------------------

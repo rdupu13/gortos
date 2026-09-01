@@ -46,7 +46,7 @@ This project was created in part to fulfill the requirements of the MSU course [
 * Lab 1: GitHub and Markdown
 * Lab 2: [I2C Bit-Banging](docs/labs/lab2_i2c_bb.md) (8/24/2026)
 * Lab 3: [RTC and LED Patterns](docs/labs/lab3_rtc_patterns.md) (~7/26/2026)
-* Lab 4: ADC and SPI
+* Lab 4: [ADC and SPI](docs/labs/lab4_adc_spi.md) (9//2026)
 * Lab 5: LCD and DAC
 * Lab 6: Dial and Menu
 * Lab 7: Thermoelectric Cooler System
