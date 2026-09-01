@@ -1,7 +1,7 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * port/peripheral function control library
+ * port/peripheral function control/configuration library
  * 
  * created by rdupu13
  * 
@@ -40,7 +40,7 @@ LHS:
 2)  P3.1 = 
 3)  P3.0 = 
 4)  P1.3 = 
-5)  P1.2 = 
+5)  P1.2 = LEDSTICK
 6)  P1.1 = LED_TEST0
 7)  P1.0 = LED_HEARTBEAT
 8)  SBWTCK

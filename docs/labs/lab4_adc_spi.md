@@ -14,26 +14,29 @@ All source files are located here: [mcu/src/](../../mcu/src/).
 ![Lab 4 Circuit Diagram](../assets/lab4/lab4_circuit.svg)
 
 
-## 
-### Prerequisite for 
-
-
-## 
-### Prereqisite for 
-
-## 
+## Analog-to-Digital Conversion
 ### Requirements met: 
 
-## 
+
+
+## Temperature Sensor Driver
 ### Requirements met: 
 
-## 
-### Requirements met: 
+```c
 
-## 
-### Requirements met: 
+```
 
+![]()
+
+## Serial LED Bar Driver
+### Requirements met:
+
+The [LED Stick](../../mcu/src)
+```c
+
+```
 
 
 ## Conclusion
 ### Unmet requirements: 
+
