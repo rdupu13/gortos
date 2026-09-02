@@ -34,6 +34,8 @@ volatile unsigned int timer_fcnt; // 256 Hz
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
+void init_clocks(void);
+
 /**
  * @brief initialize timers
  * 
@@ -42,6 +44,8 @@ volatile unsigned int timer_fcnt; // 256 Hz
 void timer_init(void)
 {
     wdt_stop(); // stop watchdog timer
+    
+    init_clocks();
     
     // timer b0 ---------------------------------------------------------------
     TB0CTL |= TBCLR;            // clear timer and dividers
@@ -140,6 +144,28 @@ void timer_ccr_set(
     }
 }
 
+void init_clocks(void) {
+    // FRAM needs extra wait states once MCLK goes above 8MHz.
+    // FRCTLPW confirmed in your header. NWAITS_1 is the commonly-required
+    // value above 8MHz on this family -- if timing looks off, check your
+    // datasheet's FRAM access-time table for the exact count at 16MHz.
+    FRCTL0 = FRCTLPW | NWAITS_1;
+
+    // CSCTL1 holds DCORSEL -- confirmed directly from your header.
+    // No CSKEY/password unlock exists on this part, so no unlock step needed.
+    CSCTL1 = DCORSEL_5;              // DCO = 16 MHz
+
+    // CSCTL2: SELA (ACLK source, high byte) + SELMS (MCLK/SMCLK source, low byte)
+    // both confirmed to exist in your header; this packing (both fields in
+    // one word) is inferred from their bit positions not overlapping, not
+    // directly confirmed line-by-line.
+    CSCTL2 = SELA__VLOCLK | SELMS__DCOCLKDIV;
+
+    // CSCTL3: your header confirmed DIVS__1 (SMCLK divider) exists.
+    // MCLK/ACLK dividers (DIVM/DIVA) likely live in the same register --
+    // uncomment/add them if your compiler errors on this line missing them.
+    CSCTL3 = DIVS__1;
+}
 
 //-----------------------------------------------------------------------------
 //  INTERRUPT SERVICE ROUTINES

@@ -123,8 +123,18 @@ RHS:
 #define SPI_VECTOR      EUSCI_A0_VECTOR
 #define SPI_SEL0        P1SEL0
 #define SPI_PINS        BIT5 | BIT6 | BIT7 // 3-pin mode
+
 #define SPI_CS0_PORT    P1OUT
 #define SPI_CS0_PIN     BIT4
+
+#define SPI_CS1_PORT // chip select 1 port
+#define SPI_CS1_PIN // chip select 1 port
+
+#define SPI_CS2_PORT // chip select 2 port
+#define SPI_CS2_PIN // chip select 2 port
+
+#define SPI_CS3_PORT // chip select 3 port
+#define SPI_CS3_PIN // chip select 3 port
 // --------------------------------------------------------
 
 // switch -------------------------------------------------

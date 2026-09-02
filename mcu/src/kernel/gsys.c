@@ -54,7 +54,7 @@ volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
 unsigned int cur_qcnt;
 int cur_temp;
 unsigned int cur_speed;
-    
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -79,7 +79,7 @@ void gsys_init(void)
     adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
     i2c_init(60000); // timeout = 60000
-    spi_init(60000); // timeout = 60000
+    spi_init(60000, 6); // timeout = 60000
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
@@ -144,12 +144,12 @@ void gsys_init(void)
 /**
  * 
  */
-void gsys_update()
+void gsys_update(unsigned int div)
 {
-    unsigned int div = 1;
-    unsigned int mask = ~(div - 1);
-    while ((cur_qcnt & mask) == (timer_qcnt & mask))
+    while ((cur_qcnt & ~(div - 1))
+        == (timer_qcnt & ~(div - 1)))
     {
+        // do instantly:
         cur_speed = (((adc_read(1) & 0xF00) >> 8)*1843) + 3276;
         timer_ccr_set(0, 0, cur_speed);
         
@@ -157,8 +157,12 @@ void gsys_update()
     }
     cur_qcnt = timer_qcnt;
 
+    // do every 0.25 seconds:
+    rtc_get();
+
     if ((timer_qcnt & 3) == 0)
     {
+        // do every 1 second:
         helloworld("current time: ");
         print_systime();
         helloworld("\n");
@@ -170,10 +174,26 @@ void gsys_update()
         helloworld("\npatterns speed: ");
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
+
+        //ledstick_tx_byte(0x4D);
+
+        unsigned int i;
+        unsigned char stick[] = {0x11, 0x88, 0xFF,
+                                 0xAA, 0xBB, 0xCC,
+                                 0x67, 0x67, 0x67};
+        //UCA0IE &= ~UCTXIE;
+        for (i = 0; i < 9; i++)
+        {
+            //while (!(UCA0IFG & UCTXIFG)) {} // wait for tx buffer to be empty
+            //UCA0TXBUF = stick[i];
+            //while (UCA0STATW & UCBUSY) {}
+        }
+        //while (UCA0STATW & UCBUSY) {}
+        //UCA0IE &= ~UCTXIFG;
     }
     else
     {
-        rtc_get();
+        
     }
 }
 

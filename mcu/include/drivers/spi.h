@@ -44,15 +44,6 @@
 #define SPI_TXIE // tx complete interrupt enable
 #define SPI_RXIFG // rx buffer full interrupt flag
 #define SPI_RXIE // rx buffer full interrupt enable
-
-#define SPI_CS1_PORT // chip select 1 port
-#define SPI_CS1_PIN // chip select 1 port
-
-#define SPI_CS2_PORT // chip select 2 port
-#define SPI_CS2_PIN // chip select 2 port
-
-#define SPI_CS3_PORT // chip select 3 port
-#define SPI_CS3_PIN // chip select 3 port
 */
 
 
@@ -61,7 +52,10 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void spi_init(unsigned int timeout); // initialize spi
+void spi_init(
+    unsigned int timeout,
+    unsigned int clock_div
+); // initialize spi
 
 // write an array to a spi slave
 int spi_write(

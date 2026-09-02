@@ -48,18 +48,21 @@ void spi_busy_clear(void);
  * @brief initialize spi
  * 
  * @param timeout countdown period until bus timeout
+ * @param clock_div number to divide clock by
  * 
  * @return none
  */
-void spi_init(unsigned int timeout)
-{
+void spi_init(
+    unsigned int timeout,
+    unsigned int clock_div
+) {
     SPI_SEL0 |= SPI_PINS; // configure pins
     SPI_CS0_PORT |= SPI_CS0_PIN; // clear slave 0 chip select
     
     // setup peripheral
     UCA0CTLW0 |= UCSWRST;       // put peripheral into software reset
     UCA0CTLW0 |= UCSSEL__SMCLK; // clock source = smclk (1 MHz)
-    UCA0BRW = 10;               // divide clock by 10 (100 kHz)
+    UCA0BRW = clock_div;        // number to divide clock by
     UCA0CTLW0 |= UCSYNC;        // synchronous mode
     UCA0CTLW0 |= UCMST;         // master mode
     UCA0CTLW0 |= UCMODE_0;      // 3-pin spi mode

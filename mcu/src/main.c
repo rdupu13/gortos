@@ -47,13 +47,13 @@ int main(void)
 {
     gsys_init(); // initialize gort system
 
-    int gsh = main_gsh(); // launch gort shell
-    gsys_log("gsh: exited with code:");
-    gsys_log(hex(gabs(gsh)));
+    //int gsh = main_gsh(); // launch gort shell
+    //gsys_log("gsh: exited with code:");
+    //gsys_log(hex(gabs(gsh)));
 
     while (1)
     {
-        gsys_update();
+        gsys_update(1);
     } // halt / loop forever
     return 0;
 }

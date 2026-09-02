@@ -28,7 +28,12 @@ All source files are located here: [mcu/src/](../../mcu/src/).
 
 ![]()
 
-## Serial LED Bar Driver
+## SPI Driver
+### Prerequisite for LED Stick
+
+
+
+## LED Stick Driver
 ### Requirements met:
 
 The [LED Stick](../../mcu/src)
