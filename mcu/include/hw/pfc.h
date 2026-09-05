@@ -98,7 +98,16 @@ RHS:
 
 #define I2C_SEL0        P4SEL0
 #define I2C_PINS        BIT6 | BIT7
+
 // TODO: peripheral base addr
+
+// i2c bb -----------------------------
+#define I2CBB_PORT      P4OUT
+#define I2CBB_DIR       P4DIR
+#define I2CBB_IN        P4IN
+#define I2CBB_SCL       BIT7
+#define I2CBB_SDA       BIT6
+// ------------------------------------
 // --------------------------------------------------------
 
 // led ----------------------------------------------------
