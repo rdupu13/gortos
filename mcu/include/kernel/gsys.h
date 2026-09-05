@@ -28,7 +28,7 @@
 
 #define INIT_EEP_PERIOD_MS 1000
 
-#define DELAY_LOOP_MS 103
+#define DELAY_LOOP_MS 1100
 
 #define BLK_SIZE_P2 8
 #define BLK_SIZE 256 // 2^(BLK_SIZE_P2)

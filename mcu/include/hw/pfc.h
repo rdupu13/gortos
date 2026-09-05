@@ -111,11 +111,16 @@ RHS:
 #define LED_TEST1_PIN       BIT5
 #define LED_TEST2_PORT      P4OUT
 #define LED_TEST2_PIN       BIT4
+#define LED_TEST3_PORT      P1OUT
+#define LED_TEST3_PIN       BIT2
 
 #define LEDBAR_PORT0        P2OUT
 #define LEDBAR_PORT1        P4OUT
 #define LEDBAR_BIT8         BIT0
 #define LEDBAR_BIT9         BIT1
+
+#define LEDSTICK_PORT       LED_TEST3_PORT
+#define LEDSTICK_PIN        LED_TEST3_PIN
 // --------------------------------------------------------
 
 // spi ----------------------------------------------------

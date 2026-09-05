@@ -40,8 +40,8 @@ void led_init(void);                            // initialize leds
 
 void led_heartbeat_update(unsigned int qcnt);   // update heartbeat led based on quarter-second counter
 
-void led_test_on(unsigned char n);              // turn on a test led
-void led_test_off(unsigned char n);             // turn off a test led
+void led_on(unsigned char n);              // turn on a test led
+void led_off(unsigned char n);             // turn off a test led
 void led_test_toggle(unsigned char n);          // toggle a test led
 
 void ledbar_setpins(unsigned int n);            // set ledbar pins

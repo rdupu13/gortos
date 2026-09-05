@@ -175,21 +175,23 @@ void gsys_update(unsigned int div)
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
 
-        //ledstick_tx_byte(0x4D);
-
+        unsigned char b = 0x4D;
+        unsigned char s;
         unsigned int i;
-        unsigned char stick[] = {0x11, 0x88, 0xFF,
-                                 0xAA, 0xBB, 0xCC,
-                                 0x67, 0x67, 0x67};
-        //UCA0IE &= ~UCTXIE;
-        for (i = 0; i < 9; i++)
+        for (i = 0; i < 8; i++)
         {
-            //while (!(UCA0IFG & UCTXIFG)) {} // wait for tx buffer to be empty
-            //UCA0TXBUF = stick[i];
-            //while (UCA0STATW & UCBUSY) {}
+            s = (b & 0x80);
+            LEDSTICK_PORT &= ~LEDSTICK_PIN;
+            if (s) {
+                __asm__ __volatile__("nop");
+                LEDSTICK_PORT |= LEDSTICK_PIN;
+                b = b << 1;
+            }
+            else {
+                LEDSTICK_PORT |= LEDSTICK_PIN;
+                b = b << 1;
+            }
         }
-        //while (UCA0STATW & UCBUSY) {}
-        //UCA0IE &= ~UCTXIFG;
     }
     else
     {
@@ -282,9 +284,9 @@ void print_systime(void)
  */
 void blinky(unsigned char led, unsigned int delay)
 {
-    led_test_on(led);
+    led_on(led);
     eep(delay);
-    led_test_off(led);
+    led_off(led);
 }
 
 /**
@@ -354,13 +356,13 @@ void switch_0_pressed(void)
     if (display_mode == 1)
     {
         display_mode = 2;
-        led_test_on(0);
+        led_on(0);
         rtc_display_sel(0);
     }
     else
     {
         display_mode = 1;
-        led_test_off(0);
+        led_off(0);
         patterns_sel(0);
     }
 }
