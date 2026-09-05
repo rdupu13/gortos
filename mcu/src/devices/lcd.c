@@ -15,8 +15,8 @@
 
 #include "devices/lcd.h"
 
-// drivers
-#include "drivers/i2c.h"
+// devices
+#include "devices/ioexp.h"
 
 
 //-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@
  */
 void lcd_init(void)
 {
-    
+
 }
 
 

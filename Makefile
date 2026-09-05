@@ -30,8 +30,6 @@ EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
 			mcu/src/devices/dial.c \
 			mcu/include/devices/dial.h \
-			mcu/src/devices/lcd.c \
-			mcu/include/devices/lcd.h \
 			mcu/src/devices/lora.c \
 			mcu/include/devices/lora.h \
 			mcu/src/devices/pwm.c \

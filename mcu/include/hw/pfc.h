@@ -203,7 +203,10 @@ RHS:
 #define MMM_23LC1024
 #define MMM_SPI_SLAVE_NUM 0
 
-// lcd (gpio)
+// io expander (i2c)
+#define IOEXP_MCP23008
+
+// lcd (io expander)
 #define LCD_NHD_0420AZ_FL_YBW_33V3
 
 // --------------------------------------------------------

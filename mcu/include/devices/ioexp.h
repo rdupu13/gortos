@@ -1,11 +1,11 @@
 /** ---------------------------------------------------------------------------
  * 
  * GORTOS
- * lcd driver library
+ * io expander driver library
  * 
  * created by rdupu13
  * 
- * @file lcd.h
+ * @file ioexp.h
  *
 ----------------------------------------------------------------------------- */
 
@@ -13,13 +13,15 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef LCD_H
-#define LCD_H
+#ifndef IOEXP_H
+#define IOEXP_H
 
 
 //-----------------------------------------------------------------------------
 //  LIBRARIES
 //-----------------------------------------------------------------------------
+
+#include "hw/pfc.h"
 
 
 //-----------------------------------------------------------------------------
@@ -27,20 +29,35 @@
 //-----------------------------------------------------------------------------
 
 // device specific ----------------------------------------
-// nhd-0420az-fl-ybw-33v3 -------------
-#ifdef LCD_NHD_0420AZ_FL_YBW_33V3
+// mcp23008 ---------------------------
+#ifdef IOEXP_MCP23008
 
-// stuff
+#define IOEXP_CLIENT_ADDR   0x40
+
+#define IOEXP_REG_IODIR     0x00
+#define IOEXP_REG_IPOL      0x01
+#define IOEXP_REG_GPINTEN   0x02
+#define IOEXP_REG_DEFVAL    0x03
+#define IOEXP_REG_INTCON    0x04
+#define IOEXP_REG_IOCON     0x05
+#define IOEXP_REG_GPPU      0x06
+#define IOEXP_REG_INTF      0x07
+#define IOEXP_REG_INTCAP    0x08
+#define IOEXP_REG_GPIO      0x09
+#define IOEXP_REG_OLAT      0x0A
 
 #endif
 // ------------------------------------
 // --------------------------------------------------------
 
+
+
+
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void lcd_init(void); // initialize lcd
+int ioexp_init(void); // initialize io expander
 
 
 #endif

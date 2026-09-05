@@ -29,6 +29,7 @@
 
 // devices
 //#include "devices/dial.h"
+#include "devices/ioexp.h"
 //#include "devices/lcd.h"
 //#include "devices/lora.h"
 //#include "devices/mmm.h"
@@ -102,17 +103,28 @@ void gsys_init(void)
     // DEVICES --------------------------------------------
     patterns_init();
 
-    int rtc_stat = rtc_init();
+    int rtc_stat = rtc_init(); // i2c
     if (rtc_stat) {
+        gsys_log("rtc: error:");
+        gsys_log(hex(gabs(rtc_stat)));
         die("rtc: initialization error :(");
     } else {
         gsys_log("rtc: initialization successful :)");
     }
 
+    int ioexp_stat = ioexp_init(); // i2c
+    if (ioexp_stat) {
+        gsys_log("ioexp: error:");
+        gsys_log(hex(gabs(ioexp_stat)));
+        die("ioexp: initialization error :(");
+    } else {
+        gsys_log("ioexp: initialization successful :)");
+    }
+
     //pwm_init(); // timer
     //dial_init(); // led, switch
     
-    //lcd_init(); // i2c
+    //lcd_init(); // ioexp
     //mmm_init(); // spi
     //lora_init(); // spi
     // ----------------------------------------------------    
@@ -175,6 +187,7 @@ void gsys_update(unsigned int div)
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
 
+        /*
         unsigned char b = 0x4D;
         unsigned char s;
         unsigned int i;
@@ -192,10 +205,7 @@ void gsys_update(unsigned int div)
                 b = b << 1;
             }
         }
-    }
-    else
-    {
-        
+        */
     }
 }
 
