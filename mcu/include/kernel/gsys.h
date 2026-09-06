@@ -35,8 +35,6 @@
 
 #define BLK_ALLOC_NUM 2
 
-//#define I2C_ENABLED
-
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES

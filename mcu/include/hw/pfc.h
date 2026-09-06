@@ -212,8 +212,14 @@ RHS:
 #define MMM_23LC1024
 #define MMM_SPI_SLAVE_NUM 0
 
-// io expander (i2c)
+// io expander (i2c) ------------------
 #define IOEXP_MCP23008
+// lcd
+#define LCD_RS      BIT0
+#define LCD_RW      BIT1
+#define LCD_EN      BIT2
+#define LCD_NIBBLE  BIT4 | BIT5 | BIT6 | BIT7
+// ------------------------------------
 
 // lcd (io expander)
 #define LCD_NHD_0420AZ_FL_YBW_33V3

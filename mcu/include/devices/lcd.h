@@ -30,7 +30,6 @@
 // nhd-0420az-fl-ybw-33v3 -------------
 #ifdef LCD_NHD_0420AZ_FL_YBW_33V3
 
-// stuff
 
 #endif
 // ------------------------------------
@@ -40,8 +39,11 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void lcd_init(void); // initialize lcd
+int lcd_init(void); // initialize lcd
 
+int lcd_write(
+    unsigned char *arr
+);
 
 #endif
 //-----------------------------------------------------------------------------

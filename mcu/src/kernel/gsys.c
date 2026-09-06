@@ -56,8 +56,6 @@ unsigned int cur_qcnt;
 int cur_temp;
 unsigned int cur_speed;
 
-unsigned char exp;
-
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -112,7 +110,6 @@ void gsys_init(void)
         gsys_log("gsys: rtc init successful :)");
     }
 
-    exp = 0x55;
     int ioexp_stat = ioexp_init(); // i2c
     if (ioexp_stat) {
         die("gsys: io expander init failed :(");
@@ -120,10 +117,15 @@ void gsys_init(void)
         gsys_log("gsys: io expander init successful :)");
     }
 
+    int lcd_stat = lcd_init(); // ioexp
+    if (lcd_stat) {
+        die("gsys: lcd init failed :(");
+    } else {
+        gsys_log("gsys: lcd init successful :)");
+    }
+    
     //pwm_init(); // timer
     //dial_init(); // led, switch
-    
-    //lcd_init(); // ioexp
     //mmm_init(); // spi
     //lora_init(); // spi
     // ----------------------------------------------------    
@@ -189,9 +191,6 @@ void gsys_update(unsigned int div)
         helloworld("\npatterns speed: ");
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
-
-        exp ^= 0xFF;
-        ioexp_write(exp);
         /*
         unsigned char b = 0x4D;
         unsigned char s;
