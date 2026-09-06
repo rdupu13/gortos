@@ -45,8 +45,10 @@
 #ifdef RTC_MCP7940N
 #define RTC_SLAVE_ADDR      0x006F
 #define RTC_REG_SEC         0x00
-#define RTC_REG_CTL         0x00
-#define RTC_OSC_EN_BIT      BIT7
+#define RTC_OSCEN_REG       0x00
+#define RTC_OSCEN_BIT       BIT7
+#define RTC_VBATEN_REG      0x03
+#define RTC_VBATEN_BIT      BIT3
 #define RTC_WEEKDAY_0       1
 #define RTC_SWAP_WEEKDAY    0
 #endif
@@ -64,12 +66,14 @@
 
 extern volatile unsigned char *rtc_display; // register currently being displayed
 
-int rtc_init(void);    // initialize rtc
+int rtc_init(void);     // initialize rtc
 
-int rtc_start(void);   // start rtc
-int rtc_stop(void);    // stop rtc
-int rtc_get(void);     // get current rtc date and time
-int rtc_set(void);     // set current date and time
+int rtc_start(void);    // start rtc
+int rtc_stop(void);     // stop rtc
+int rtc_get(void);      // get current rtc date and time
+int rtc_set(void);      // set current date and time
+
+int rtc_vbaten(void);   // enbable battery power
 
 char *rtc_getstr(void); // get current rtc date and time and convert to string
 //void rtc_setdate(int month, int day, int year);

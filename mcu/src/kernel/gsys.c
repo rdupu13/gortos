@@ -185,14 +185,15 @@ void gsys_update(unsigned int div)
         print_systime();
         helloworld("\n");
 
-        helloworld("temp: ");
+        helloworld("Temp: ");
         helloworld(hex(cur_temp));
         helloworld("h degrees C");
         
-        helloworld("\nspeed: ");
+        helloworld("\nSpeed: ");
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
         gout = 0;
+        
         /*
         unsigned char b = 0x4D;
         unsigned char s;
