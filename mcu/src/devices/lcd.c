@@ -90,7 +90,6 @@ int lcd_write_nibble(
     ioexp_write(base);
     ioexp_write(base | LCD_EN);
     ioexp_write(base);
-
     return 0;
 }
 
@@ -106,9 +105,18 @@ int lcd_write_byte(
     unsigned char byte,
     unsigned char reg_sel
 ) {
-    lcd_write_nibble(byte >> 4, reg_sel);
-    lcd_write_nibble(byte & 0x0F, reg_sel);
-
+    if (reg_sel) {
+        switch (byte)
+        {
+            case '\n':
+                // some dumb shit
+                break;
+            default: break;
+        }
+    } else {
+        lcd_write_nibble(byte >> 4, reg_sel);
+        lcd_write_nibble(byte & 0x0F, reg_sel);
+    }
     return 0;
 }
 
@@ -122,7 +130,11 @@ int lcd_write_byte(
 int lcd_write(
     unsigned char *arr
 ) {
-
+    unsigned int i;
+    for (i = 0; arr[i] != '\0'; i++)
+    {
+        lcd_write_byte(arr[i], 1);
+    }
     return 0;
 }
 

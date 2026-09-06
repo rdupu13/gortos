@@ -58,6 +58,11 @@ int helloworld(char *arr)
             );
             break;
         
+        case 1:
+            // lcd
+            lcd_write(arr);
+            break;
+        
         default:
             status = -1; // raise error
             break;

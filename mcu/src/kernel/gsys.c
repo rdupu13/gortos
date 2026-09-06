@@ -146,11 +146,14 @@ void gsys_init(void)
     }
 
     // print start message (init successful)
+    gout = 1; // on lcd!!
     helloworld("\n\n~~~ Gort OS ~~~\n");
     helloworld("(c) rdupu13 2026\n\n");
     helloworld("Current time: ");
     print_systime();
     helloworld("\n\n");
+
+    lcd_write("hello gort!\n");
     // ------------------------------------------------------------------------
 }
 
