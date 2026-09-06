@@ -146,14 +146,11 @@ void gsys_init(void)
     }
 
     // print start message (init successful)
-    gout = 1; // on lcd!!
     helloworld("\n\n~~~ Gort OS ~~~\n");
     helloworld("(c) rdupu13 2026\n\n");
     helloworld("Current time: ");
     print_systime();
     helloworld("\n\n");
-
-    lcd_write("hello gort!\n");
     // ------------------------------------------------------------------------
 }
 
@@ -183,17 +180,19 @@ void gsys_update(unsigned int div)
     if ((timer_qcnt & 3) == 0)
     {
         // do every 1 second:
-        helloworld("current time: ");
+        gout = 1;
+        glear();
         print_systime();
         helloworld("\n");
 
-        helloworld("current temperature: ");
+        helloworld("temp: ");
         helloworld(hex(cur_temp));
         helloworld("h degrees C");
         
-        helloworld("\npatterns speed: ");
+        helloworld("\nspeed: ");
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
+        gout = 0;
         /*
         unsigned char b = 0x4D;
         unsigned char s;

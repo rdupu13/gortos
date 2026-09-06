@@ -21,6 +21,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+#include "hw/pfc.h"
+
 
 //-----------------------------------------------------------------------------
 //  MACROS
@@ -30,6 +32,8 @@
 // nhd-0420az-fl-ybw-33v3 -------------
 #ifdef LCD_NHD_0420AZ_FL_YBW_33V3
 
+#define NUM_COLS    20
+#define NUM_LINES   4
 
 #endif
 // ------------------------------------
@@ -41,8 +45,11 @@
 
 int lcd_init(void); // initialize lcd
 
-int lcd_write(
-    unsigned char *arr
+int lcd_write(unsigned char *arr);
+
+int lcd_set_cursor(
+    unsigned char row,
+    unsigned char col
 );
 
 #endif

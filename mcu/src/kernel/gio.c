@@ -112,8 +112,18 @@ int hellogort(char *arr, unsigned int len, char stop)
  */
 void glear(void)
 {
-    char seq[] = PUTTY_CLEAR_SEQ;
-    helloworld(seq);
+    switch(gout)
+    {
+        case 0:
+            helloworld(PUTTY_CLEAR_SEQ);
+            break;
+        
+        case 1:
+            lcd_set_cursor(0, 0);
+            break;
+        
+        default: break;
+    }
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

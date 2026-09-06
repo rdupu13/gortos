@@ -28,6 +28,11 @@
 
 unsigned char lcd_reg;
 
+unsigned char lcd_line;
+unsigned char lcd_col;
+
+unsigned char lcd_line_addr[NUM_LINES] = {0x00, 0x40, 0x14, 0x54};
+
 
 
 //-----------------------------------------------------------------------------
@@ -43,7 +48,6 @@ int lcd_write_byte(
     unsigned char byte,
     unsigned char reg_sel
 );
-
 
 
 /**
@@ -70,6 +74,40 @@ int lcd_init(void)
     eep(5);
 
     return 0;
+}
+
+/**
+ * @brief print a character to the lcd display
+ * 
+ * @param 
+ * 
+ * @return none
+ */
+int lcd_write(
+    unsigned char *arr
+) {
+    unsigned int i;
+    for (i = 0; arr[i] != '\0'; i++)
+    {
+        lcd_write_byte(arr[i], 1);
+    }
+    return 0;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_set_cursor(
+    unsigned char row,
+    unsigned char col
+) {
+    lcd_line = row;
+    lcd_col = col;
+    return lcd_write_byte(0x80 | (lcd_line_addr[row] + col), 0);
 }
 
 /**
@@ -106,35 +144,16 @@ int lcd_write_byte(
     unsigned char reg_sel
 ) {
     if (reg_sel) {
-        switch (byte)
-        {
-            case '\n':
-                // some dumb shit
-                break;
-            default: break;
+        if (byte == '\n' || (lcd_col == NUM_COLS)) {
+            lcd_line = (lcd_line + 1) & 0x03;
+            lcd_set_cursor(lcd_line, 0);
+            if (byte == '\n') { return 0; }
+        } else {    
+            lcd_col++;
         }
-    } else {
-        lcd_write_nibble(byte >> 4, reg_sel);
-        lcd_write_nibble(byte & 0x0F, reg_sel);
     }
-    return 0;
-}
-
-/**
- * @brief print a character to the lcd display
- * 
- * @param 
- * 
- * @return none
- */
-int lcd_write(
-    unsigned char *arr
-) {
-    unsigned int i;
-    for (i = 0; arr[i] != '\0'; i++)
-    {
-        lcd_write_byte(arr[i], 1);
-    }
+    lcd_write_nibble(byte >> 4, reg_sel);
+    lcd_write_nibble(byte & 0x0F, reg_sel);
     return 0;
 }
 
