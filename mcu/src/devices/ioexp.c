@@ -39,7 +39,7 @@
  */
 int ioexp_init(void)
 {
-    unsigned char client_addr = 0x00;
+    //unsigned char client_addr = 0x00;
     unsigned char reg_config1[] = {
         0x00,
         0x00, 0x00, 0x00, 0x00,
@@ -53,7 +53,7 @@ int ioexp_init(void)
     unsigned char olat = 0x00;
 
     int stat = i2c_write(
-        (volatile unsigned char *) reg_config1,
+        reg_config1,
         7,
         IOEXP_CLIENT_ADDR,
         IOEXP_REG_IODIR

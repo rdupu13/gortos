@@ -33,7 +33,6 @@ unsigned char i2cbb_sda_rx;
 unsigned char i2cbb_nack;
 unsigned char i2cbb_end_rx;
 unsigned char i2cbb_slave_addr;
-unsigned int i2cbb_len;
 unsigned char i2cbb_busy;
 
 
@@ -69,7 +68,6 @@ void i2cbb_init(void)
     i2cbb_nack = 0;
     i2cbb_end_rx = 0;
     i2cbb_slave_addr = 0;
-    i2cbb_len = 0;
     i2cbb_busy_clear();
 }
 
@@ -98,11 +96,10 @@ int i2cbb_write(
     if (len == 0) { return -2; }
 
     i2cbb_tx_buf_ptr = arr;
-    i2cbb_len = len;
     i2cbb_slave_addr = slave_addr;
     
     i2cbb_busy_set();
-    
+
     i2cbb_mode = 0; // write mode
     i2cbb_tx_start();
 
@@ -138,39 +135,56 @@ int i2cbb_write(
  * 
  * @return status of read:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
- *          -3: nack error
- *
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -4: nack error
+ */
 int i2cbb_read(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
 ) {
-    if (len == 0) { return -1; }
+    if (i2cbb_busy) { return -1; }
+    if (len == 0) { return -2; }
 
-    if (i2c_busy) { return 1; }
+    i2cbb_rx_buf_ptr = arr;
+    i2cbb_slave_addr = slave_addr;
 
-    i2c_rx_buf_ptr = arr;
-    i2c_cnt = len + 1;
-    UCB1I2CSA = slave_addr;
-    i2c_reg_addr = reg_addr;
+    i2cbb_mode = 1; // read mode
 
-    i2c_len = len;
-    i2c_mode = 1; // read mode
+    i2cbb_busy_set();
+    
+    i2cbb_mode = 0;
+    i2cbb_tx_start();
 
-    UCB1CTLW0 |= UCTR; // put peripheral into tx mode
-    UCB1IFG &= ~UCTXIFG0; // clear tx complete interrupt flag
-    UCB1IE |= UCTXIE0; // enable tx complete interrupts
+    i2cbb_byte = reg_addr;
+    i2cbb_tx_byte();
 
-    i2c_busy_set();
-    UCB1CTLW0 |= UCTXSTT; // send start + slave addr
+    if (i2cbb_nack) {
+        i2c_busy_clear();
+        return -4;
+    }
 
-    return i2c_wait(); // wait until rx done (with timeout)
+    i2cbb_mode = 1;
+    i2cbb_tx_start();
+
+    unsigned char i;
+    for (i = 0; i < len; i++)
+    {
+        if (i == len - 1) {
+            i2cbb_end_rx = 1;
+        }
+
+        i2cbb_rx_byte();
+        *i2cbb_rx_buf_ptr++ = i2cbb_byte;
+    }
+
+    i2cbb_tx_stop();
+    i2cbb_busy_clear();
+
+    return 0;
 }
-*/
 
 /**
  * 
@@ -240,8 +254,7 @@ void i2cbb_tx_byte(void)
     I2CBB_PORT |= I2CBB_SCL;
     I2CBB_DELAY
 
-    i2cbb_sda_rx = I2CBB_IN;
-    i2cbb_sda_rx &= I2CBB_SDA;
+    i2cbb_sda_rx = (I2CBB_IN & I2CBB_SDA);
 
     I2CBB_DELAY
     I2CBB_PORT &= ~I2CBB_SCL;
@@ -261,7 +274,46 @@ void i2cbb_tx_byte(void)
  */
 void i2cbb_rx_byte(void)
 {
-    
+    if (i2cbb_nack) { return; }
+
+    I2CBB_DIR &= ~I2CBB_SDA;
+
+    unsigned char i;
+    for (i = 0; i < 8; i++)
+    {
+        I2CBB_DELAY
+        I2CBB_PORT |= I2CBB_SCL;
+        I2CBB_DELAY
+
+        i2cbb_sda_rx = (I2CBB_IN & I2CBB_SDA);
+
+        I2CBB_DELAY
+        I2CBB_PORT &= ~I2CBB_SCL;
+        I2CBB_DELAY
+
+        i2cbb_byte = i2cbb_byte << 1;
+        if (i2cbb_sda_rx) {
+            i2cbb_byte |= 1;
+        }
+    }
+
+    I2CBB_DIR |= I2CBB_SDA;
+    I2CBB_PORT |= I2CBB_SDA;
+
+    if (i2cbb_end_rx) {
+        I2CBB_PORT |= I2CBB_SDA;
+        i2cbb_end_rx = 0;
+    } else {
+        I2CBB_PORT &= ~I2CBB_SDA;
+    }
+
+    I2CBB_DELAY
+    I2CBB_PORT |= I2CBB_SCL;
+    I2CBB_DELAY
+    I2CBB_DELAY
+    I2CBB_DELAY
+    I2CBB_PORT &= ~I2CBB_SCL;
+    I2CBB_DELAY
 }
 
 /**

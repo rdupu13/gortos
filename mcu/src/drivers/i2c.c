@@ -18,6 +18,9 @@
 // hardware
 #include "hw/pfc.h"
 
+// drivers
+#include "drivers/i2cbb.h"
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
@@ -35,6 +38,8 @@ volatile unsigned char i2c_nack;
 
 unsigned int i2c_timeout;
 
+unsigned char i2cbb;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -47,12 +52,19 @@ void i2c_busy_clear(void);
 /**
  * @brief initialize i2c
  * 
- * @param timeout countdown period until bus timeout
+ * @param timeout   countdown period until bus timeout
+ * @param bb        whether or not to bit-bang the protocol
  * 
  * @return none
  */
-void i2c_init(unsigned int timeout)
+void i2c_init(unsigned int timeout, unsigned char bb)
 {
+    i2cbb = bb;
+    if (i2cbb) {
+        i2cbb_init();
+        return;
+    }
+
     I2C_SEL0 |= I2C_PINS; // configure pins
     
     // setup peripheral
@@ -92,22 +104,30 @@ void i2c_init(unsigned int timeout)
  * 
  * @return status of write:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
- *          -3: nack error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
+ *          -4: nack error
  */
 int i2c_write(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
 ) {
-    if (len == 0) { return -1; }
+    if (i2cbb) {
+        return i2cbb_write(
+            arr,
+            len,
+            slave_addr,
+            reg_addr
+        );
+    }
 
-    if (i2c_busy) { return 1; }
+    if (i2c_busy) { return -1; }
+    if (len == 0) { return -2; }
 
-    i2c_tx_buf_ptr = arr;
+    i2c_tx_buf_ptr = (volatile unsigned char *) arr;
     i2c_cnt = len + 1;
     UCB1I2CSA = slave_addr;
     i2c_reg_addr = reg_addr;
@@ -135,22 +155,30 @@ int i2c_write(
  * 
  * @return status of read:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
- *          -3: nack error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
+ *          -4: nack error
  */
 int i2c_read(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
 ) {
-    if (len == 0) { return -1; }
+    if (i2cbb) {
+        return i2cbb_read(
+            arr,
+            len,
+            slave_addr,
+            reg_addr
+        );
+    }
 
-    if (i2c_busy) { return 1; }
+    if (i2c_busy) { return -1; }
+    if (len == 0) { return -2; }
 
-    i2c_rx_buf_ptr = arr;
+    i2c_rx_buf_ptr = (volatile unsigned char *) arr;
     i2c_cnt = len + 1;
     UCB1I2CSA = slave_addr;
     i2c_reg_addr = reg_addr;
@@ -173,8 +201,8 @@ int i2c_read(
  * 
  * @return status of wait:
  *           0: ok
- *          -2: timeout error
- *          -3: nack error
+ *          -3: timeout error
+ *          -4: nack error
  */
 int i2c_wait(void)
 {
@@ -191,9 +219,9 @@ int i2c_wait(void)
         
         UCB1CTLW0 |= UCTXSTP;           // send stop condition
         i2c_busy_clear();
-        return -2;
+        return -3;
     }
-    if (i2c_nack) { return -3; } // handle nack case
+    if (i2c_nack) { return -4; } // handle nack case
     return 0;
 }
 

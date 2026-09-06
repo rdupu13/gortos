@@ -21,7 +21,6 @@
 // drivers
 #include "drivers/adc.h"
 #include "drivers/i2c.h"
-#include "drivers/i2cbb.h"
 #include "drivers/led.h"
 #include "drivers/spi.h"
 #include "drivers/switch.h"
@@ -80,7 +79,7 @@ void gsys_init(void)
     timer_init();
     adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
-    //i2c_init(60000); // timeout = 60000
+    i2c_init(60000, 1); // timeout = 60000, bit bang = 1
     spi_init(60000, 6); // timeout = 60000
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
@@ -104,11 +103,6 @@ void gsys_init(void)
     // DEVICES --------------------------------------------
     patterns_init();
 
-    i2cbb_init();
-
-    //i2cbb_tx_start();
-    //i2cbb_tx_stop();
-    /*
     int rtc_stat = rtc_init(); // i2c
     if (rtc_stat) {
         gsys_log("rtc: error:");
@@ -117,7 +111,8 @@ void gsys_init(void)
     } else {
         gsys_log("rtc: initialization successful :)");
     }
-
+    
+    /*
     int ioexp_stat = ioexp_init(); // i2c
     if (ioexp_stat) {
         gsys_log("ioexp: error:");
@@ -155,7 +150,7 @@ void gsys_init(void)
     helloworld("\n\n~~~ Gort OS ~~~\n");
     helloworld("(c) rdupu13 2026\n\n");
     helloworld("Current time: ");
-    //print_systime();
+    print_systime();
     helloworld("\n\n");
     // ------------------------------------------------------------------------
 }
@@ -177,13 +172,13 @@ void gsys_update(unsigned int div)
     cur_qcnt = timer_qcnt;
 
     // do every 0.25 seconds:
-    //rtc_get();
+    rtc_get();
 
     if ((timer_qcnt & 3) == 0)
     {
         // do every 1 second:
         helloworld("current time: ");
-        //print_systime();
+        print_systime();
         helloworld("\n");
 
         helloworld("current temperature: ");
@@ -193,9 +188,6 @@ void gsys_update(unsigned int div)
         helloworld("\npatterns speed: ");
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
-
-        unsigned char arr[] = {0xAA, 0xBB, 0xCC};
-        i2cbb_write(arr, 3, 0x68, 0x03);
 
         /*
         unsigned char b = 0x4D;

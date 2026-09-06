@@ -93,7 +93,7 @@ int rtc_start(void)
     unsigned char ctl_reg;
 
     int stat = i2c_read(
-        (volatile unsigned char *) &ctl_reg,
+        &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
@@ -103,7 +103,7 @@ int rtc_start(void)
     ctl_reg |= RTC_OSC_EN_BIT; // enable oscillator
     
     stat = i2c_write(
-        (volatile unsigned char *) &ctl_reg,
+        &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
@@ -121,7 +121,7 @@ int rtc_stop(void)
     unsigned char ctl_reg;
 
     int stat = i2c_read(
-        (volatile unsigned char *) &ctl_reg,
+        &ctl_reg,
         1,
         RTC_SLAVE_ADDR,
         RTC_REG_CTL
@@ -149,7 +149,7 @@ int rtc_get(void)
     unsigned char dt[7];
 
     int stat = i2c_read(
-        (volatile unsigned char *) dt,
+        dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
@@ -187,7 +187,7 @@ int rtc_set(void)
     dt[6] = rtc_year;
 
     int stat = i2c_write(
-        (volatile unsigned char *) dt,
+        dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC

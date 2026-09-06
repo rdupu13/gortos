@@ -64,11 +64,15 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void i2c_init(unsigned int timeout); // initialize i2c
+// initialize i2c
+void i2c_init(
+    unsigned int timeout,
+    unsigned char bb
+);
 
 // write an array to an i2c slave
 int i2c_write(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
@@ -76,7 +80,7 @@ int i2c_write(
 
 // read an array from an i2c slave 
 int i2c_read(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned int slave_addr,
     unsigned char reg_addr
