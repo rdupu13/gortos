@@ -18,6 +18,9 @@
 // drivers
 #include "drivers/i2c.h"
 
+// kernel
+#include "kernel/gsys.h"
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
@@ -58,7 +61,7 @@ int ioexp_init(void)
         IOEXP_CLIENT_ADDR,
         IOEXP_REG_IODIR
     );
-    if (stat) { return stat; }
+    if (ioexp_errmsg(stat)) { return stat; }
     
     stat = i2c_write(
         &gpio,
@@ -66,7 +69,7 @@ int ioexp_init(void)
         IOEXP_CLIENT_ADDR,
         IOEXP_REG_GPIO
     );
-    if (stat) { return stat; }
+    if (ioexp_errmsg(stat)) { return stat; }
 
     stat = i2c_write(
         &olat,
@@ -74,8 +77,9 @@ int ioexp_init(void)
         IOEXP_CLIENT_ADDR,
         IOEXP_REG_OLAT
     );
+    if (ioexp_errmsg(stat)) { return stat; }
     
-    return stat;
+    return 0;
 }
 
 /**
@@ -95,6 +99,28 @@ int ioexp_write(unsigned char gpio)
         IOEXP_CLIENT_ADDR,
         IOEXP_REG_GPIO
     );
+    if (ioexp_errmsg(stat)) { return stat; }
+    
+    return 0;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return none
+ */
+int ioexp_errmsg(int stat)
+{
+    switch (stat)
+    {
+        case -1: gsys_log("ioexp: i2c bus busy"); break;
+        case -2: gsys_log("ioexp: i2c 0 length error"); break;
+        case -3: gsys_log("ioexp: i2c timeout error"); break;
+        case -4: gsys_log("ioexp: i2c NACK received error"); break;
+        default: break;
+    }
     return stat;
 }
 

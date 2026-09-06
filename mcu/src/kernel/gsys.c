@@ -56,6 +56,8 @@ unsigned int cur_qcnt;
 int cur_temp;
 unsigned int cur_speed;
 
+unsigned char exp;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -79,7 +81,7 @@ void gsys_init(void)
     timer_init();
     adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
-    i2c_init(60000, 1); // timeout = 60000, bit bang = 1
+    i2c_init(60000, 1); // timeout = 60000, bit bang enabled
     spi_init(60000, 6); // timeout = 60000
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
@@ -105,23 +107,18 @@ void gsys_init(void)
 
     int rtc_stat = rtc_init(); // i2c
     if (rtc_stat) {
-        gsys_log("rtc: error:");
-        gsys_log(hex(gabs(rtc_stat)));
-        die("rtc: initialization error :(");
+        die("gsys: initialization failed :(");
     } else {
-        gsys_log("rtc: initialization successful :)");
+        gsys_log("gsys: rtc init successful :)");
     }
-    
-    /*
+
+    exp = 0x55;
     int ioexp_stat = ioexp_init(); // i2c
     if (ioexp_stat) {
-        gsys_log("ioexp: error:");
-        gsys_log(hex(gabs(ioexp_stat)));
-        die("ioexp: initialization error :(");
+        die("gsys: io expander init failed :(");
     } else {
-        gsys_log("ioexp: initialization successful :)");
+        gsys_log("gsys: io expander init successful :)");
     }
-    */
 
     //pwm_init(); // timer
     //dial_init(); // led, switch
@@ -156,7 +153,11 @@ void gsys_init(void)
 }
 
 /**
+ * @brief updater
  * 
+ * @param div 
+ * 
+ * @return none
  */
 void gsys_update(unsigned int div)
 {
@@ -189,6 +190,8 @@ void gsys_update(unsigned int div)
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
 
+        exp ^= 0xFF;
+        ioexp_write(exp);
         /*
         unsigned char b = 0x4D;
         unsigned char s;
@@ -215,12 +218,13 @@ void gsys_update(unsigned int div)
  * @brief add an entry to gort's diary
  * 
  * @param entry entry to be written
+ * TODO: add name param
  * 
  * @return none
  */
 void gsys_log(char *entry)
 {
-    //gout = " ";
+    //gout = " "; TODO: make dynamic
 
     helloworld("[ ");
     print_systime(); // TODO: maybe just time

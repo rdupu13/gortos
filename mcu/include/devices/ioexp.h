@@ -32,7 +32,7 @@
 // mcp23008 ---------------------------
 #ifdef IOEXP_MCP23008
 
-#define IOEXP_CLIENT_ADDR   0x40
+#define IOEXP_CLIENT_ADDR   0x20
 
 #define IOEXP_REG_IODIR     0x00
 #define IOEXP_REG_IPOL      0x01
