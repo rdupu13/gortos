@@ -18,6 +18,9 @@
 // hardware
 #include "hw/pfc.h"
 
+// kernel
+#include "kernel/gsys.h"
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
@@ -25,13 +28,11 @@
 
 volatile unsigned char *spi_tx_buf_ptr;
 volatile unsigned char *spi_rx_buf_ptr;
-volatile unsigned int spi_cnt;
-volatile unsigned char spi_busy;
-
-volatile unsigned char spi_slave;
-volatile unsigned char spi_mode;
 volatile unsigned char *spi_addr_ptr;
+volatile unsigned int spi_cnt;
 volatile unsigned int spi_len;
+volatile unsigned char spi_busy;
+volatile unsigned char spi_mode;
 
 unsigned int spi_timeout;
 
@@ -41,8 +42,8 @@ unsigned int spi_timeout;
 //-----------------------------------------------------------------------------
 
 int spi_wait(void);
-void spi_busy_set(void);
-void spi_busy_clear(void);
+void spi_start(unsigned char slave);
+void spi_stop(unsigned char slave);
 
 /**
  * @brief initialize spi
@@ -78,51 +79,64 @@ void spi_init(
     spi_rx_buf_ptr = 0;
     spi_cnt = 0;
     spi_busy = 0;
-    spi_slave = 0;
     spi_mode = 0;
     spi_timeout = timeout;
     spi_addr_ptr = 0;
     spi_len = 0;
+
+    SPI_BUSY_PORT &= ~SPI_BUSY_PIN;
 }
 
 /**
  * @brief write an array to a spi slave
  * 
- * @param arr   pointer to array to be written
- * @param len   length in bytes of array to be written
- * @param slave selected slave
+ * @param arr       pointer to array to be written
+ * @param len       length in bytes of array to be written
+ * @param slave     selected slave
+ * @param addr      pointer to array to send before writing
+ * @param addr_len  length in bytes of addr array
  * 
  * @return status of write:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
  */
 int spi_write(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
-    unsigned char slave
+    unsigned char slave,
+    unsigned char *addr,
+    unsigned int addr_len
 ) {
-    if (len == 0) { return -1; }
+    if (spi_busy) { return -1; }
+    if (len == 0) { return -2; }
 
-    if (spi_busy) { return 1; }
+    SPI_BUSY_PORT |= SPI_BUSY_PIN;
 
-    spi_tx_buf_ptr = arr;
-    spi_cnt = len - 1;
-    spi_slave = slave;
-    spi_len = 0;
+    spi_tx_buf_ptr = (volatile unsigned char *) arr;
+    spi_addr_ptr = (volatile unsigned char *) addr;
+    spi_cnt = len + addr_len;
+    spi_len = len;
 
+    spi_mode = 0; // write mode
     UCA0IFG = 0; // clear interrupt flags
     UCA0IE |= UCTXIE; // enable tx complete interrupts
     
-    SPI_CS0_PORT &= ~SPI_CS0_PIN;
+    spi_start(slave);
     spi_busy = 1; // turn on bus
 
-    UCA0TXBUF = *spi_tx_buf_ptr++; // tx first byte (triggers tx interrupt)
+    // tx first addr/data byte (triggers tx interrupt)
+    spi_cnt--;
+    UCA0TXBUF = addr_len ? *spi_addr_ptr++ : *spi_tx_buf_ptr++;
 
     int stat = spi_wait(); // wait until tx done (with timeout)
 
-    SPI_CS0_PORT |= SPI_CS0_PIN;
+    spi_stop(slave);
+
+    eep(SPI_DELAY_MS);
+
+    SPI_BUSY_PORT &= ~SPI_BUSY_PIN;
 
     return stat;
 }
@@ -130,50 +144,61 @@ int spi_write(
 /**
  * @brief read an array from a spi slave
  * 
- * @param arr   pointer to array to store received data
- * @param len   length in bytes of array to be read
- * @param slave selected slave
+ * @param arr       pointer to array to store received data
+ * @param len       length in bytes of array to be read
+ * @param slave     selected slave
+ * @param addr      pointer to array to send before reading
+ * @param addr_len  length in bytes of addr array
  * 
  * @return status of read:
  *           0: ok
- *           1: bus busy
- *          -1: 0 length error
- *          -2: timeout error
+ *          -1: bus busy
+ *          -2: 0 length error
+ *          -3: timeout error
  */
 int spi_read(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned char slave,
-    volatile unsigned char *addr,
+    unsigned char *addr,
     unsigned int addr_len
 ) {
-    if (len == 0) { return -1; }
+    if (spi_busy) { return -1; }
+    if (len == 0) { return -2; }
 
-    if (spi_busy) { return 1; }
+    SPI_BUSY_PORT |= SPI_BUSY_PIN;
 
-    spi_rx_buf_ptr = arr;
-    spi_cnt = len + addr_len - 1;
-    spi_slave = slave;
-    spi_addr_ptr = addr;
+    spi_rx_buf_ptr = (volatile unsigned char *) arr;
+    spi_addr_ptr = (volatile unsigned char *) addr;
+    spi_cnt = len + addr_len;
     spi_len = len;
 
-    //UCA0IFG = 0; // clear interrupt flags
-    //UCA0IE |= UCRXIE; // enable rx buffer full interrupts
-    //spi_busy = 1; // turn on bus
-    //UCA0TXBUF = 0; // send dummy byte
-
+    spi_mode = 1; // read mode
     UCA0IFG = 0; // clear interrupt flags
-    UCA0IE |= UCTXIE; // enable tx complete interrupts
-    
-    SPI_CS0_PORT &= ~SPI_CS0_PIN;
+
+    spi_start(slave);
     spi_busy = 1; // turn on bus
 
     // tx first addr byte or dummy (triggers tx interrupt)
-    UCA0TXBUF = addr_len ? *spi_addr_ptr++ : 0;
+    spi_cnt--;
+    if (addr_len == 0)
+    {
+        UCA0IE |= UCRXIE; // enable rx buffer full interrupts
+        UCA0TXBUF = 0;
+    }
+    else
+    {
+        UCA0IE |= UCTXIE; // enable tx complete interrupts
+        UCA0TXBUF = *spi_addr_ptr++;
+    }
 
     int stat = spi_wait(); // wait until rx done (with timeout)
 
-    SPI_CS0_PORT |= SPI_CS0_PIN;
+    spi_stop(slave);
+
+    eep(SPI_DELAY_MS);
+
+    SPI_BUSY_PORT &= ~SPI_BUSY_PIN;
 
     return stat;
 }
@@ -193,7 +218,7 @@ int spi_wait(void)
     while(spi_busy && (cnt > 0)) { cnt--; }
 
     if (cnt == 0) {
-        // recover bus? TODO: hmm
+        // recover bus? TODO: hmmmmmm
         UCA0IFG = 0;    // clear interrupt flags
         UCA0IE = 0;     // disable interrupts
         spi_busy = 0;   // turn off bus
@@ -207,16 +232,14 @@ int spi_wait(void)
  * 
  * @return none
  */
-void spi_start(void)
+void spi_start(unsigned char slave)
 {
-    switch(spi_slave)
+    switch(slave)
     {
         case 0:
             SPI_CS0_PORT &= ~SPI_CS0_PIN;
             break;
-        default:
-            SPI_CS0_PORT &= ~SPI_CS0_PIN;
-            break;
+        default: break;
     }
 }
 
@@ -225,16 +248,14 @@ void spi_start(void)
  * 
  * @return none
  */
-void spi_stop(void)
+void spi_stop(unsigned char slave)
 {
-    switch(spi_slave)
+    switch(slave)
     {
         case 0:
             SPI_CS0_PORT |= SPI_CS0_PIN;
             break;
-        default:
-            SPI_CS0_PORT |= SPI_CS0_PIN;
-            break;
+        default: break;
     }
 }
 
@@ -252,14 +273,14 @@ void __attribute__((interrupt(SPI_VECTOR))) isr_spi(void)
             *spi_rx_buf_ptr++ = UCA0RXBUF; // store received byte
             if (spi_cnt == 0)
             {
-                UCA0IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
-                UCA0IE &= ~UCRXIE; // disable rx buffer full interrupts
+                UCA0IFG &= ~UCRXIFG;    // clear rx buffer full interrupt flag
+                UCA0IE &= ~UCRXIE;      // disable rx buffer full interrupts
                 spi_busy = 0;
             }
             else
             {
-                spi_cnt--; // decrement counter
-                UCA0TXBUF = 0; // send dummy byte
+                UCA0TXBUF = 0;  // send dummy byte
+                spi_cnt--;      // decrement counter
             }
             break;
         
@@ -267,28 +288,27 @@ void __attribute__((interrupt(SPI_VECTOR))) isr_spi(void)
             // TXIFG (tx complete)
             if (spi_cnt == 0)
             {
-                UCA0IFG &= ~UCTXIFG; // clear tx complete interrupt flag
-                UCA0IE &= ~UCTXIE; // disable tx complete interrupts
+                UCA0IFG &= ~UCTXIFG;    // clear tx complete interrupt flag
+                UCA0IE &= ~UCTXIE;      // disable tx complete interrupts
                 spi_busy = 0;
             }
             else if (spi_cnt > spi_len)
             {
-                UCA0TXBUF = *spi_addr_ptr++; // send next addr byte
-                spi_cnt--; // decrement counter
+                UCA0TXBUF = *spi_addr_ptr++;    // send next addr byte
+                spi_cnt--;                      // decrement counter
             }
-            else if (spi_cnt == spi_len)
+            else if (spi_mode && (spi_cnt == spi_len))
             {
-                UCA0IFG = 0; // clear interrupt flags
-                UCA0IE &= ~UCTXIE; // disable tx complete interrupts
-                UCA0IFG &= ~UCRXIFG; // clear tx complete interrupt flag
-                UCA0IE |= UCRXIE; // enable rx buffer full interrupts
-                spi_cnt--;
-                UCA0TXBUF = 0;
+                UCA0IFG = 0;        // clear interrupt flags
+                UCA0IE &= ~UCTXIE;  // disable tx complete interrupts
+                UCA0IE |= UCRXIE;   // enable rx buffer full interrupts
+                UCA0TXBUF = 0;      // send dummy byte
+                spi_cnt--;          // decrement counter
             }
             else
             {
-                UCA0TXBUF = *spi_tx_buf_ptr++; // send next byte
-                spi_cnt--; // decrement counter
+                UCA0TXBUF = *spi_tx_buf_ptr++;  // send next byte
+                spi_cnt--;                      // decrement counter
             }
             break;
         

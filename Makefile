@@ -33,7 +33,9 @@ EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/src/devices/lora.c \
 			mcu/include/devices/lora.h \
 			mcu/src/devices/pwm.c \
-			mcu/include/devices/pwm.h
+			mcu/include/devices/pwm.h \
+			mcu/src/devices/mmm.c \
+			mcu/include/devices/mmm.h
 # -------------------------------------
 
 # WARNING OPTIONS ---------------------

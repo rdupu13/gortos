@@ -22,6 +22,7 @@
 #include "drivers/adc.h"
 #include "drivers/i2c.h"
 #include "drivers/led.h"
+#include "drivers/patterns.h"
 #include "drivers/spi.h"
 #include "drivers/switch.h"
 #include "drivers/timer.h"
@@ -30,12 +31,12 @@
 // devices
 //#include "devices/dial.h"
 #include "devices/ioexp.h"
-//#include "devices/lcd.h"
+#include "devices/lcd.h"
 //#include "devices/lora.h"
 //#include "devices/mmm.h"
-#include "devices/patterns.h"
 //#include "devices/pwm.h"
 #include "devices/rtc.h"
+#include "devices/temp.h"
 
 // kernel
 //#include "kernel/gfs.h"
@@ -80,7 +81,7 @@ void gsys_init(void)
     adc_init();
     uart_init(96, 1); // 9600 baud, echo enabled
     i2c_init(60000, 1); // timeout = 60000, bit bang enabled
-    spi_init(60000, 6); // timeout = 60000
+    spi_init(60000, 6); // timeout = 60000, divide clock by 6
     
     eep(INIT_EEP_PERIOD_MS); // eep for a lil to let clockies warm up
     
@@ -194,6 +195,11 @@ void gsys_update(unsigned int div)
         helloworld("h\n\n");
         gout = 0;
         
+        unsigned char addr[4] = {0x01, 0x02, 0xF3, 0xF4};
+        unsigned char arr[6] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
+        int spi_stat = spi_write(arr, 6, 0, addr, 2);
+        spi_stat = spi_read(arr, 6, 0, addr, 1);
+
         /*
         unsigned char b = 0x4D;
         unsigned char s;
