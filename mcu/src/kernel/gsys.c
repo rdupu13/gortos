@@ -194,31 +194,25 @@ void gsys_update(unsigned int div)
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
         gout = 0;
-        
-        unsigned char addr[4] = {0x01, 0x02, 0xF3, 0xF4};
-        unsigned char arr[6] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
-        int spi_stat = spi_write(arr, 6, 0, addr, 2);
-        spi_stat = spi_read(arr, 6, 0, addr, 1);
 
-        /*
         unsigned char b = 0x4D;
-        unsigned char s;
+        unsigned char s = (b & 0x80);
         unsigned int i;
         for (i = 0; i < 8; i++)
         {
-            s = (b & 0x80);
             LEDSTICK_PORT &= ~LEDSTICK_PIN;
             if (s) {
                 __asm__ __volatile__("nop");
-                LEDSTICK_PORT |= LEDSTICK_PIN;
-                b = b << 1;
+                __asm__ __volatile__("nop");
+                __asm__ __volatile__("nop");
+                __asm__ __volatile__("nop");
+                __asm__ __volatile__("nop");
+                __asm__ __volatile__("nop");
+                __asm__ __volatile__("nop");
             }
-            else {
-                LEDSTICK_PORT |= LEDSTICK_PIN;
-                b = b << 1;
-            }
+            LEDSTICK_PORT |= LEDSTICK_PIN;
+            s = ((b << 1) & 0x80);
         }
-        */
     }
 }
 
