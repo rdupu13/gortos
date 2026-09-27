@@ -239,41 +239,64 @@ char *hex(unsigned int n)
 
 /**
  * @brief convert an unsigned integer to binary-coded decimal
- *
+ * DOUBLE DABBLE ALGORITHM!!!!!!!!!!!!
+ * 
+ * @param bcd 3 BYTES LONG BCD
+ * @param num 16-bit unsigned integer
+ */
 void uint_to_bcd(unsigned char *bcd, unsigned int num)
 {
-    // 16-bit unsigned int -> 5 x 4-bit BCD (char[3])
-    // 8-bit unsigned int -> 3 x 4-bit BCD (char[2])
+    unsigned char i;
+    for (i = 0; i < 16; i++)
+    {
+        if ((bcd[2] & 0x0F) >= 0x05) { bcd[2] += 0x03; }
+        if (bcd[1] >= 0x50)          { bcd[1] += 0x30; }
+        if ((bcd[1] & 0x0F) >= 0x05) { bcd[1] += 0x03; }
+        if (bcd[0] >= 0x50)          { bcd[0] += 0x30; }
+        if ((bcd[0] & 0x0F) >= 0x05) { bcd[0] += 0x03; }
+
+        bcd[2] = (bcd[2] << 1) | ((bcd[1] & 0x80) ? 1 : 0);
+        bcd[1] = (bcd[1] << 1) | ((bcd[0] & 0x80) ? 1 : 0);
+        bcd[0] = (bcd[0] << 1) | ((num & 0x8000) ? 1 : 0);
+        num = (num << 1);
+    }
+    unsigned char tmp = bcd[2];
+    bcd[2] = bcd[0];
+    bcd[0] = tmp;
 }
-*/
+
+
 
 /**
  * @brief convert unsigned integer to string representation
- *
+ */
 char *uint_to_dec(unsigned int num)
 {
     // 5 x 4-bit BCD (char[3]) -> char[5]
 }
-*/
+
+
 
 /**
  * @brief convert binary-coded decimal to an unsigned integer
- *
+ */
 void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len)
 {
     // 5 x 4-bit BCD (char[3]) -> 16-bit unsigned int
     // 3 x 4-bit BCD (char[2]) -> 8-bit unsigned int
 }
-*/
+
+
 
 /**
  * @brief convert decimal string representation to unsigned integer
- *
+ */
 unsigned int dec_to_uint(char *str)
 {
     // char[5] -> 5 x 4-bit BCD (char[3])
 }
-*/
+
+
 
 /**
  * @brief absolute value
