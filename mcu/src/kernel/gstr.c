@@ -21,7 +21,7 @@
 //-----------------------------------------------------------------------------
 
 char hex_str[5];
-char dec_str[] = "00000";
+char dec_str[] = "000000";
 
 
 //-----------------------------------------------------------------------------
@@ -243,6 +243,8 @@ char *hex(unsigned int n)
  * 
  * @param bcd 3 BYTES LONG BCD
  * @param num 16-bit unsigned integer
+ * 
+ * @return none
  */
 void uint_to_bcd(unsigned char *bcd, unsigned int num)
 {
@@ -265,28 +267,39 @@ void uint_to_bcd(unsigned char *bcd, unsigned int num)
     bcd[0] = tmp;
 }
 
-
-
 /**
  * @brief convert unsigned integer to string representation
+ * 
+ * @param num
+ * 
+ * @return 
  */
 char *uint_to_dec(unsigned int num)
 {
-    // 5 x 4-bit BCD (char[3]) -> char[5]
+    unsigned char bcd[] = {0x00, 0x00, 0x00};
+    uint_to_bcd(bcd, num);
+    hex_to_str(dec_str, bcd, 3);
+    unsigned int i;
+    for (i = 0; dec_str[i] == '0'; i++) {}
+    return dec_str + i;
 }
-
-
 
 /**
  * @brief convert binary-coded decimal to an unsigned integer
+ * 
+ * @param num 16-bit unsigned integer
+ * @param bcd 3-BYTES LONG BCD
+ * 
+ * @return none
  */
 void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len)
 {
-    // 5 x 4-bit BCD (char[3]) -> 16-bit unsigned int
-    // 3 x 4-bit BCD (char[2]) -> 8-bit unsigned int
+    num = (bcd[2] & 0x0F) * 10000;
+    num += (bcd[1] & 0xF0) * 1000;
+    num += (bcd[1] & 0x0F) * 100;
+    num += (bcd[0] & 0xF0) * 10;
+    num += (bcd[0] & 0x0F);
 }
-
-
 
 /**
  * @brief convert decimal string representation to unsigned integer
@@ -295,8 +308,6 @@ unsigned int dec_to_uint(char *str)
 {
     // char[5] -> 5 x 4-bit BCD (char[3])
 }
-
-
 
 /**
  * @brief absolute value

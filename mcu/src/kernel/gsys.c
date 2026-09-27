@@ -187,12 +187,12 @@ void gsys_update(unsigned int div)
         helloworld("\n");
 
         helloworld("Temp: ");
-        helloworld(hex(cur_temp));
-        helloworld("h degrees C");
+        helloworld(uint_to_dec(cur_temp));
+        helloworld(" C"); // TODO: add custom char for degree symbol
         
         helloworld("\nSpeed: ");
-        helloworld(hex(cur_speed));
-        helloworld("h\n\n");
+        helloworld(uint_to_dec(cur_speed));
+        helloworld("\n\n");
         gout = 0;
 
         unsigned char b = 0x4D;
