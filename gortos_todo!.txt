@@ -1,0 +1,27 @@
+
+
+Project 4:
+- TEMP:
+    - [] Improve temperature calculation
+- GSH:
+    - [] Set RTC date and time via UART
+    - [] Set window size via UART
+    x LED stick (8, 9, 9.1, 10)
+    x Remove RTC reg <-> pattern switch + LED
+
+Project 5:
+- LCD:
+    - Demo:
+    - [] Display all char
+    - [] Display on all segments
+    - Change UI:
+    - [] Display pattern name
+    - [] Display pattern period
+    - [] Display window size
+    - Fancy things:
+    - [] Cursor on/off
+    - [] Blinking on/off
+    - [] Custom char ()
+- SPI:
+    - [] DAC
+

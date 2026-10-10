@@ -58,6 +58,7 @@ int cur_temp;
 unsigned int cur_speed;
 
 
+
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
@@ -194,25 +195,20 @@ void gsys_update(unsigned int div)
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
         gout = 0;
+    }
 
-        unsigned char b = 0x4D;
-        unsigned char s = (b & 0x80);
-        unsigned int i;
-        for (i = 0; i < 8; i++)
-        {
-            LEDSTICK_PORT &= ~LEDSTICK_PIN;
-            if (s) {
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-            }
-            LEDSTICK_PORT |= LEDSTICK_PIN;
-            s = ((b << 1) & 0x80);
-        }
+    if ((timer_qcnt & 7) == 0)
+    {
+        // do every 2 seconds:
+
+        lcd_cursor_blink(1);
+    }
+
+    if ((timer_qcnt & 15) == 0)
+    {
+        // do every 4 seconds:
+
+        lcd_cursor_blink(0);
     }
 }
 

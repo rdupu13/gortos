@@ -49,7 +49,6 @@ int lcd_write_byte(
     unsigned char reg_sel
 );
 
-
 /**
  * @brief initialize lcd
  * 
@@ -74,40 +73,6 @@ int lcd_init(void)
     eep(5);
 
     return 0;
-}
-
-/**
- * @brief print a character to the lcd display
- * 
- * @param 
- * 
- * @return none
- */
-int lcd_write(
-    unsigned char *arr
-) {
-    unsigned int i;
-    for (i = 0; arr[i] != '\0'; i++)
-    {
-        lcd_write_byte(arr[i], 1);
-    }
-    return 0;
-}
-
-/**
- * @brief 
- * 
- * @param 
- * 
- * @return 
- */
-int lcd_set_cursor(
-    unsigned char row,
-    unsigned char col
-) {
-    lcd_line = row;
-    lcd_col = col;
-    return lcd_write_byte(0x80 | (lcd_line_addr[row] + col), 0);
 }
 
 /**
@@ -146,7 +111,7 @@ int lcd_write_byte(
     if (reg_sel) {
         if (byte == '\n' || (lcd_col == NUM_COLS)) {
             lcd_line = (lcd_line + 1) & 0x03;
-            lcd_set_cursor(lcd_line, 0);
+            lcd_cursor_goto(lcd_line, 0);
             if (byte == '\n') { return 0; }
         } else {    
             lcd_col++;
@@ -155,6 +120,78 @@ int lcd_write_byte(
     lcd_write_nibble(byte >> 4, reg_sel);
     lcd_write_nibble(byte & 0x0F, reg_sel);
     return 0;
+}
+
+/**
+ * @brief print a character to the lcd display
+ * 
+ * @param 
+ * 
+ * @return none
+ */
+int lcd_write(
+    unsigned char *arr
+) {
+    unsigned int i;
+    for (i = 0; arr[i] != '\0'; i++)
+    {
+        lcd_write_byte(arr[i], 1);
+    }
+    return 0;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_cursor(unsigned char state)
+{
+    int ret;
+    switch(state)
+    {
+        case 1: ret = lcd_write_byte(0x0F, 0); break;
+        case 0: ret = lcd_write_byte(0x0C, 0); break;
+        default: ret = -1; break;
+    }
+    return ret;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_cursor_blink(unsigned char state)
+{
+    int ret;
+    switch(state)
+    {
+        case 1: ret = lcd_write_byte(0x0F, 0); break;
+        case 0: ret = lcd_write_byte(0x0E, 0); break;
+        default: ret = -1; break;
+    }
+    return ret;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_cursor_goto(
+    unsigned char row,
+    unsigned char col
+) {
+    lcd_line = row;
+    lcd_col = col;
+    return lcd_write_byte(0x80 | (lcd_line_addr[row] + col), 0);
 }
 
 //-----------------------------------------------------------------------------

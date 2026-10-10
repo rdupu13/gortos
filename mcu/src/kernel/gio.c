@@ -119,7 +119,7 @@ void glear(void)
             break;
         
         case 1:
-            lcd_set_cursor(0, 0);
+            lcd_cursor_goto(0, 0);
             break;
         
         default: break;
