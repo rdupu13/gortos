@@ -110,20 +110,45 @@ int hellogort(char *arr, unsigned int len, char stop)
  * 
  * @return none
  */
-void glear(void)
+int glear(void)
 {
+    int ret;
     switch(gout)
     {
         case 0:
-            helloworld(PUTTY_CLEAR_SEQ);
+            ret = helloworld(PUTTY_CLEAR_SEQ);
             break;
         
         case 1:
-            lcd_cursor_goto(0, 0);
+            ret = lcd_clear();
+            if (ret) { return ret; }
+            ret = lcd_cursor_goto(0, 0);
             break;
         
-        default: break;
+        default: ret = -1; break;
     }
+    return ret;
+}
+
+/**
+ * 
+ */
+int ghome(void)
+{
+    int ret;
+    switch(gout)
+    {
+        case 0:
+            ret = helloworld("\r");
+            break;
+        
+        case 1:
+            ret = lcd_cursor_goto(0, 0);
+            break;
+        
+        default: ret = -1; break;
+    }
+    return ret;
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

@@ -39,8 +39,8 @@ extern int gout;
 int helloworld(char *arr);                              // write a null-terminated array to gout
 int hellogort(char *arr, unsigned int len, char stop);  // read an array from gin
 
-void glear(void); // write putty clear sequence to gout
-
+int glear(void); // write putty clear sequence to gout
+int ghome(void); // 
 
 #endif
 //-----------------------------------------------------------------------------

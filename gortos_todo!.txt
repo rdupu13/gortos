@@ -19,8 +19,8 @@ Project 5:
     - [] Display pattern period
     - [] Display window size
     - Fancy things:
-    - [] Cursor on/off
-    - [] Blinking on/off
+    - [x] Cursor on/off
+    - [x] Blinking on/off
     - [] Custom char ()
 - SPI:
     - [] DAC

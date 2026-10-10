@@ -56,6 +56,8 @@ int lcd_cursor_goto(
     unsigned char col
 );
 
+int lcd_clear(void);
+
 
 #endif
 //-----------------------------------------------------------------------------

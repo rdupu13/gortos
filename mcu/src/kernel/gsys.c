@@ -183,7 +183,7 @@ void gsys_update(unsigned int div)
     {
         // do every 1 second:
         gout = 1;
-        glear();
+        ghome();
         print_systime();
         helloworld("\n");
 

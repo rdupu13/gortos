@@ -194,6 +194,19 @@ int lcd_cursor_goto(
     return lcd_write_byte(0x80 | (lcd_line_addr[row] + col), 0);
 }
 
+/**
+ * @brief
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_clear(void)
+{
+    return lcd_write_byte(0x01, 0);
+}
+
+
 //-----------------------------------------------------------------------------
 //  END OF CODE
 //-----------------------------------------------------------------------------
