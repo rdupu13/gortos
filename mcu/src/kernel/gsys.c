@@ -99,6 +99,7 @@ void gsys_init(void)
     display_mode = 1;
     gin = 0;
     gout = 0;
+    wait_flag = &uart_rx_bg;
     glear();
 
     // DEVICES --------------------------------------------
@@ -181,38 +182,24 @@ void gsys_update(unsigned int div)
     if ((timer_qcnt & 3) == 0)
     {
         // do every 1 second:
-        gout = 1;
+        gout = 1; // LCD ----------------------------------
         glear();
         print_systime();
-        helloworld("\n");
-
-        helloworld("Temp: ");
+        
+        helloworld("\nTemp: ");
         helloworld(uint_to_dec(cur_temp));
         helloworld(" C"); // TODO: add custom char for degree symbol
         
         helloworld("\nSpeed: ");
         helloworld(uint_to_dec(cur_speed));
-        helloworld("\n\n");
-        gout = 0;
 
-        unsigned char b = 0x4D;
-        unsigned char s = (b & 0x80);
-        unsigned int i;
-        for (i = 0; i < 8; i++)
-        {
-            LEDSTICK_PORT &= ~LEDSTICK_PIN;
-            if (s) {
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-            }
-            LEDSTICK_PORT |= LEDSTICK_PIN;
-            s = ((b << 1) & 0x80);
-        }
+        //helloworld("\nWait flag: ");
+        //helloworld(uint_to_dec((unsigned int) *wait_flag));
+        gout = 0; // --------------------------------------
+
+        //helloworld(uint_to_dec(dec_to_uint(uint_to_dec(cur_qcnt))));
+        //helloworld("\n");
+
     }
 }
 

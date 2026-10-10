@@ -50,6 +50,8 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+extern volatile unsigned char uart_rx_bg;
+
 // initialize uart
 void uart_init(
     unsigned int baud,
@@ -58,15 +60,16 @@ void uart_init(
 
 // transmit an array over uart
 int uart_tx(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len
 );
 
 // receive an array over uart
 int uart_rx(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
-    unsigned char stop
+    unsigned char stop,
+    unsigned char bg
 );
 
 

@@ -67,8 +67,12 @@ int main_gsh(void)
         helloworld("$ ");
 
         // ------------------------------------------------
-        // wait and read in next command
-        hellogort(gsh_cmd, 0, '\r');
+        // read in next command, but update system while waiting
+        hellogort(gsh_cmd);
+        //while (*wait_flag != 0)
+        //{
+        //    gsys_update(1);
+        //}
         // ------------------------------------------------
         
         // split command by spaces

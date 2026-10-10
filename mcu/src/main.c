@@ -14,7 +14,7 @@
 //-----------------------------------------------------------------------------
 
 // drivers
-
+#include "drivers/switch.h"
 
 // devices
 
@@ -47,10 +47,14 @@ int main(void)
 {
     gsys_init(); // initialize gort system
 
-    //int gsh = main_gsh(); // launch gort shell
-    //gsys_log("gsh: exited with code:");
-    //gsys_log(hex(gabs(gsh)));
-
+    int gsh_code;
+    if (switch_poll(0) != 0)
+    {
+        gsh_code = main_gsh(); // launch gort shell
+        gsys_log("gsh: exited with code:");
+        gsys_log(uint_to_dec(gabs(gsh_code)));
+    }
+    
     while (1)
     {
         gsys_update(1);

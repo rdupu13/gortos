@@ -44,7 +44,7 @@ char *hex(unsigned int n);
 
 void uint_to_bcd(unsigned char *bcd, unsigned int num);
 char *uint_to_dec(unsigned int num);
-void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len);
+void bcd_to_uint(unsigned int *num, unsigned char *bcd);
 unsigned int dec_to_uint(char *str);
 
 unsigned int gabs(int i); // absolute value

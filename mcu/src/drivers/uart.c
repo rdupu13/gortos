@@ -32,8 +32,7 @@ volatile unsigned char uart_rxmode;
 volatile unsigned char uart_stop;
 volatile unsigned char uart_echo;
 
-volatile unsigned char uart_rx_buf[UART_RX_BUF_SIZE];
-volatile unsigned char uart_idle_rx;
+volatile unsigned char uart_rx_bg;
 
 
 //-----------------------------------------------------------------------------
@@ -84,14 +83,14 @@ void uart_init(
     UCA1IE &= ~(UCTXCPTIE | UCRXIE);    // disable tx/rx interrupts
     
     // initialize variables
-    uart_tx_buf_ptr = 0;
-    uart_rx_buf_ptr = uart_rx_buf;
+    uart_tx_buf_ptr = (volatile unsigned char *) 0;
+    uart_rx_buf_ptr = (volatile unsigned char *) 0;
     uart_cnt = 0;
     uart_busy = 0;
     uart_rxmode = 0;
     uart_stop = '\r';
     uart_echo = echo;
-    uart_idle_rx = 0;
+    uart_rx_bg = 0;
 }
 
 /**
@@ -102,18 +101,17 @@ void uart_init(
  * 
  * @return status of transmit:
  *               0: ok
- *               1: uart busy
- *              -1: 0 length error
+ *              -1: uart busy
+ *              -2: 0 length error
  */
 int uart_tx(
-    volatile unsigned char *arr, // pronounced "char star arr"
+    unsigned char *arr, // pronounced "char star arr"
     unsigned int len
 ) {
-    if (len == 0) { return -1; }
-
-    if (uart_busy) { return 1; }
+    if (uart_busy) { return -1; }
+    if (len == 0) { return -2; }
     
-    uart_tx_buf_ptr = arr;
+    uart_tx_buf_ptr = (volatile unsigned char *) arr;
     uart_cnt = len - 1;
     
     UCA1IFG = 0;            // clear interrupt flags
@@ -127,11 +125,6 @@ int uart_tx(
 
     UCA1IE &= ~UCTXCPTIE; // disable tx complete interrupts
     
-    // restore previous rx interrupt enable state
-    if (uart_idle_rx) {
-        UCA1IE |= UCRXIE;
-    }
-    
     return 0;
 }
 
@@ -141,19 +134,21 @@ int uart_tx(
  * @param arr   pointer to array to store received data
  * @param len   number of bytes to read (> 0)
  * @param stop  if len = 0, read until this character received
+ * @param bg    receive in background
  * 
  * @return status of receive:
  *               0: ok
- *               1: uart busy
+ *              -1: uart busy
  */
 int uart_rx(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
-    unsigned char stop
+    unsigned char stop,
+    unsigned char bg
 ) {
-    if (uart_busy) { return 1; }
+    if (uart_busy) { return -1; }
 
-    uart_rx_buf_ptr = arr;
+    uart_rx_buf_ptr = (volatile unsigned char *) arr;
     uart_cnt = len;
     uart_stop = stop;
 
@@ -163,10 +158,10 @@ int uart_rx(
     UCA1IE |= UCRXIE; // enable rx buffer full interrupts
     
     uart_busy = 1;
-    while(uart_busy) {} // wait until rx done
-    
-    // restore previous rx interrupt enable state
-    if (!uart_idle_rx) {
+    if (bg) {
+        uart_rx_bg = 1; // begin receiving in background
+    } else {
+        while(uart_busy) {} // wait until rx done
         UCA1IE &= ~UCRXIE;
     }
 
@@ -180,6 +175,7 @@ int uart_rx(
 
 void __attribute__((interrupt(UART_VECTOR))) isr_uart(void)
 {
+    
     switch(UCA1IV)
     {
         case 0x00: break; // no interrupts
@@ -194,20 +190,13 @@ void __attribute__((interrupt(UART_VECTOR))) isr_uart(void)
             {
                 UCA1TXBUF = *uart_rx_buf_ptr;
             }
-
-            // if idley receiving, create circular buffer
-            if (uart_idle_rx
-                && (uart_rx_buf_ptr == (uart_rx_buf + UART_RX_BUF_SIZE - 1))
-            ) {
-                uart_rx_buf_ptr = uart_rx_buf;
-                break;
-            }
             
             // check stop criteria
             if ((!uart_rxmode && (uart_cnt == 0))
                 || (uart_rxmode && (*uart_rx_buf_ptr == uart_stop))
             ) {
                 uart_busy = 0; // not busy
+                uart_rx_bg = 0; // stop receiving in background
             }
                         
             uart_rx_buf_ptr++; // increment pointer

@@ -128,7 +128,7 @@ unsigned char gstr_cmp(char *dst, char *src)
 /**
  * @brief convert hexadecimal to string representation
  * 
- * @param str string representation of hexadecimal
+ * @param str string representation of hexadecimal (len x2)
  * @param hex hexadecimal to be converted
  * @param len length of hexadecimal array
  * 
@@ -287,18 +287,18 @@ char *uint_to_dec(unsigned int num)
 /**
  * @brief convert binary-coded decimal to an unsigned integer
  * 
- * @param num 16-bit unsigned integer
+ * @param num pointer to a 16-bit unsigned integer
  * @param bcd 3-BYTES LONG BCD
  * 
  * @return none
  */
-void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len)
+void bcd_to_uint(unsigned int *num, unsigned char *bcd)
 {
-    num = (bcd[2] & 0x0F) * 10000;
-    num += (bcd[1] & 0xF0) * 1000;
-    num += (bcd[1] & 0x0F) * 100;
-    num += (bcd[0] & 0xF0) * 10;
-    num += (bcd[0] & 0x0F);
+    *num =  ((bcd[2] & 0x0F) * 10000);
+    *num += (((bcd[1] & 0xF0) >> 4) * 1000);
+    *num += ((bcd[1] & 0x0F) * 100);
+    *num += (((bcd[0] & 0xF0) >> 4) * 10);
+    *num += (bcd[0] & 0x0F);
 }
 
 /**
@@ -306,7 +306,11 @@ void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len)
  */
 unsigned int dec_to_uint(char *str)
 {
-    // char[5] -> 5 x 4-bit BCD (char[3])
+    unsigned int dec;
+    unsigned char bcd[] = {0x00, 0x00, 0x00};
+    str_to_hex(bcd, str);
+    bcd_to_uint(&dec, bcd);
+    return dec;
 }
 
 /**
