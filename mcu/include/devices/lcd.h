@@ -47,7 +47,7 @@ int lcd_init(void); // initialize lcd
 
 int lcd_write(unsigned char *arr);
 
-int lcd_cursor(unsigned char state);
+int lcd_cursor_show(unsigned char state);
 
 int lcd_cursor_blink(unsigned char state);
 
@@ -57,6 +57,8 @@ int lcd_cursor_goto(
 );
 
 int lcd_clear(void);
+
+int lcd_test(void);
 
 
 #endif

@@ -147,7 +147,7 @@ int lcd_write(
  * 
  * @return 
  */
-int lcd_cursor(unsigned char state)
+int lcd_cursor_show(unsigned char state)
 {
     int ret;
     switch(state)
@@ -206,6 +206,24 @@ int lcd_clear(void)
     return lcd_write_byte(0x01, 0);
 }
 
+/**
+ * @brief
+ * 
+ * @param
+ * 
+ * @return 
+ */
+int lcd_test(void)
+{
+    int ret;
+    char c; 
+    for (c = 32; c < 127; c++) {
+        ret = lcd_write_byte(c, 1);
+        if (ret) { return ret; }
+        eep(250);
+    }
+    return ret;
+}
 
 //-----------------------------------------------------------------------------
 //  END OF CODE

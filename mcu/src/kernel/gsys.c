@@ -99,6 +99,8 @@ void gsys_init(void)
     // KERNEL -----------------------------------------------------------------
     display_mode = 1;
     gin = 0;
+    gout = 1;
+    glear();
     gout = 0;
     glear();
 
@@ -125,6 +127,8 @@ void gsys_init(void)
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
+    lcd_cursor_show(0);
+    lcd_cursor_blink(0);
     
     //pwm_init(); // timer
     //dial_init(); // led, switch
@@ -201,14 +205,12 @@ void gsys_update(unsigned int div)
     {
         // do every 2 seconds:
 
-        lcd_cursor_blink(1);
     }
 
     if ((timer_qcnt & 15) == 0)
     {
         // do every 4 seconds:
 
-        lcd_cursor_blink(0);
     }
 }
 

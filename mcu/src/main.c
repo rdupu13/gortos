@@ -51,6 +51,11 @@ int main(void)
     //gsys_log("gsh: exited with code:");
     //gsys_log(hex(gabs(gsh)));
 
+    lcd_test();
+    gout = 1;
+    glear();
+    gout = 0;
+
     while (1)
     {
         gsys_update(1);
