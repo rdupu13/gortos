@@ -15,6 +15,9 @@
 
 #include "devices/lcd.h"
 
+// drivers
+#include "drivers/spi.h"
+
 // devices
 #include "devices/ioexp.h"
 
@@ -71,6 +74,8 @@ int lcd_init(void)
     lcd_write_byte(0x0F, 0); // display on, cursor + blink on
     lcd_write_byte(0x01, 0); // clear display
     eep(5);
+
+    lcd_contrast_set(0);
 
     return 0;
 }
@@ -217,12 +222,35 @@ int lcd_test(void)
 {
     int ret;
     char c; 
-    for (c = 32; c < 127; c++) {
+    for (c = 32; c < 255; c++) {
         ret = lcd_write_byte(c, 1);
         if (ret) { return ret; }
-        eep(250);
+        eep(100);
     }
+    eep(1000);
     return ret;
+}
+
+/**
+ * @brief
+ * 
+ * @param
+ * 
+ * @return
+ */
+int lcd_contrast_set(unsigned char val)
+{
+    unsigned char dac_in[] = {0b00110000, 0b00000000};
+    dac_in[0] |= ((val >> 4) & 0x0F);
+    dac_in[1] |= ((val << 4) & 0xF0);
+    int stat = spi_write(
+        dac_in,
+        2,
+        DAC_SPI_ADDR,
+        (unsigned char *) 0,
+        0
+    );
+    return stat;
 }
 
 //-----------------------------------------------------------------------------

@@ -199,12 +199,14 @@ void gsys_update(unsigned int div)
         helloworld(hex(cur_speed));
         helloworld("h\n\n");
         gout = 0;
+
+        lcd_contrast_set((unsigned char) ((timer_qcnt & 0x03FC)));
     }
 
     if ((timer_qcnt & 7) == 0)
     {
         // do every 2 seconds:
-
+        
     }
 
     if ((timer_qcnt & 15) == 0)

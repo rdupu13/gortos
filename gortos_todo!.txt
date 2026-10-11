@@ -12,8 +12,8 @@ Project 4:
 Project 5:
 - LCD:
     - Demo:
-    - [] Display all char
-    - [] Display on all segments
+    - [x] Display all char
+    - [x] Display on all segments
     - Change UI:
     - [] Display pattern name
     - [] Display pattern period

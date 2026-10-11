@@ -60,6 +60,8 @@ int lcd_clear(void);
 
 int lcd_test(void);
 
+int lcd_contrast_set(unsigned char val);
+
 
 #endif
 //-----------------------------------------------------------------------------
