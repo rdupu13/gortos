@@ -196,9 +196,11 @@ void gsys_update(unsigned int div)
         //helloworld("\nWait flag: ");
         //helloworld(uint_to_dec((unsigned int) *wait_flag));
         gout = 0; // --------------------------------------
-
-        //helloworld(uint_to_dec(dec_to_uint(uint_to_dec(cur_qcnt))));
-        //helloworld("\n");
+        
+        helloworld(uint_to_dec(cur_qcnt));
+        helloworld("\n");
+        helloworld(uint_to_dec(dec_to_uint(uint_to_dec(cur_qcnt))));
+        helloworld("\n");
 
     }
 }

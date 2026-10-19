@@ -122,8 +122,7 @@ int lcd_write_nibble(
     unsigned char nibble,
     unsigned char reg_sel
 ) {
-    unsigned char base = \
-        ((nibble & 0x0F) << 4) | (reg_sel ? LCD_RS : 0);
+    unsigned char base = ((nibble & 0x0F) << 4) | (reg_sel ? LCD_RS : 0);
     
     ioexp_write(base);
     ioexp_write(base | LCD_EN);
