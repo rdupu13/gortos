@@ -23,5 +23,5 @@ Project 5:
     - [x] Blinking on/off
     - [] Custom char ()
 - SPI:
-    - [] DAC
+    - [x] DAC ?
 

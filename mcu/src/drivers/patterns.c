@@ -29,6 +29,7 @@ volatile unsigned char fillr_cnt;
 // ------------------------------------
 
 volatile int cur_pattern_num;
+volatile char *cur_pattern_name;
 
 volatile unsigned int test_pattern;
 volatile unsigned int pattern0;
@@ -37,6 +38,14 @@ volatile unsigned int pattern2;
 volatile unsigned int pattern3;
 volatile unsigned int pattern4; volatile unsigned char pattern4_qcnt; // annoying TODO: remove somehow
 volatile unsigned int pattern5;
+
+volatile char test_pattern_name[] = "Test";
+volatile char pattern0_name[] = PATTERN0_NAME;
+volatile char pattern1_name[] = PATTERN1_NAME;
+volatile char pattern2_name[] = PATTERN2_NAME;
+volatile char pattern3_name[] = PATTERN3_NAME;
+volatile char pattern4_name[] = PATTERN4_NAME;
+volatile char pattern5_name[] = PATTERN5_NAME;
 
 volatile unsigned int *cur_pattern;
 
@@ -85,6 +94,7 @@ void patterns_init(void)
     pattern5 = PATTERN5_INIT;
 
     cur_pattern = &pattern0;
+    cur_pattern_name = pattern0_name;
     cur_pattern_num = 0;
 }
 
@@ -100,14 +110,38 @@ void patterns_sel(int sel)
     cur_pattern_num = sel;
     switch(sel)
     {
-        case -1: cur_pattern = &test_pattern; break;
-        case 0: cur_pattern = &pattern0; break;
-        case 1: cur_pattern = &pattern1; break;
-        case 2: cur_pattern = &pattern2; break;
-        case 3: cur_pattern = &pattern3; break;
-        case 4: cur_pattern = &pattern4; break;
-        case 5: cur_pattern = &pattern5; break;
-        default: cur_pattern = &test_pattern; break;
+        case -1:
+            cur_pattern = &test_pattern;
+            cur_pattern_name = test_pattern_name;
+            break;
+        case 0:
+            cur_pattern = &pattern0;
+            cur_pattern_name = pattern0_name;
+            break;
+        case 1:
+            cur_pattern = &pattern1;
+            cur_pattern_name = pattern1_name;
+            break;
+        case 2:
+            cur_pattern = &pattern2;
+            cur_pattern_name = pattern2_name;
+            break;
+        case 3:
+            cur_pattern = &pattern3;
+            cur_pattern_name = pattern3_name;
+            break;
+        case 4:
+            cur_pattern = &pattern4;
+            cur_pattern_name = pattern4_name;
+            break;
+        case 5:
+            cur_pattern = &pattern5;
+            cur_pattern_name = pattern5_name;
+            break;
+        default:
+            cur_pattern = &test_pattern;
+            cur_pattern_name = test_pattern_name;
+            break;
     }
 }
 

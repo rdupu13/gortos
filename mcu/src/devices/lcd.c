@@ -118,12 +118,13 @@ int lcd_write_byte(
             lcd_line = (lcd_line + 1) & 0x03;
             lcd_cursor_goto(lcd_line, 0);
             if (byte == '\n') { return 0; }
-        } else {    
-            lcd_col++;
-        }
+        } 
     }
     lcd_write_nibble(byte >> 4, reg_sel);
     lcd_write_nibble(byte & 0x0F, reg_sel);
+    if (reg_sel) {
+        lcd_col++;
+    }
     return 0;
 }
 
@@ -222,10 +223,10 @@ int lcd_test(void)
 {
     int ret;
     char c; 
-    for (c = 32; c < 255; c++) {
+    for (c = 32; c < 128; c++) {
         ret = lcd_write_byte(c, 1);
         if (ret) { return ret; }
-        eep(100);
+        eep(150);
     }
     eep(1000);
     return ret;

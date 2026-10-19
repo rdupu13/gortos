@@ -128,7 +128,6 @@ void gsys_init(void)
         gsys_log("gsys: lcd init successful :)");
     }
     lcd_cursor_show(0);
-    lcd_cursor_blink(0);
     
     //pwm_init(); // timer
     //dial_init(); // led, switch
@@ -188,19 +187,24 @@ void gsys_update(unsigned int div)
         // do every 1 second:
         gout = 1;
         ghome();
-        print_systime();
+        
+        helloworld(cur_pattern_name);
+        helloworld("      \n");
+
+        helloworld("Period = ");
+        helloworld(hex(cur_speed));
+        helloworld(" s\n");
+
+        helloworld(hex(cur_temp));
+        helloworld(".5 'C       ");
+
+        helloworld("N = ");
+        helloworld(hex(window_size));
         helloworld("\n");
 
-        helloworld("Temp: ");
-        helloworld(hex(cur_temp));
-        helloworld("h degrees C");
-        
-        helloworld("\nSpeed: ");
-        helloworld(hex(cur_speed));
-        helloworld("h\n\n");
+        print_systime();
+        helloworld("\n");
         gout = 0;
-
-        lcd_contrast_set((unsigned char) ((timer_qcnt & 0x03FC)));
     }
 
     if ((timer_qcnt & 7) == 0)
