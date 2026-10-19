@@ -58,6 +58,7 @@ int cur_temp;
 unsigned int cur_speed;
 
 
+
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
@@ -98,6 +99,8 @@ void gsys_init(void)
     // KERNEL -----------------------------------------------------------------
     display_mode = 1;
     gin = 0;
+    gout = 1;
+    glear();
     gout = 0;
     wait_flag = &uart_rx_bg;
     glear();
@@ -125,6 +128,7 @@ void gsys_init(void)
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
+    lcd_cursor_show(0);
     
     //pwm_init(); // timer
     //dial_init(); // led, switch
@@ -183,24 +187,42 @@ void gsys_update(unsigned int div)
     {
         // do every 1 second:
         gout = 1; // LCD ----------------------------------
-        glear();
-        print_systime();
+        ghome();
         
-        helloworld("\nTemp: ");
-        helloworld(uint_to_dec(cur_temp));
-        helloworld(" C"); // TODO: add custom char for degree symbol
-        
-        helloworld("\nSpeed: ");
-        helloworld(uint_to_dec(cur_speed));
+        helloworld(cur_pattern_name);
+        helloworld("      \n");
 
-        //helloworld("\nWait flag: ");
-        //helloworld(uint_to_dec((unsigned int) *wait_flag));
+        helloworld("Period = ");
+        helloworld(hex(cur_speed));
+        helloworld(" s\n");
+
+        helloworld(hex(cur_temp));
+        helloworld(".5 'C       ");
+
+        helloworld("N = ");
+        helloworld(hex(window_size));
+        helloworld("\n");
+
+        print_systime();
+        helloworld("\n");
         gout = 0; // --------------------------------------
+        
         
         helloworld(uint_to_dec(cur_qcnt));
         helloworld("\n");
         helloworld(uint_to_dec(dec_to_uint(uint_to_dec(cur_qcnt))));
         helloworld("\n");
+    }
+
+    if ((timer_qcnt & 7) == 0)
+    {
+        // do every 2 seconds:
+        
+    }
+
+    if ((timer_qcnt & 15) == 0)
+    {
+        // do every 4 seconds:
 
     }
 }
