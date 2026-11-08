@@ -1,7 +1,7 @@
 # Lab 5: LCD and DAC
 
 #### Ryan Dupuis
-#### EELE 465 | 10//2026
+#### EELE 465 | 11//2026
 
 ## Introduction
 

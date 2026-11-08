@@ -42,20 +42,19 @@ Follow instructions [[here](https://github.com/rdupu13/msp430-dev/blob/main/msp4
 
 This project was created in part to fulfill the requirements of the MSU course [EELE 465 - Microcontroller Applications](https://catalog.montana.edu/coursedescriptions/eele/). Below are reports detailing the development and testing of several components of the Gort System:
 
-* Lab 0: [Heartbeat LED](mcu/test/main.c)
-* Lab 1: GitHub and Markdown
+* Lab 0: [Heartbeat LED](mcu/test/main.c) (circa. 2024)
+* Lab 1: GitHub and Markdown (circa. 2025)
 * Lab 2: [I2C Bit-Banging](docs/labs/lab2_i2c_bb.md) (8/24/2026)
-* Lab 3: [RTC and LED Patterns](docs/labs/lab3_rtc_patterns.md) (~7/26/2026)
-* Lab 4: [ADC and SPI](docs/labs/lab4_adc_spi.md) (9//2026)
-* Lab 5: LCD and DAC
-* Lab 6: Dial and Menu
-* Lab 7: Thermoelectric Cooler System
-* Final Project: Gort OS
+* Lab 3: [RTC and LED Patterns](docs/labs/lab3_rtc_patterns.md) (~7/12/2026 - 7/26/2026)
+* Lab 4: [ADC and SPI](docs/labs/lab4_adc_spi.md) (8/9/2026 - ~8/30/2026)
+* Lab 5: [LCD and DAC](docs/labs/lab5_lcd_dac.md) (~9/1/2026 - 11//2026)
+* Lab 6: [Dial and Menu](docs/labs/lab6_dial_menu.md) (11//2026)
+* Final Project: [Serial RAM and File System Interface](docs/planning/final_project_proposal.md) (p. 11/9/2026)
 
 [Course BOM](docs/planning/eele465_bom.md)
 
 ## Breadboard
-![Gort OS Breadboard](docs/assets/photo/board4.jpg)
+![Gort OS Breadboard](docs/assets/photo/board10.jpg)
 
 ## Circuit Diagram
 ![Gort OS Circuit Diagram](docs/assets/gortos_circuit.svg)
