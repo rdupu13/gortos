@@ -61,7 +61,8 @@ CCFLAGS =	-mmcu=$(MCU) \
 # LINKER FLAGS --------------------------------------------
 LDFLAGS = 	-mmcu=$(MCU) \
 			-L $(TOOLDIR)/msp430-elf/lib \
-			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld
+			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld \
+			-Wl,-Map=gort.map
 # ---------------------------------------------------------
 
 # SOURCE CODE SEARCH ------------------

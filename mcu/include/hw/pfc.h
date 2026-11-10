@@ -141,8 +141,8 @@ RHS:
 #define SPI_CS0_PORT    P1OUT
 #define SPI_CS0_PIN     BIT4
 
-#define SPI_CS1_PORT // chip select 1 port
-#define SPI_CS1_PIN // chip select 1 port
+#define SPI_CS1_PORT    P3OUT
+#define SPI_CS1_PIN     BIT5
 
 #define SPI_CS2_PORT // chip select 2 port
 #define SPI_CS2_PIN // chip select 2 port
@@ -205,12 +205,14 @@ RHS:
 // --------------------------------------------------------
 
 // board configuration ------------------------------------
-// rtc (i2c)
+// rtc (i2c) --------------------------
 #define RTC_MCP7940N
+// ------------------------------------
 
-// mmm (spi)
+// mmm (spi) --------------------------
 #define MMM_23LC1024
-#define MMM_SPI_SLAVE_NUM 0
+#define MMM_SPI_CS      0
+// ------------------------------------
 
 // io expander (i2c) ------------------
 #define IOEXP_MCP23008
@@ -223,19 +225,13 @@ RHS:
 
 // lcd (io expander) ------------------
 #define LCD_NHD_0420AZ_FL_YBW_33V3
-
 // ------------------------------------
 
 // dac (spi) --------------------------
 #define DAC_MCP4801
-#define DAC_SPI_ADDR    0
+#define DAC_SPI_CS      1
 // ------------------------------------
 
-// --------------------------------------------------------
-
-// lora ---------------------------------------------------
-//#define LORA_RESET_PORT         P3OUT
-//#define LORA_RESET_PIN          BIT5
 // --------------------------------------------------------
 
 //-----------------------------------------------------------------------------

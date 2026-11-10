@@ -15,14 +15,8 @@
 
 #include "kernel/gfs.h"
 
-// drivers
-#include "drivers/uart.h"
-
 // devices
-#include "devices/dial.h"
 #include "devices/mmm.h"
-#include "devices/lcd.h"
-#include "devices/lora.h"
 
 // kernel
 #include "kernel/gstr.h"
@@ -33,10 +27,6 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-gfile_t uart;
-//gfile_t lcd;
-//gfile_t dial;
-//gfile_t lora;
 
 
 //-----------------------------------------------------------------------------
@@ -48,39 +38,7 @@ gfile_t uart;
  */
 void gfs_init(void)
 {
-    // uart ---------------------------
-    uart.mode = 0b00011010;
-    uart.size = 0;
-    uart.loaded = 1;
-    gstr_copy(uart.name, "uart", 5);
-    uart.blk = 0;
-    // --------------------------------
-
-    /*
-    // lcd ----------------------------
-    lcd.mode = 0b00101010;
-    lcd.size = 0;
-    lcd.loaded = 1;
-    gopy(lcd.name, "lcd", 5);
-    lcd.blk = 0;
-    // --------------------------------
-
-    // dial ---------------------------
-    dial.mode = 0b01010010;
-    dial.size = 0;
-    dial.loaded = 1;
-    gopy(dial.name, "dial", 5);
-    dial.blk = 0;
-    // --------------------------------
-
-    // lora ---------------------------
-    lora.mode = 0b01111010;
-    lora.size = 0;
-    lora.loaded = 1;
-    gopy(lora.name, "lora", 5);
-    lora.blk = 0;
-    // --------------------------------
-    */
+    
 
 }
 

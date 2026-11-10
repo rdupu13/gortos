@@ -68,6 +68,10 @@ void spi_init(
     UCA0CTLW0 |= UCMST;         // master mode
     UCA0CTLW0 |= UCMODE_0;      // 3-pin spi mode
     UCA0CTLW0 |= UCMSB;         // MSB first
+
+    UCA0CTLW0 &= ~UCCKPH;
+    UCA0CTLW0 |= UCCKPL;
+    
     UCA0CTLW0 &= ~UCSWRST;      // take peripheral out of software reset
 
     // setup interrupts
@@ -236,9 +240,8 @@ void spi_start(unsigned char slave)
 {
     switch(slave)
     {
-        case 0:
-            SPI_CS0_PORT &= ~SPI_CS0_PIN;
-            break;
+        case 0: SPI_CS0_PORT &= ~SPI_CS0_PIN; break;
+        case 1: SPI_CS1_PORT &= ~SPI_CS1_PIN; break;
         default: break;
     }
 }
@@ -252,9 +255,8 @@ void spi_stop(unsigned char slave)
 {
     switch(slave)
     {
-        case 0:
-            SPI_CS0_PORT |= SPI_CS0_PIN;
-            break;
+        case 0: SPI_CS0_PORT |= SPI_CS0_PIN; break;
+        case 1: SPI_CS1_PORT |= SPI_CS1_PIN; break;
         default: break;
     }
 }

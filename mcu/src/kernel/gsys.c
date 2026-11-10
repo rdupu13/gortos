@@ -99,10 +99,7 @@ void gsys_init(void)
     // KERNEL -----------------------------------------------------------------
     display_mode = 1;
     gin = 0;
-    gout = 1;
-    glear();
     gout = 0;
-    wait_flag = &uart_rx_bg;
     glear();
 
     // DEVICES --------------------------------------------
@@ -122,21 +119,24 @@ void gsys_init(void)
         gsys_log("gsys: io expander init successful :)");
     }
 
-    int lcd_stat = lcd_init(); // ioexp
+    int lcd_stat = lcd_init(); // ioexp, spi
     if (lcd_stat) {
         die("gsys: lcd init failed :(");
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
-    lcd_cursor_show(0);
     
-    //pwm_init(); // timer
     //dial_init(); // led, switch
-    //mmm_init(); // spi
-    //lora_init(); // spi
-    // ----------------------------------------------------    
 
-    //gfs_init(); // mmm, (uart, lcd, lora)?
+    //mmm_init(); // spi
+    
+    // ----------------------------------------------------    
+    
+    gout = 1;
+    glear();
+    gout = 0;
+    
+    //gfs_init(); // mmm
     
     // initialize gort blocks TODO: maybe clunky, but for fun
     int i;
@@ -173,10 +173,7 @@ void gsys_update(unsigned int div)
         == (timer_qcnt & ~(div - 1)))
     {
         // do instantly:
-        cur_speed = (((adc_read(1) & 0xF00) >> 8)*1843) + 3276;
-        timer_ccr_set(0, 0, cur_speed);
         
-        cur_temp = temp_analog_avg(adc_read(0));
     }
     cur_qcnt = timer_qcnt;
 
@@ -193,11 +190,13 @@ void gsys_update(unsigned int div)
         helloworld("      \n");
 
         helloworld("Period = ");
-        helloworld(hex(cur_speed));
+        helloworld(uint_to_dec(cur_speed));
         helloworld(" s\n");
 
-        helloworld(hex(cur_temp));
-        helloworld(".5 'C       ");
+        helloworld(uint_to_dec(cur_temp));
+        helloworld(".5 ");
+        helloworld("\xDF");
+        helloworld("C       ");
 
         helloworld("N = ");
         helloworld(hex(window_size));
@@ -206,24 +205,16 @@ void gsys_update(unsigned int div)
         print_systime();
         helloworld("\n");
         gout = 0; // --------------------------------------
-        
-        
-        helloworld(uint_to_dec(cur_qcnt));
-        helloworld("\n");
-        helloworld(uint_to_dec(dec_to_uint(uint_to_dec(cur_qcnt))));
-        helloworld("\n");
     }
 
     if ((timer_qcnt & 7) == 0)
     {
         // do every 2 seconds:
-        
     }
 
     if ((timer_qcnt & 15) == 0)
     {
         // do every 4 seconds:
-
     }
 }
 
@@ -364,7 +355,7 @@ void qcnt_update(unsigned int qcnt)
 }
 
 /**
- * @brief update things faster (256 Hz) TODO: APP
+ * @brief update things faster (8 Hz)
  * 
  * @param fcnt timer "fast" counter
  * 
@@ -372,7 +363,10 @@ void qcnt_update(unsigned int qcnt)
  */
 void fcnt_update(unsigned int fcnt)
 {
-    
+    cur_speed = (((adc_read(1) & 0xF00) >> 8)*1843) + 3276;
+    timer_ccr_set(0, 0, cur_speed);
+        
+    cur_temp = temp_analog_avg(adc_read(0));
 }
 
 /**

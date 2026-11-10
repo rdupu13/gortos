@@ -194,7 +194,7 @@ __interrupt void isr_tb0_iv(void)
 // ----------------------------------------------------------------------------
 
 #if TIMER_B1_TOGGLE // --------------------------------------------------------
-__attribute__((interrupt(TIMER1_B0_VECTOR))) isr_tb1_ccr0
+__attribute__((interrupt(TIMER1_B0_VECTOR))) isr_tb1_ccr0(void)
 {
     fcnt_update(timer_fcnt);
     timer_fcnt++;

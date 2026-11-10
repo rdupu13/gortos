@@ -36,6 +36,7 @@ unsigned char lcd_col;
 
 unsigned char lcd_line_addr[NUM_LINES] = {0x00, 0x40, 0x14, 0x54};
 
+extern unsigned char lcd_contrast;
 
 
 //-----------------------------------------------------------------------------
@@ -75,7 +76,8 @@ int lcd_init(void)
     lcd_write_byte(0x01, 0); // clear display
     eep(5);
 
-    lcd_contrast_set(0);
+    //lcd_contrast_set(0);
+    lcd_cursor_show(0);
 
     return 0;
 }
@@ -134,9 +136,8 @@ int lcd_write_byte(
  * 
  * @return none
  */
-int lcd_write(
-    unsigned char *arr
-) {
+int lcd_write(unsigned char *arr)
+{
     unsigned int i;
     for (i = 0; arr[i] != '\0'; i++)
     {
@@ -240,13 +241,19 @@ int lcd_test(void)
  */
 int lcd_contrast_set(unsigned char val)
 {
+    // truncate contrast value, can't see shit above like 64
+    if (val > 99) {
+        val = 99;
+    }
+
     unsigned char dac_in[] = {0b00110000, 0b00000000};
     dac_in[0] |= ((val >> 4) & 0x0F);
     dac_in[1] |= ((val << 4) & 0xF0);
+    
     int stat = spi_write(
         dac_in,
         2,
-        DAC_SPI_ADDR,
+        DAC_SPI_CS,
         (unsigned char *) 0,
         0
     );

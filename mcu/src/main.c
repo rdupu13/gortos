@@ -55,11 +55,14 @@ int main(void)
         gsys_log(uint_to_dec(gabs(gsh_code)));
     }
 
-    lcd_test();
-    gout = 1;
-    glear();
-    gout = 0;
-
+    if (switch_poll(1) != 0)
+    {
+        lcd_test();
+        gout = 1;
+        glear();
+        gout = 0;
+    }
+    
     while (1)
     {
         gsys_update(1);
