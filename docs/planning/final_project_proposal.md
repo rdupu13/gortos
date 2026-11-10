@@ -1,7 +1,7 @@
 # Final Project Proposal
 
 #### Ryan Dupuis
-#### EELE 465 | 11/9/2026
+#### EELE 465 | 11/10/2026
 
 ## Embedded System Description
 
@@ -23,13 +23,19 @@ A **23LC1024 Serial SRAM** is to be connected to the existing SPI lines and the 
 
 ## Software Overview
 
+![Final Project Software Architecture](../../../gortos/docs/assets/fp_softarch.svg)
+
+### Mini Memory Manager
+
 Built atop the SPI driver interface, a device driver called the [Mini Memory Manager (MMM)](../../mcu/src/devices/mmm.c) is to control the 23LC1024 and expose its basic functionality. Too keep it as simple as possible, it only has 2 functions (besides `mmm_init`): `mmm_load_block` and `mmm_store_block`. According to some fixed system `BLK_SIZE` (default 256 bytes), the MMM will divide the memory into chunks for simple loading and storing. Initialization will simply read from the mode register, set its upper two bits to '10', and write it back.
 
 Both loading and storing begin on SPI with a 1-byte instruction indicating the transaction type (x03 for Read, x02 for write). Then, a 3-byte (17-bit) address is sent to . The driver will do the work of determining which address to begin at given the block object pointer (`*gblk_t blk`) and the helper function `get_mmm_addr`. For simplicity, only the lower 2 bytes of the address will be used in this project, so the first address byte is always x00. The bytes after the address are the data to be read from/written to that location. The caller must allocate the necessary cache space on MCU RAM for each block.
 
 ![MMM Flowcharts](../assets/mmm_flowchart.svg)
 
-An additional kernel layer named the [Gort File System (GFS)](../../mcu/src/kernel/gfs.c) will keep track of files stored on the MMM. Via the [Gort Shell](../../mcu/src/apps/gsh.c), it will allow users to create (`file_open`) and edit (`file_write`, `file_read`) "large" files. GFS will keep track of a local cache of Gort Blocks (`gblks`) in MCU RAM. Since space is limited, the default number of Gort Blocks is 2. As the caller of the MMM's load and store functions, it must provide a pointer to each  `gblk_t` that a file is using. Each `gfile_t` will contain the following metadata:
+### Gort File System
+
+An additional kernel layer named the [Gort File System (GFS)](../../mcu/src/kernel/gfs.c) will keep track of files stored on the MMM. Via the Gort Shell, it will allow users to create (`file_open`) and edit (`file_write`, `file_read`) "large" files. GFS will keep track of a local cache of Gort Blocks (`gblks`) in MCU RAM. Since space is limited, the default number of Gort Blocks is 2. As the caller of the MMM's load and store functions, it must provide a pointer to each  `gblk_t` that a file is using. Each `gfile_t` will contain the following metadata:
 
 * Mode: 000 rwx tt
     - r: read permission
@@ -42,20 +48,24 @@ An additional kernel layer named the [Gort File System (GFS)](../../mcu/src/kern
 
 The rest is data that does *not* get stored externally. These are virtual parameters known only by the MCU:
 
-* Loaded: '0' = not loaded & only exists on external device, '1' = loaded & available
+* Loaded: '0' = not loaded & only exists on external device, '1' = loaded & available for read/write
 
 ![Gort File System Flowcharts](../assets/gfs_flowchart.svg)
 
-The Gort Shell may count as an additional component to the final project, though it was originally created to satisfy requirements from previous labs, such as modifying the system time and the temperature's moving average window size.
+### Gort Shell
 
-![Gort Shell Flowcharts](../assets/gsh_flowchart.svg)
+The [Gort Shell](../../mcu/src/apps/gsh.c) counts as an additional component to the final project, though it was originally created to satisfy requirements from previous labs, such as modifying the system time and the temperature's moving average window size.
 
-### Software Architecture
+<!-- ![Gort Shell Flowcharts](../assets/gsh_flowchart.svg) -->
 
-![Final Project Software Architecture](../assets/fp_softarch.svg)
+### Gort String Library
+
+The [Gort String](../../mcu/src/kernel/gstr.c) Library provides various string manipulation and conversion functions.
+
+<!-- ![Gort String Flowcharts](../assets/gstr_flowchart.svg) -->
 
 ## Testing procedure
 
-While building the architecture, I'll begin at the lowest level with wiring and basic read/write testing of the SRAM. After connecting it to power and SPI, I will send the Read Mode Register (x05) instruction to test if the chip responds. Then, I will try writing to this register and reading the value back to make sure it retains data. Building this into the error structure of Gort OS will aid in future debugging. Once I can do the same to data at any address on the device is when I can verify the MMM driver works.
+While building the architecture, I'll begin at the lowest level with wiring and basic read/write testing of the SRAM. After connecting it to power and SPI, I will send the Read Mode Register (x05) instruction to test if the chip responds. Then, I will try writing to this register and reading the value back to make sure it retains data. Once I can do the same to data at any address on the device is when I can verify the MMM driver works. Building a mode register read/write into the initialization error structure of Gort OS will aid in future debugging.
 
 Before the GFS can be built, `gblk_t` allocation must be tested at `BLK_ALLOC_NUM` = 2 blocks and `BLK_SIZE` = 256 bytes. Block allocation limits the maximum stack size, so a reasonable estimation of maximum stack size may have to be calculated. I will then verify that the MMM driver can read from/write too these blocks. I will begin development on GFS with initializing the file system and opening/closing a file. After, I'll try writing from/reading to it. I'll top off testing with a full integration with GSH. Hopefully by then, it will use the correct version of a few of the [GSTR functions](../../mcu/src/kernel/gstr.c).
