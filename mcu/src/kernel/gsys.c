@@ -58,6 +58,7 @@ int cur_temp;
 unsigned int cur_speed;
 
 
+
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
@@ -98,7 +99,10 @@ void gsys_init(void)
     // KERNEL -----------------------------------------------------------------
     display_mode = 1;
     gin = 0;
+    gout = 1;
+    glear();
     gout = 0;
+    wait_flag = &uart_rx_bg;
     glear();
 
     // DEVICES --------------------------------------------
@@ -124,6 +128,7 @@ void gsys_init(void)
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
+    lcd_cursor_show(0);
     
     //pwm_init(); // timer
     //dial_init(); // led, switch
@@ -181,38 +186,44 @@ void gsys_update(unsigned int div)
     if ((timer_qcnt & 3) == 0)
     {
         // do every 1 second:
-        gout = 1;
-        glear();
-        print_systime();
+        gout = 1; // LCD ----------------------------------
+        ghome();
+        
+        helloworld(cur_pattern_name);
+        helloworld("      \n");
+
+        helloworld("Period = ");
+        helloworld(hex(cur_speed));
+        helloworld(" s\n");
+
+        helloworld(hex(cur_temp));
+        helloworld(".5 'C       ");
+
+        helloworld("N = ");
+        helloworld(hex(window_size));
         helloworld("\n");
 
-        helloworld("Temp: ");
-        helloworld(hex(cur_temp));
-        helloworld("h degrees C");
+        print_systime();
+        helloworld("\n");
+        gout = 0; // --------------------------------------
         
-        helloworld("\nSpeed: ");
-        helloworld(hex(cur_speed));
-        helloworld("h\n\n");
-        gout = 0;
+        
+        helloworld(uint_to_dec(cur_qcnt));
+        helloworld("\n");
+        helloworld(uint_to_dec(dec_to_uint(uint_to_dec(cur_qcnt))));
+        helloworld("\n");
+    }
 
-        unsigned char b = 0x4D;
-        unsigned char s = (b & 0x80);
-        unsigned int i;
-        for (i = 0; i < 8; i++)
-        {
-            LEDSTICK_PORT &= ~LEDSTICK_PIN;
-            if (s) {
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-                __asm__ __volatile__("nop");
-            }
-            LEDSTICK_PORT |= LEDSTICK_PIN;
-            s = ((b << 1) & 0x80);
-        }
+    if ((timer_qcnt & 7) == 0)
+    {
+        // do every 2 seconds:
+        
+    }
+
+    if ((timer_qcnt & 15) == 0)
+    {
+        // do every 4 seconds:
+
     }
 }
 

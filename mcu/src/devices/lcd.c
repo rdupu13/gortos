@@ -15,6 +15,9 @@
 
 #include "devices/lcd.h"
 
+// drivers
+#include "drivers/spi.h"
+
 // devices
 #include "devices/ioexp.h"
 
@@ -49,7 +52,6 @@ int lcd_write_byte(
     unsigned char reg_sel
 );
 
-
 /**
  * @brief initialize lcd
  * 
@@ -73,6 +75,55 @@ int lcd_init(void)
     lcd_write_byte(0x01, 0); // clear display
     eep(5);
 
+    lcd_contrast_set(0);
+
+    return 0;
+}
+
+/**
+ * @brief
+ * 
+ * @param nibble
+ * @param reg_sel
+ * 
+ * @return 
+ */
+int lcd_write_nibble(
+    unsigned char nibble,
+    unsigned char reg_sel
+) {
+    unsigned char base = ((nibble & 0x0F) << 4) | (reg_sel ? LCD_RS : 0);
+    
+    ioexp_write(base);
+    ioexp_write(base | LCD_EN);
+    ioexp_write(base);
+    return 0;
+}
+
+/**
+ * @brief
+ * 
+ * @param byte
+ * @param reg_sel
+ * 
+ * @return 
+ */
+int lcd_write_byte(
+    unsigned char byte,
+    unsigned char reg_sel
+) {
+    if (reg_sel) {
+        if (byte == '\n' || (lcd_col == NUM_COLS)) {
+            lcd_line = (lcd_line + 1) & 0x03;
+            lcd_cursor_goto(lcd_line, 0);
+            if (byte == '\n') { return 0; }
+        } 
+    }
+    lcd_write_nibble(byte >> 4, reg_sel);
+    lcd_write_nibble(byte & 0x0F, reg_sel);
+    if (reg_sel) {
+        lcd_col++;
+    }
     return 0;
 }
 
@@ -101,7 +152,45 @@ int lcd_write(
  * 
  * @return 
  */
-int lcd_set_cursor(
+int lcd_cursor_show(unsigned char state)
+{
+    int ret;
+    switch(state)
+    {
+        case 1: ret = lcd_write_byte(0x0F, 0); break;
+        case 0: ret = lcd_write_byte(0x0C, 0); break;
+        default: ret = -1; break;
+    }
+    return ret;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_cursor_blink(unsigned char state)
+{
+    int ret;
+    switch(state)
+    {
+        case 1: ret = lcd_write_byte(0x0F, 0); break;
+        case 0: ret = lcd_write_byte(0x0E, 0); break;
+        default: ret = -1; break;
+    }
+    return ret;
+}
+
+/**
+ * @brief 
+ * 
+ * @param 
+ * 
+ * @return 
+ */
+int lcd_cursor_goto(
     unsigned char row,
     unsigned char col
 ) {
@@ -113,48 +202,55 @@ int lcd_set_cursor(
 /**
  * @brief
  * 
- * @param nibble
- * @param reg_sel
+ * @param 
  * 
  * @return 
  */
-int lcd_write_nibble(
-    unsigned char nibble,
-    unsigned char reg_sel
-) {
-    unsigned char base = \
-        ((nibble & 0x0F) << 4) | (reg_sel ? LCD_RS : 0);
-    
-    ioexp_write(base);
-    ioexp_write(base | LCD_EN);
-    ioexp_write(base);
-    return 0;
+int lcd_clear(void)
+{
+    return lcd_write_byte(0x01, 0);
 }
 
 /**
  * @brief
  * 
- * @param byte
- * @param reg_sel
+ * @param
  * 
  * @return 
  */
-int lcd_write_byte(
-    unsigned char byte,
-    unsigned char reg_sel
-) {
-    if (reg_sel) {
-        if (byte == '\n' || (lcd_col == NUM_COLS)) {
-            lcd_line = (lcd_line + 1) & 0x03;
-            lcd_set_cursor(lcd_line, 0);
-            if (byte == '\n') { return 0; }
-        } else {    
-            lcd_col++;
-        }
+int lcd_test(void)
+{
+    int ret;
+    char c; 
+    for (c = 32; c < 128; c++) {
+        ret = lcd_write_byte(c, 1);
+        if (ret) { return ret; }
+        eep(150);
     }
-    lcd_write_nibble(byte >> 4, reg_sel);
-    lcd_write_nibble(byte & 0x0F, reg_sel);
-    return 0;
+    eep(1000);
+    return ret;
+}
+
+/**
+ * @brief
+ * 
+ * @param
+ * 
+ * @return
+ */
+int lcd_contrast_set(unsigned char val)
+{
+    unsigned char dac_in[] = {0b00110000, 0b00000000};
+    dac_in[0] |= ((val >> 4) & 0x0F);
+    dac_in[1] |= ((val << 4) & 0xF0);
+    int stat = spi_write(
+        dac_in,
+        2,
+        DAC_SPI_ADDR,
+        (unsigned char *) 0,
+        0
+    );
+    return stat;
 }
 
 //-----------------------------------------------------------------------------

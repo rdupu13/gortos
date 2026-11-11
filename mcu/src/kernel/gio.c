@@ -30,6 +30,8 @@
 int gin;
 int gout;
 
+volatile unsigned char *wait_flag;
+
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -53,7 +55,7 @@ int helloworld(char *arr)
             // uart
             // TODO: handle errors
             uart_tx(
-                (volatile unsigned char *) arr,
+                (unsigned char *) arr,
                 gstr_len(arr)
             );
             break;
@@ -71,17 +73,15 @@ int helloworld(char *arr)
 }
 
 /**
- * @brief read an array from gin
+ * @brief read an array from gin until newline
  * 
- * @param arr   pointer to where received array will be stored
- * @param len   number of bytes to read (> 0)
- * @param stop  if n = 0, read until this character received
+ * @param arr pointer to where received array will be stored
  * 
  * @return status of read:
  *               0: ok
  *              -1: error
  */
-int hellogort(char *arr, unsigned int len, char stop)
+int hellogort(char *arr)
 {
     int status = 0;
     switch(gin)
@@ -90,10 +90,12 @@ int hellogort(char *arr, unsigned int len, char stop)
             // uart
             // TODO: handle errors
             uart_rx(
-                (volatile unsigned char *) arr,
-                len,
-                (unsigned char) stop
+                (unsigned char *) arr,
+                0,
+                '\r',
+                0
             );
+            wait_flag = &uart_rx_bg;
             break;
         
         default:
@@ -110,20 +112,45 @@ int hellogort(char *arr, unsigned int len, char stop)
  * 
  * @return none
  */
-void glear(void)
+int glear(void)
 {
+    int ret;
     switch(gout)
     {
         case 0:
-            helloworld(PUTTY_CLEAR_SEQ);
+            ret = helloworld(PUTTY_CLEAR_SEQ);
             break;
         
         case 1:
-            lcd_set_cursor(0, 0);
+            ret = lcd_clear();
+            if (ret) { return ret; }
+            ret = lcd_cursor_goto(0, 0);
             break;
         
-        default: break;
+        default: ret = -1; break;
     }
+    return ret;
+}
+
+/**
+ * 
+ */
+int ghome(void)
+{
+    int ret;
+    switch(gout)
+    {
+        case 0:
+            ret = helloworld("\r");
+            break;
+        
+        case 1:
+            ret = lcd_cursor_goto(0, 0);
+            break;
+        
+        default: ret = -1; break;
+    }
+    return ret;
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

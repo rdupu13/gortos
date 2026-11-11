@@ -35,6 +35,8 @@
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+extern unsigned char window_size;
+
 int temp_analog(unsigned int analog);
 int temp_analog_avg(unsigned int analog);
 void temp_window_set_size(unsigned int size);

@@ -56,25 +56,34 @@
 // ------------------------------------
 
 // only powers of 2:
-#define PATTERN0_QDIV    4
-#define PATTERN1_QDIV    2
-#define PATTERN2_QDIV    2
-#define PATTERN3_QDIV    1
+#define PATTERN0_QDIV   4
+#define PATTERN1_QDIV   2
+#define PATTERN2_QDIV   2
+#define PATTERN3_QDIV   1
 // pattern 4 is divided by 3 and needs its own counter >:(
-#define PATTERN5_QDIV    4
+#define PATTERN5_QDIV   4
 
-#define PATTERN0_INIT    0x02AA
-#define PATTERN1_INIT    0x0000
-#define PATTERN2_INIT    INOUT0
-#define PATTERN3_INIT    0x00FF
-#define PATTERN4_INIT    0x0001
-#define PATTERN5_INIT    FILLR0
+#define PATTERN0_INIT   0x02AA
+#define PATTERN1_INIT   0x0000
+#define PATTERN2_INIT   INOUT0
+#define PATTERN3_INIT   0x00FF
+#define PATTERN4_INIT   0x0001
+#define PATTERN5_INIT   FILLR0
+
+#define PATTERN0_NAME   "Toggle"
+#define PATTERN1_NAME   "Up Counter"
+#define PATTERN2_NAME   "In-Out"
+#define PATTERN3_NAME   "Down Counter"
+#define PATTERN4_NAME   "Rotate Left"
+#define PATTERN5_NAME   "Fill Right"
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
+extern volatile int cur_pattern_num;
+extern volatile char *cur_pattern_name;
 extern volatile unsigned int *cur_pattern;  // current pattern pointer
 
 void patterns_init(void);                   // initialize patterns
