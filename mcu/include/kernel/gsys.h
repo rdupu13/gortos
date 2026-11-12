@@ -78,6 +78,9 @@ void print_systime(void); // write current gort system time to gout
 void blinky(unsigned char led, unsigned int delay); // blink a test led
 void ledbar_sel(unsigned char sel);                 // select current thing displayed on ledbar
 
+// lcd
+void update_lcd(void);
+
 // interrupt service routines (for drivers only): ---------
 // timer
 void qcnt_update(unsigned int qcnt);
