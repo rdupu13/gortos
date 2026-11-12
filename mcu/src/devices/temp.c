@@ -43,11 +43,10 @@ int temp_avg;
 int temp_analog(unsigned char adc_ch)
 {
     unsigned int analog = adc_read(adc_ch);
-    unsigned int masked = (analog & 0x7FF);
 
-    masked = ((masked >> 5) + (masked >> 6));   // magic division
-    int temp = -masked + 85;           // magic number
-
+    // T(A) = 1989 - 0.5*A
+    int temp = 1989 - (analog >> 1);
+    
     return temp;
 }
 

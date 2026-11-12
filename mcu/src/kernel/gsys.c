@@ -58,7 +58,8 @@ unsigned int cur_fcnt;
 int cur_temp;
 unsigned int cur_speed;
 
-char period_str[] = "0.0 s\n";
+char period_str[] = "0.0 s      \n";
+char temp_str[] = "00.0\xDF";
 
 
 //-----------------------------------------------------------------------------
@@ -180,16 +181,21 @@ void gsys_update(void)
     }
 
     // do every 0.125 s:
-    helloworld(hex(timer_fcnt));
+    //helloworld();
+    //helloworld("\n");
+        
+    pot_set_speed(1);
+
+    cur_temp = temp_analog_avg(0);
+
+    helloworld(uint_to_dec(adc_read(0)));
+    helloworld("    ");
+    helloworld(uint_to_dec(cur_temp));
     helloworld("\n");
 
     // do every 0.25 s:
     if ((timer_fcnt & 1) == 0)
-    {
-        cur_temp = temp_analog_avg(0);
-        
-        pot_set_speed(1);
-        
+    {        
         rtc_get();
 
         update_lcd();
@@ -324,10 +330,32 @@ void ledbar_sel(unsigned char sel)
 unsigned char pot_get(unsigned char adc_ch)
 {
     unsigned int adc_val = adc_read(adc_ch);
+    unsigned char period;
 
     // convert adc_val into pattern period 0.10 - 1.00 step 0.05
-    // T ~= 0.0234375*adc_val + 10
-    return ((adc_val >> 6) + (adc_val >> 7) + 10);
+    // T ~= 0.0234375*adc_val + 10 (lookup table)
+    if (adc_val < 228) { period = 10; }
+    else if ((adc_val >= 228) && (adc_val < 455)) { period = 15; }
+    else if ((adc_val >= 455) && (adc_val < 682)) { period = 20; }
+    else if ((adc_val >= 682) && (adc_val < 910)) { period = 25; }
+    else if ((adc_val >= 910) && (adc_val < 1137)) { period = 30; }
+    else if ((adc_val >= 1137) && (adc_val < 1364)) { period = 35; }
+    else if ((adc_val >= 1364) && (adc_val < 1591)) { period = 40; }
+    else if ((adc_val >= 1591) && (adc_val < 1819)) { period = 45; }
+    else if ((adc_val >= 1819) && (adc_val < 2046)) { period = 50; }
+    else if ((adc_val >= 2046) && (adc_val < 2273)) { period = 55; }
+    else if ((adc_val >= 2273) && (adc_val < 2501)) { period = 60; }
+    else if ((adc_val >= 2501) && (adc_val < 2728)) { period = 65; }
+    else if ((adc_val >= 2728) && (adc_val < 2955)) { period = 70; }
+    else if ((adc_val >= 2955) && (adc_val < 3182)) { period = 75; }
+    else if ((adc_val >= 3182) && (adc_val < 3410)) { period = 80; }
+    else if ((adc_val >= 3410) && (adc_val < 3637)) { period = 85; }
+    else if ((adc_val >= 3637) && (adc_val < 3864)) { period = 90; }
+    else if ((adc_val >= 3864) && (adc_val < 4091)) { period = 95; }
+    else if ((adc_val >= 4091) && (adc_val < 4096)) { period = 100; }
+    else { period = 100; }
+
+    return period;
 }
 
 /**
@@ -344,6 +372,10 @@ void pot_set_speed(unsigned char adc_ch)
     // CCR ~= 328*period
     unsigned int ccr_val = (period << 6) + (period << 4) + (period << 1);
 
+    if (ccr_val > 32767) {
+        ccr_val = 32767;
+    }
+
     timer_ccr_set(0, 0, ccr_val);
 }
 
@@ -354,10 +386,13 @@ void update_lcd(void)
 {
     gout = 1;
     ghome();
-            
+    
+    // print current pattern name -------------------------
     helloworld(cur_pattern_name);
     helloworld("      \n");
+    // ----------------------------------------------------
 
+    // led patterns + heartbeat period --------------------
     helloworld("Period = ");
     char *raw_period_str = uint_to_dec(pot_get(1));
     if (gstr_len(raw_period_str) < 3) {
@@ -368,17 +403,26 @@ void update_lcd(void)
         period_str[2] = raw_period_str[1];
     }
     helloworld(period_str);
+    // ----------------------------------------------------
 
-    helloworld(uint_to_dec(cur_temp));
-    helloworld(".5 ");
-    helloworld("\xDF"); // degree sign
+    // temperature reading in celsius ---------------------
+    char *raw_temp_str = uint_to_dec(cur_temp);
+    temp_str[0] = raw_temp_str[0];
+    temp_str[1] = raw_temp_str[1];
+    temp_str[3] = raw_temp_str[2];
+    helloworld(temp_str);
     helloworld("C       ");
 
+    // temperature averaging window size
     helloworld("N = ");
     helloworld(hex(window_size));
     helloworld("\n");
+    // ----------------------------------------------------
 
+    // print system time ----------------------------------
     print_systime();
+    // ----------------------------------------------------
+
     helloworld("\n");
     gout = 0;
 }
