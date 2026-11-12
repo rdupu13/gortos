@@ -76,7 +76,6 @@ int lcd_init(void)
     lcd_write_byte(0x01, 0); // clear display
     eep(5);
 
-    //lcd_contrast_set(0);
     lcd_cursor_show(0);
 
     return 0;
@@ -233,20 +232,21 @@ int lcd_test(void)
 }
 
 /**
- * @brief
+ * @brief 
  * 
- * @param
+ * @param val contrast level 0-7
  * 
  * @return
  */
 int lcd_contrast_set(unsigned char val)
 {
-    // truncate contrast value, can't see shit above like 64
-    if (val > 99) {
-        val = 99;
-    }
-
     unsigned char dac_in[] = {0b00110000, 0b00000000};
+    
+    if (val > 7) {
+        val = 7;
+    }
+    val = ((val & 0x0007) << 4);
+
     dac_in[0] |= ((val >> 4) & 0x0F);
     dac_in[1] |= ((val << 4) & 0xF0);
     

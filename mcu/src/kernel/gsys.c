@@ -53,13 +53,15 @@ volatile unsigned char display_mode;
 volatile gblk_t gblks[BLK_ALLOC_NUM];
 volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
 
-unsigned int cur_qcnt;
 unsigned int cur_fcnt;
 int cur_temp;
 unsigned int cur_speed;
+unsigned char cur_contrast;
 
 char period_str[] = "0.0 s      \n";
 char temp_str[] = "00.0\xDF";
+
+
 
 
 //-----------------------------------------------------------------------------
@@ -131,6 +133,8 @@ void gsys_init(void)
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
+    cur_contrast = 0;
+    lcd_contrast_set(0);
     
     //dial_init(); // led, switch
 
@@ -144,7 +148,7 @@ void gsys_init(void)
     
     //gfs_init(); // mmm
     
-    // initialize gort blocks TODO: maybe clunky, but for fun
+    // initialize gort blocks
     int i;
     for (i = 0; i < BLK_ALLOC_NUM; i++) {
         int j;
@@ -169,8 +173,6 @@ void gsys_init(void)
 /**
  * @brief system update loop
  * 
- * @param div clock divider value, only powers of 2 (1, 2, 4, 8, ...)
- * 
  * @return none
  */
 void gsys_update(void)
@@ -179,25 +181,25 @@ void gsys_update(void)
     {
         // do instantly:
     }
+    cur_fcnt = timer_fcnt;
 
     // do every 0.125 s:
     //helloworld();
     //helloworld("\n");
-        
-    pot_set_speed(1);
-
+    
     cur_temp = temp_analog_avg(0);
-
-    helloworld(uint_to_dec(adc_read(0)));
-    helloworld("    ");
-    helloworld(uint_to_dec(cur_temp));
-    helloworld("\n");
+    pot_set_speed(1);
+    
+    // proof i'm not crazy:
+    //helloworld(uint_to_dec(adc_read(0)));
+    //helloworld("    ");
+    //helloworld(uint_to_dec(cur_temp));
+    //helloworld("\n");
 
     // do every 0.25 s:
     if ((timer_fcnt & 1) == 0)
     {        
         rtc_get();
-
         update_lcd();
     }
 
@@ -207,8 +209,11 @@ void gsys_update(void)
         
     }
 
-    cur_qcnt = timer_qcnt;
-    cur_fcnt = timer_fcnt;
+    // do every 1 s:
+    if ((timer_fcnt & 4) == 0)
+    {
+        
+    }
 }
 
 /**
@@ -384,6 +389,8 @@ void pot_set_speed(unsigned char adc_ch)
  */
 void update_lcd(void)
 {
+    lcd_contrast_set(cur_contrast);
+
     gout = 1;
     ghome();
     
