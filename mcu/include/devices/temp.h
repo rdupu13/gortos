@@ -13,8 +13,8 @@
 //  HEADER DEFINITION
 //-----------------------------------------------------------------------------
 
-#ifndef PWM_H
-#define PWM_H
+#ifndef TEMP_H
+#define TEMP_H
 
 
 //-----------------------------------------------------------------------------
@@ -28,7 +28,6 @@
 //  MACROS
 //-----------------------------------------------------------------------------
 
-#define TEMP_OFFSET         85
 #define INIT_WINDOW_SIZE    5
 
 //-----------------------------------------------------------------------------
@@ -37,8 +36,8 @@
 
 extern unsigned char window_size;
 
-int temp_analog(unsigned int analog);
-int temp_analog_avg(unsigned int analog);
+int temp_analog(unsigned char adc_ch);
+int temp_analog_avg(unsigned char adc_ch);
 void temp_window_set_size(unsigned int size);
 
 #endif

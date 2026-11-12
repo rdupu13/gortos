@@ -141,8 +141,8 @@ RHS:
 #define SPI_CS0_PORT    P1OUT
 #define SPI_CS0_PIN     BIT4
 
-#define SPI_CS1_PORT // chip select 1 port
-#define SPI_CS1_PIN // chip select 1 port
+#define SPI_CS1_PORT    P3OUT
+#define SPI_CS1_PIN     BIT5
 
 #define SPI_CS2_PORT // chip select 2 port
 #define SPI_CS2_PIN // chip select 2 port
@@ -180,21 +180,6 @@ RHS:
 // --------------------------------------------------------
 
 // timer --------------------------------------------------
-// TODO: peripheral base addr
-#define TIMER_B0_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
-#define TIMER_B0_DIV    ID__1           // divide by 1
-#define TIMER_B0_LEN    CNTL_0          // len = 16-bit
-#define TIMER_B0_MODE   MC__UP          // up mode
-
-#define TIMER_B1_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
-#define TIMER_B1_DIV    ID__1           // divide by 1
-#define TIMER_B1_LEN    CNTL_0          // len = 16-bit
-#define TIMER_B1_MODE   MC__UP          // up mode
-
-#define TIMER_B2_SRC    TBSSEL__ACLK    // source = aclk (32.768 kHz)
-#define TIMER_B2_DIV    ID__1           // divide by 1
-#define TIMER_B2_LEN    CNTL_0          // len = 16-bit
-#define TIMER_B2_MODE   MC__CONTINOUS   // continuous mode
 // --------------------------------------------------------
 
 // uart ---------------------------------------------------
@@ -205,12 +190,14 @@ RHS:
 // --------------------------------------------------------
 
 // board configuration ------------------------------------
-// rtc (i2c)
+// rtc (i2c) --------------------------
 #define RTC_MCP7940N
+// ------------------------------------
 
-// mmm (spi)
+// mmm (spi) --------------------------
 #define MMM_23LC1024
-#define MMM_SPI_SLAVE_NUM 0
+#define MMM_SPI_CS      0
+// ------------------------------------
 
 // io expander (i2c) ------------------
 #define IOEXP_MCP23008
@@ -223,19 +210,13 @@ RHS:
 
 // lcd (io expander) ------------------
 #define LCD_NHD_0420AZ_FL_YBW_33V3
-
 // ------------------------------------
 
 // dac (spi) --------------------------
 #define DAC_MCP4801
-#define DAC_SPI_ADDR    0
+#define DAC_SPI_CS      1
 // ------------------------------------
 
-// --------------------------------------------------------
-
-// lora ---------------------------------------------------
-//#define LORA_RESET_PORT         P3OUT
-//#define LORA_RESET_PIN          BIT5
 // --------------------------------------------------------
 
 //-----------------------------------------------------------------------------

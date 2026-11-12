@@ -26,8 +26,8 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-volatile unsigned int timer_qcnt; // 4 Hz
-volatile unsigned int timer_fcnt; // 256 Hz
+volatile unsigned int timer_qcnt; // variable
+volatile unsigned int timer_fcnt; // 8 Hz
 
 
 //-----------------------------------------------------------------------------
@@ -54,10 +54,12 @@ void timer_init(void)
     TB0CTL |= TIMER_B0_LEN;     // set length
     TB0CTL |= TIMER_B0_MODE;    // set mode
     #if TIMER_B0_INT
+        // ccr0 interrupts
         timer_ccr_set(0, 0, TIMER_B0_CCR0);    // set ccr0
         TB0CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
         TB0CCTL0 |= CCIE;           // enable ccr0 interrupts
     #else
+        // overflow interrupts
         TB0CTL &= ~TBIFG;           // clear overflow interrupt flag
         TB0CTL |= TBIE;             // enable overflow interrupts
     #endif
@@ -71,10 +73,12 @@ void timer_init(void)
         TB1CTL |= TIMER_B1_LEN;     // set length
         TB1CTL |= TIMER_B1_MODE;    // set mode
         #if TIMER_B1_INT
-            TB1CCR0 = TIMER_B1_CCR0;    // set ccr0
+            // ccr0 interrupts
+            timer_ccr_set(1, 0, TIMER_B1_CCR0);    // set ccr0
             TB1CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
             TB1CCTL0 |= CCIE;           // enable ccr0 interrupts
         #else
+            // overflow interrupts
             TB1CTL &= ~TBIFG;           // clear overflow interrupt flag
             TB1CTL |= TBIE;             // enable overflow interrupts
         #endif
@@ -94,10 +98,12 @@ void timer_init(void)
         TB2CTL |= TIMER_B2_LEN;     // set length
         TB2CTL |= TIMER_B2_MODE;    // set mode
         #if TIMER_B2_INT
+            // ccr0 interrupts
             TB2CCR0 = TIMER_B2_CCR0;    // set ccr0
             TB2CCTL0 &= ~CCIFG;         // clear ccr0 interrupt flag
             TB2CCTL0 |= CCIE;           // enable ccr0 interrupts
         #else
+            // overflow interrupts
             TB2CTL &= ~TBIFG;           // clear overflow interrupt flag
             TB2CTL |= TBIE;             // enable overflow interrupts
         #endif
@@ -124,7 +130,13 @@ void wdt_stop(void)
 }
 
 /**
+ * @brief set a capture-compare register in a timer
  * 
+ * @param timer timer b #
+ * @param ccr capture-compare register #
+ * @param val value to set register to
+ * 
+ * @return none
  */
 void timer_ccr_set(
     unsigned char timer,
@@ -137,6 +149,13 @@ void timer_ccr_set(
             switch(ccr)
             {
                 case 0: TB0CCR0 = val; break;
+                default: break;
+            }
+            break;
+        case 1:
+            switch(ccr)
+            {
+                case 0: TB1CCR0 = val; break;
                 default: break;
             }
             break;
@@ -178,64 +197,19 @@ void __attribute__((interrupt(TIMER0_B0_VECTOR))) isr_tb0_ccr0(void)
     timer_qcnt++;
     TB0CCTL0 &= ~CCIFG; // clear interrupt flag
 }
-
-/*
-#pragma vector = TIMER0_B1_VECTOR
-__interrupt void isr_tb0_iv(void)
-{
-    switch(TB0IV)
-    {
-  
-    
-        TB0CCTL0 &= ~CCIFG; // clear interrupt flag
-    }
-}
-*/
 // ----------------------------------------------------------------------------
 
 #if TIMER_B1_TOGGLE // --------------------------------------------------------
-__attribute__((interrupt(TIMER1_B0_VECTOR))) isr_tb1_ccr0
+void __attribute__((interrupt(TIMER1_B0_VECTOR))) isr_tb1_ccr0(void)
 {
-    fcnt_update(timer_fcnt);
+    //fcnt_update(timer_fcnt);
     timer_fcnt++;
     TB1CCTL0 &= ~CCIFG; // clear interrupt flag
 }
-
-/*
-#pragma vector = TIMER1_B1_VECTOR
-__interrupt void isr_tb1_iv(void)
-{
-    switch(TB0IV)
-    {
-  
-    
-        TB1CCTL0 &= ~CCIFG; // clear interrupt flag
-    }
-}
-*/
 #endif // ---------------------------------------------------------------------
 
 #if TIMER_B2_TOGGLE // --------------------------------------------------------
-/*
-#pragma vector = TIMER2_B0_VECTOR
-__interrupt void isr_tb2_ccr0(void)
-{
-    TB2CCTL0 &= ~CCIFG; // clear interrupt flag
-}
-*/
 
-__attribute__((interrupt(TIMER2_B1_VECTOR))) isr_tb2_iv
-{
-    switch(TB2IV)
-    {
-        case 0x0E:
-            // overflow
-
-            break;
-        
-        default: break;
-    }
-}
 #endif // ---------------------------------------------------------------------
 
 
