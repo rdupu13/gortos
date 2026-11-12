@@ -30,12 +30,12 @@ EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
 			mcu/src/devices/dial.c \
 			mcu/include/devices/dial.h \
-			mcu/src/devices/lora.c \
-			mcu/include/devices/lora.h \
-			mcu/src/devices/pwm.c \
-			mcu/include/devices/pwm.h \
 			mcu/src/devices/mmm.c \
-			mcu/include/devices/mmm.h
+			mcu/include/devices/mmm.h \
+			mcu/src/devices/rot.h \
+			mcu/include/devices/rot.h \
+			mcu/src/kernel/menu.c \
+			mcu/include/kernel/menu.h
 # -------------------------------------
 
 # WARNING OPTIONS ---------------------
@@ -44,6 +44,7 @@ WARNFLAGS = -Wall \
 			-Wno-unknown-pragmas \
 			-Wno-implicit-function-declaration \
 			-Wno-missing-braces \
+			-Wno-discarded-qualifiers \
 			-Wno-comment
 # -------------------------------------
 
@@ -61,8 +62,7 @@ CCFLAGS =	-mmcu=$(MCU) \
 # LINKER FLAGS --------------------------------------------
 LDFLAGS = 	-mmcu=$(MCU) \
 			-L $(TOOLDIR)/msp430-elf/lib \
-			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld \
-			-Wl,-Map=gort.map
+			-T $(TOOLDIR)/msp430-elf/lib/$(MCU).ld
 # ---------------------------------------------------------
 
 # SOURCE CODE SEARCH ------------------

@@ -34,16 +34,19 @@ int temp_avg;
 /**
  * @brief convert an analog temperature reading into degrees celsius
  * 
+ * @note LEAST SIGNIFICANT DIGIT IS 1/10THS PLACE
+ * 
  * @param analog adc value from temperature sensor
  * 
  * @return temperature in celsius
  */
-int temp_analog(unsigned int analog)
+int temp_analog(unsigned char adc_ch)
 {
+    unsigned int analog = adc_read(adc_ch);
     unsigned int masked = (analog & 0x7FF);
 
     masked = ((masked >> 5) + (masked >> 6));   // magic division
-    int temp = -masked + TEMP_OFFSET;           // magic number
+    int temp = -masked + 85;           // magic number
 
     return temp;
 }
@@ -53,17 +56,23 @@ int temp_analog(unsigned int analog)
  * 
  * @return 
  */
-int temp_analog_avg(unsigned int analog)
+int temp_analog_avg(unsigned char adc_ch)
 {
+    unsigned int temp_avg;
+    unsigned int analog = adc_read(adc_ch);
     int new_temp = temp_analog(analog);
 
+    // move window # by #
     unsigned int i;
     for (i = window_size - 1; i > 0; i--)
     {
         temp_window[i] = temp_window[i - 1];
     }
+
+    // add the new temperature value
     temp_window[0] = new_temp;
 
+    // calculate average of window
     temp_avg = 0;
     for (i = 0; i < window_size; i++)
     {

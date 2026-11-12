@@ -32,9 +32,8 @@
 //#include "devices/dial.h"
 #include "devices/ioexp.h"
 #include "devices/lcd.h"
-//#include "devices/lora.h"
 //#include "devices/mmm.h"
-//#include "devices/pwm.h"
+//#include "devices/rot.h"
 #include "devices/rtc.h"
 #include "devices/temp.h"
 
@@ -42,6 +41,7 @@
 //#include "kernel/gfs.h"
 #include "kernel/gio.h"
 #include "kernel/gstr.h"
+//#include "kernel/menu.h"
 
 
 //-----------------------------------------------------------------------------
@@ -54,16 +54,21 @@ volatile gblk_t gblks[BLK_ALLOC_NUM];
 volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
 
 unsigned int cur_qcnt;
+unsigned int cur_fcnt;
 int cur_temp;
 unsigned int cur_speed;
 
+char period_str[] = "0.0 s\n";
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
 
-void die(char *last_words);
+void die(char *last_words); // only gort can kill herself
+
+unsigned char pot_get(unsigned char adc_ch);
+void pot_set_speed(unsigned char adc_ch);
 
 /**
  * @brief initialize gort system
@@ -161,61 +166,43 @@ void gsys_init(void)
 }
 
 /**
- * @brief updater
+ * @brief system update loop
  * 
- * @param div 
+ * @param div clock divider value, only powers of 2 (1, 2, 4, 8, ...)
  * 
  * @return none
  */
-void gsys_update(unsigned int div)
+void gsys_update(void)
 {
-    while ((cur_qcnt & ~(div - 1))
-        == (timer_qcnt & ~(div - 1)))
+    while (cur_fcnt == timer_fcnt)
     {
         // do instantly:
+    }
+
+    // do every 0.125 s:
+    helloworld(hex(timer_fcnt));
+    helloworld("\n");
+
+    // do every 0.25 s:
+    if ((timer_fcnt & 1) == 0)
+    {
+        cur_temp = temp_analog_avg(0);
+        
+        pot_set_speed(1);
+        
+        rtc_get();
+
+        update_lcd();
+    }
+
+    // do every 0.5 s:
+    if ((timer_fcnt & 3) == 0)
+    {
         
     }
+
     cur_qcnt = timer_qcnt;
-
-    // do every 0.25 seconds:
-    rtc_get();
-
-    if ((timer_qcnt & 3) == 0)
-    {
-        // do every 1 second:
-        gout = 1; // LCD ----------------------------------
-        ghome();
-        
-        helloworld(cur_pattern_name);
-        helloworld("      \n");
-
-        helloworld("Period = ");
-        helloworld(uint_to_dec(cur_speed));
-        helloworld(" s\n");
-
-        helloworld(uint_to_dec(cur_temp));
-        helloworld(".5 ");
-        helloworld("\xDF");
-        helloworld("C       ");
-
-        helloworld("N = ");
-        helloworld(hex(window_size));
-        helloworld("\n");
-
-        print_systime();
-        helloworld("\n");
-        gout = 0; // --------------------------------------
-    }
-
-    if ((timer_qcnt & 7) == 0)
-    {
-        // do every 2 seconds:
-    }
-
-    if ((timer_qcnt & 15) == 0)
-    {
-        // do every 4 seconds:
-    }
+    cur_fcnt = timer_fcnt;
 }
 
 /**
@@ -310,7 +297,7 @@ void blinky(unsigned char led, unsigned int delay)
 }
 
 /**
- * @brief select current thing displayed on ledbar TODO: APP
+ * @brief select current thing displayed on ledbar
  * 
  * @param sel selection
  * 
@@ -327,6 +314,73 @@ void ledbar_sel(unsigned char sel)
     }
 
     ledbar_setpins(n);
+}
+
+/**
+ * @brief 
+ * 
+ * @return 
+ */
+unsigned char pot_get(unsigned char adc_ch)
+{
+    unsigned int adc_val = adc_read(adc_ch);
+
+    // convert adc_val into pattern period 0.10 - 1.00 step 0.05
+    // T ~= 0.0234375*adc_val + 10
+    return ((adc_val >> 6) + (adc_val >> 7) + 10);
+}
+
+/**
+ * @brief 
+ * 
+ * @return 
+ */
+void pot_set_speed(unsigned char adc_ch)
+{
+    unsigned int period = (unsigned int) pot_get(adc_ch);
+
+    // convert period 0.10 - 1.00 step 0.05 into capture-compare value
+    // for 32.768 kHz clock, CNTL = 16:
+    // CCR ~= 328*period
+    unsigned int ccr_val = (period << 6) + (period << 4) + (period << 1);
+
+    timer_ccr_set(0, 0, ccr_val);
+}
+
+/**
+ * 
+ */
+void update_lcd(void)
+{
+    gout = 1;
+    ghome();
+            
+    helloworld(cur_pattern_name);
+    helloworld("      \n");
+
+    helloworld("Period = ");
+    char *raw_period_str = uint_to_dec(pot_get(1));
+    if (gstr_len(raw_period_str) < 3) {
+        period_str[0] = '0';
+        period_str[2] = raw_period_str[0];
+    } else {
+        period_str[0] = raw_period_str[0];
+        period_str[2] = raw_period_str[1];
+    }
+    helloworld(period_str);
+
+    helloworld(uint_to_dec(cur_temp));
+    helloworld(".5 ");
+    helloworld("\xDF"); // degree sign
+    helloworld("C       ");
+
+    helloworld("N = ");
+    helloworld(hex(window_size));
+    helloworld("\n");
+
+    print_systime();
+    helloworld("\n");
+    gout = 0;
 }
 // --------------------------------------------------------
 
@@ -363,10 +417,7 @@ void qcnt_update(unsigned int qcnt)
  */
 void fcnt_update(unsigned int fcnt)
 {
-    cur_speed = (((adc_read(1) & 0xF00) >> 8)*1843) + 3276;
-    timer_ccr_set(0, 0, cur_speed);
-        
-    cur_temp = temp_analog_avg(adc_read(0));
+    
 }
 
 /**
