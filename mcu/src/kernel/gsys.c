@@ -58,10 +58,8 @@ int cur_temp;
 unsigned int cur_speed;
 unsigned char cur_contrast;
 
-char period_str[] = "0.0 s      \n";
+char period_str[] = "0.0 s";
 char temp_str[] = "00.0\xDF";
-
-
 
 
 //-----------------------------------------------------------------------------
@@ -133,6 +131,7 @@ void gsys_init(void)
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
+    // must be banned from lcd_init for some reason:
     cur_contrast = 0;
     lcd_contrast_set(0);
     
@@ -198,11 +197,12 @@ void gsys_update(void)
 
     // do every 0.25 s:
     if ((timer_fcnt & 1) == 0)
-    {        
+    {
         rtc_get();
         update_lcd();
     }
 
+    /*
     // do every 0.5 s:
     if ((timer_fcnt & 3) == 0)
     {
@@ -214,13 +214,13 @@ void gsys_update(void)
     {
         
     }
+    */
 }
 
 /**
  * @brief add an entry to gort's diary
  * 
  * @param entry entry to be written
- * TODO: add name param
  * 
  * @return none
  */
@@ -391,15 +391,16 @@ void update_lcd(void)
 {
     lcd_contrast_set(cur_contrast);
 
-    gout = 1;
+    gout = 1; // --------------------------------------------------------------
     ghome();
     
-    // print current pattern name -------------------------
+    // row 1: current pattern name ------------------------
+    helloworld("\x01\x02\x03 ");
     helloworld(cur_pattern_name);
     helloworld("      \n");
     // ----------------------------------------------------
 
-    // led patterns + heartbeat period --------------------
+    // row 2: led patterns + heartbeat period -------------
     helloworld("Period = ");
     char *raw_period_str = uint_to_dec(pot_get(1));
     if (gstr_len(raw_period_str) < 3) {
@@ -410,28 +411,38 @@ void update_lcd(void)
         period_str[2] = raw_period_str[1];
     }
     helloworld(period_str);
+    helloworld("      \n");
     // ----------------------------------------------------
 
-    // temperature reading in celsius ---------------------
+    // row 3: temperature reading in celsius --------------
     char *raw_temp_str = uint_to_dec(cur_temp);
-    temp_str[0] = raw_temp_str[0];
-    temp_str[1] = raw_temp_str[1];
-    temp_str[3] = raw_temp_str[2];
+    if (gstr_len(raw_temp_str) < 3) {
+        temp_str[0] = '0';
+        temp_str[1] = raw_temp_str[0];
+        temp_str[3] = raw_temp_str[1];
+    } else {
+        temp_str[0] = raw_temp_str[0];
+        temp_str[1] = raw_temp_str[1];
+        temp_str[3] = raw_temp_str[2];
+    }
     helloworld(temp_str);
     helloworld("C       ");
 
     // temperature averaging window size
     helloworld("N = ");
-    helloworld(hex(window_size));
+    char *dec_window_size = uint_to_dec(window_size);
+    if (gstr_len(dec_window_size) < 2) {
+        helloworld("0"); // stupid required leading zero
+    }
+    helloworld(dec_window_size);
     helloworld("\n");
     // ----------------------------------------------------
 
-    // print system time ----------------------------------
+    // row 4: print system time ---------------------------
     print_systime();
     // ----------------------------------------------------
 
-    helloworld("\n");
-    gout = 0;
+    gout = 0; // --------------------------------------------------------------
 }
 // --------------------------------------------------------
 
@@ -441,7 +452,7 @@ void update_lcd(void)
 //-----------------------------------------------------------------------------
 
 /**
- * @brief update things (4 Hz) TODO: APP
+ * @brief update things (variable)
  * 
  * @param qcnt timer quarter-second counter
  * 
@@ -472,7 +483,7 @@ void fcnt_update(unsigned int fcnt)
 }
 
 /**
- * @brief executes when switch 0 is pressed TODO: APP
+ * @brief executes when switch 0 is pressed
  * 
  * @return none
  */
@@ -493,7 +504,7 @@ void switch_0_pressed(void)
 }
 
 /**
- * @brief executes when switch 1 is pressed TODO: APP
+ * @brief executes when switch 1 is pressed
  * 
  * @return none
  */

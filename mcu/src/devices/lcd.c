@@ -30,14 +30,59 @@
 //-----------------------------------------------------------------------------
 
 unsigned char lcd_reg;
-
 unsigned char lcd_line;
 unsigned char lcd_col;
-
 unsigned char lcd_line_addr[NUM_LINES] = {0x00, 0x40, 0x14, 0x54};
 
-extern unsigned char lcd_contrast;
+unsigned char lcd_contrast;
 
+unsigned char smile_char[] =
+{
+    0b00001110,
+    0b00011111,
+    0b00010101,
+    0b00010101,
+    0b00011111,
+    0b00010101,
+    0b00011011,
+    0b00001110
+};
+
+unsigned char gort_char[] =
+{
+    0b00001110,
+    0b00011111,
+    0b00011111,
+    0b00010101,
+    0b00000100,
+    0b00001110,
+    0b00000100,
+    0b00001010
+};
+
+unsigned char star_char[] =
+{
+    0b00000100,
+    0b00000100,
+    0b00001110,
+    0b00011111,
+    0b00001110,
+    0b00001110,
+    0b00011011,
+    0b00010001
+};
+
+unsigned char heart_char[] =
+{
+    0b00001010,
+    0b00011011,
+    0b00011111,
+    0b00011111,
+    0b00001110,
+    0b00001110,
+    0b00000100,
+    0b00000100
+};
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
@@ -60,16 +105,12 @@ int lcd_write_byte(
  */
 int lcd_init(void)
 {
+    // magic bit banging:
     eep(50);
-    lcd_write_nibble(0x03, 0);
-    eep(5);
-    lcd_write_nibble(0x03, 0);
-    eep(1);
-    lcd_write_nibble(0x03, 0);
-    eep(1);
-    lcd_write_nibble(0x02, 0);
-    eep(1);
-
+    lcd_write_nibble(0x03, 0); eep(5);
+    lcd_write_nibble(0x03, 0); eep(1);
+    lcd_write_nibble(0x03, 0); eep(1);
+    lcd_write_nibble(0x02, 0); eep(1);
     lcd_write_byte(0x28, 0); // 4-bit, 2 lines, 5x8 font
     lcd_write_byte(0x06, 0); // incerement cursor, no shift
     lcd_write_byte(0x0F, 0); // display on, cursor + blink on
@@ -77,6 +118,11 @@ int lcd_init(void)
     eep(5);
 
     lcd_cursor_show(0);
+
+    lcd_char_set(1, smile_char);
+    lcd_char_set(2, gort_char);
+    lcd_char_set(3, star_char);
+    //lcd_char_set(4, heart_char);  insha'allah gort says limit is 3 custom chars
 
     return 0;
 }
@@ -258,6 +304,37 @@ int lcd_contrast_set(unsigned char val)
         0
     );
     return stat;
+}
+
+/**
+ * @brief 
+ * 
+ * @param addr 
+ * @param char_data 
+ * 
+ * @return 
+ */
+int lcd_char_set(
+    unsigned char addr,
+    unsigned char *char_data
+) {
+    if (addr > 7) {
+        addr = 7;
+    }
+
+    // set address counter to cgram address
+    lcd_write_byte(0x40 | (addr << 3), 0);
+
+    // write custom character
+    unsigned int i;
+    for (i = 0; i < 8; i++) {
+        lcd_write_byte(char_data[i], 1);
+    }
+
+    // return address counter to ddram
+    lcd_write_byte(0x80, 0);
+
+    return 0; // TODO: handle errors
 }
 
 //-----------------------------------------------------------------------------

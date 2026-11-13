@@ -39,6 +39,12 @@
 // ------------------------------------
 // --------------------------------------------------------
 
+extern unsigned char lcd_contrast;
+
+extern unsigned char smiley_char[8];
+extern unsigned char gort_char[8];
+
+
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
@@ -62,6 +68,10 @@ int lcd_test(void);
 
 int lcd_contrast_set(unsigned char val);
 
+int lcd_char_set(
+    unsigned char addr,
+    unsigned char *char_data
+);
 
 #endif
 //-----------------------------------------------------------------------------

@@ -23,7 +23,7 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-int temp_window[INIT_WINDOW_SIZE];
+int temp_window[MAX_WINDOW_SIZE];
 unsigned char window_size = INIT_WINDOW_SIZE;
 int temp_avg;
 
@@ -85,7 +85,13 @@ int temp_analog_avg(unsigned char adc_ch)
 
 void temp_window_set_size(unsigned int size)
 {
-    window_size = size;
+    if (size > MAX_WINDOW_SIZE) {
+        window_size = MAX_WINDOW_SIZE;
+    } else if (size < MIN_WINDOW_SIZE) {
+        window_size = MIN_WINDOW_SIZE;
+    } else {
+        window_size = size;
+    }
 }
 //-----------------------------------------------------------------------------
 //  END OF CODE

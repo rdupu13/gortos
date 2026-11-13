@@ -57,19 +57,22 @@ int rtc_init(void)
 
     rtc_second = 0x00;
     rtc_minute = 0x37;
-    rtc_hour = 0x10;
-    rtc_weekday = 0x01;
-    rtc_date = 0x06;
-    rtc_month = 0x09;
+    rtc_hour = 0x16;
+    rtc_weekday = 0x03;
+    rtc_date = 0x12;
+    rtc_month = 0x11;
     rtc_year = 0x26;
 
-    gstr_copy(rtc_dt_str, RTC_INIT_DT_STR, gstr_len(RTC_INIT_DT_STR) + 1);
-
+    gstr_copy(
+        rtc_dt_str,
+        RTC_INIT_DT_STR,
+        gstr_len(RTC_INIT_DT_STR) + 1
+    );
+    
     rtc_display_sel(0);
     
-    //rtc_set(); // TODO: python gui to set system time?
+    //rtc_set();
 
-    // sets fake init time TODO: maybe get time from internet (AFTER this init function?)
     int stat;
     
     //stat = rtc_set();
