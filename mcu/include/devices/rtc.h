@@ -77,8 +77,16 @@ int rtc_set(void);      // set current date and time
 int rtc_vbaten(void);   // enbable battery power
 
 char *rtc_getstr(void); // get current rtc date and time and convert to string
-//void rtc_setdate(int month, int day, int year);
-//void rtc_settime(int hour, int minute, int second);
+void rtc_settime(
+    unsigned int hour,
+    unsigned int min,
+    unsigned int sec
+);
+void rtc_setdate(
+    unsigned int month,
+    unsigned int date,
+    unsigned int year
+);
 
 void rtc_display_sel(unsigned char sel);    // select which register to display
 void rtc_display_next(void);                // select next register to display

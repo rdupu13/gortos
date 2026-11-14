@@ -291,6 +291,8 @@ int lcd_contrast_set(unsigned char val)
     if (val > 7) {
         val = 7;
     }
+    lcd_contrast = val;
+
     val = ((val & 0x0007) << 4);
 
     dac_in[0] |= ((val >> 4) & 0x0F);

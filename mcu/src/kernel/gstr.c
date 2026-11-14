@@ -278,6 +278,7 @@ void uint_to_bcd(unsigned char *bcd, unsigned int num)
  */
 char *uint_to_dec(unsigned int num)
 {
+    // TODO: handle 0 case
     unsigned char bcd[] = {0x00, 0x00, 0x00};
     uint_to_bcd(bcd, num);
     hex_to_str(dec_str, bcd, 3);

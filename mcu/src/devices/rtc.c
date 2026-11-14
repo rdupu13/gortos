@@ -77,8 +77,9 @@ int rtc_init(void)
     
     //stat = rtc_set();
     //if (stat) { return stat; }
-    //stat = rtc_vbaten();
-    //if (stat) { return stat; }
+
+    stat = rtc_vbaten();
+    if (stat) { return stat; }
 
     stat = rtc_get();
     if (stat) { return stat; }
@@ -256,21 +257,48 @@ char *rtc_getstr(void)
 
 /**
  * 
- *
-void rtc_setdate(int date, int month, int year)
-{
-    // TODO: bin to bcd
+ */
+void rtc_settime(
+    unsigned int hour,
+    unsigned int min,
+    unsigned int sec
+) {
+    unsigned char hour_bcd[3];
+    unsigned char min_bcd[3];
+    unsigned char sec_bcd[3];
+    
+    uint_to_bcd(hour_bcd, hour);
+    uint_to_bcd(min_bcd, min);
+    uint_to_bcd(sec_bcd, sec);
 
+    rtc_get();    
+    rtc_hour = hour_bcd[2];
+    rtc_minute = min_bcd[2];
+    rtc_second = sec_bcd[2];
     rtc_set();
 }
 
 /**
  * 
- *
-void rtc_settime(int date, int month, int year)
-{
-    // TODO: bin to bcd
+ */
+void rtc_setdate(
+    unsigned int month,
+    unsigned int date,
+    unsigned int year
+) {
+    unsigned char month_bcd[3];
+    unsigned char date_bcd[3];
+    unsigned char year_bcd[3];
+    
+    uint_to_bcd(month_bcd, month);
+    uint_to_bcd(date_bcd, date);
+    uint_to_bcd(year_bcd, year);
 
+    rtc_get();
+    //rtc_weekday = 0x01;
+    rtc_month = month_bcd[2];
+    rtc_date = date_bcd[2];
+    rtc_year = year_bcd[2];
     rtc_set();
 }
 
