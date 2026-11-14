@@ -39,6 +39,9 @@
 // ------------------------------------
 // --------------------------------------------------------
 
+#define MAX_CONTRAST 7
+#define MIN_CONTRAST 0
+
 extern unsigned char lcd_contrast;
 
 extern unsigned char smiley_char[8];

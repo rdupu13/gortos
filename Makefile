@@ -35,8 +35,7 @@ EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/src/devices/mmm.c \
 			mcu/include/devices/mmm.h \
 			mcu/src/devices/rot.c \
-			mcu/include/devices/rot.h \
-			mcu/src/drivers/good_uart.c
+			mcu/include/devices/rot.h
 # -------------------------------------
 
 # WARNING OPTIONS ---------------------

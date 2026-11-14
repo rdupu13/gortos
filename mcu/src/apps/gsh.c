@@ -96,7 +96,6 @@ int main_gsh(void)
         //    helloworld(args[i]);
         //    helloworld("\n");
         //}
-        //helloworld("\n");
 
         // parse arguments
         if (gstr_cmp(args[0], "exit"))
@@ -140,23 +139,25 @@ int main_gsh(void)
                 if (argc > 2) { helloworld("too many args\n"); continue; }
 
                 // TODO: dec_to_uint!!
-                
-                /*
                 unsigned int win = dec_to_uint(args[1]);
 
-                helloworld(uint_to_dec(win));
-                helloworld("\n");
+                //helloworld(uint_to_dec(win));
+                //helloworld("\n");
 
-                if (win > MAX_WINDOW_SIZE) { win = MAX_WINDOW_SIZE; }
-                if (win < MIN_WINDOW_SIZE) { win = MIN_WINDOW_SIZE; }
-                temp_window_set_size(win);
+                //if (win > MAX_WINDOW_SIZE) { win = MAX_WINDOW_SIZE; }
+                //if (win < MIN_WINDOW_SIZE) { win = MIN_WINDOW_SIZE; }
+                //temp_window_set_size(win);
                 
+                //helloworld("temp window size (not written) = ");
+                //helloworld(uint_to_dec(window_size));
+                //helloworld("\n");
+            }
+            else
+            {
                 helloworld("temp window size = ");
                 helloworld(uint_to_dec(window_size));
                 helloworld("\n");
-                */
             }
-            else { helloworld(uint_to_dec(window_size)); helloworld("\n"); }
         }
         else if (gstr_cmp(args[0], "lcdc"))
         {
@@ -167,7 +168,7 @@ int main_gsh(void)
                 
                 /*
                 unsigned int con = dec_to_uint(args[1]);
-
+                
                 helloworld(uint_to_dec(con));
                 helloworld("\n");
 
@@ -180,7 +181,12 @@ int main_gsh(void)
                 helloworld("\n");
                 */
             }
-            else { helloworld(hex(lcd_contrast)); helloworld("\n"); }
+            else
+            {
+                helloworld("lcd contrast = ");
+                helloworld(hex(lcd_contrast));
+                helloworld("\n");
+            }
         }
         
 
