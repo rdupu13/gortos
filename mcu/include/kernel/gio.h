@@ -40,6 +40,7 @@ extern volatile unsigned char *wait_flag;
 
 int helloworld(char *arr); // write a null-terminated array to gout
 int hellogort(char *arr);  // read an array from gin until newline
+int arf(char c); // putc: print 1 char to gout
 
 int glear(void); // write putty clear sequence to gout
 int ghome(void); // 

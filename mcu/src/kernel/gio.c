@@ -73,7 +73,7 @@ int helloworld(char *arr)
 }
 
 /**
- * @brief read an array from gin until newline
+ * @brief read an array from gin until newline, null-terminate it
  * 
  * @param arr pointer to where received array will be stored
  * 
@@ -88,14 +88,12 @@ int hellogort(char *arr)
     {
         case 0:
             // uart
-            // TODO: handle errors
-            uart_rx(
-                (unsigned char *) arr,
-                0,
-                '\r',
-                0
+            status = uart_rx(
+                (unsigned char *) arr
             );
-            wait_flag = &uart_rx_bg;
+            if (status > 0) {
+                arr[status] = '\0';
+            }
             break;
         
         default:
@@ -103,6 +101,15 @@ int hellogort(char *arr)
             break;
     }
     return status;
+}
+
+/**
+ * @brief putc: print 1 character to gout
+ */
+int arf(char c)
+{
+    char printable[2] = {c, '\0'};
+    return helloworld(printable);
 }
 
 /**

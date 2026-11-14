@@ -120,9 +120,9 @@ int lcd_init(void)
     lcd_cursor_show(0);
 
     lcd_char_set(1, smile_char);
-    lcd_char_set(2, gort_char);
+    lcd_char_set(2, gort_char); // insha'allah gort must not have legs
     lcd_char_set(3, star_char);
-    //lcd_char_set(4, heart_char);  insha'allah gort says limit is 3 custom chars
+    //lcd_char_set(4, heart_char);  // insha'allah gort says limit is 3 custom chars
 
     return 0;
 }

@@ -28,14 +28,15 @@ ASM_SRCDIR = mcu/asm
 
 EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
+			mcu/src/kernel/menu.c \
+			mcu/include/kernel/menu.h \
 			mcu/src/devices/dial.c \
 			mcu/include/devices/dial.h \
 			mcu/src/devices/mmm.c \
 			mcu/include/devices/mmm.h \
-			mcu/src/devices/rot.h \
+			mcu/src/devices/rot.c \
 			mcu/include/devices/rot.h \
-			mcu/src/kernel/menu.c \
-			mcu/include/kernel/menu.h
+			mcu/src/drivers/good_uart.c
 # -------------------------------------
 
 # WARNING OPTIONS ---------------------

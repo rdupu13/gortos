@@ -1,9 +1,7 @@
 # Lab 4: ADC and SPI
 
 #### Ryan Dupuis
-#### EELE 465 | 9/14/2026
-
-*Updated 11//2026*
+#### EELE 465 | 9/14/2026 (*Updated 11//2026*)
 
 ## Introduction
 
@@ -105,7 +103,7 @@ int spi_read(
 
 
 
-## LED Stick Driver
+## LED Stick Driver (Attempted)
 
 I attempted to interface with the WS2812B RGB LED stick, which is a very strange "serially"-addressable module. After encountering great difficulty when trying to abuse the SPI MOSI line, I switched to bit-banging the data directly from `gsys`, so it doesn't technically have its own driver file. Unfortunately, the timing requirements are incredibly tight and unlike any other device I've seen. Logic 1's are counted as a long-pulse (66% duty) and logic 0's are counted as a short-pulse (33% duty) with a lightning-fast ~1 microsecond period. To further complicate matters, the LED stick wants a 5v input, not 3.3v. This required a simple NMOS inverter that steps up the MCU output, as seen in the circuit diagram at the start.
 

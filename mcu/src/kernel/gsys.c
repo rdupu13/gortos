@@ -162,7 +162,7 @@ void gsys_init(void)
 
     // print start message (init successful)
     helloworld("\n\n~~~ Gort OS ~~~\n");
-    helloworld("(c) rdupu13 2026\n\n");
+    helloworld("rdupu13 2026\n\n");
     helloworld("Current time: ");
     print_systime();
     helloworld("\n\n");
@@ -397,7 +397,10 @@ void update_lcd(void)
     // row 1: current pattern name ------------------------
     helloworld("\x01\x02\x03 ");
     helloworld(cur_pattern_name);
-    helloworld("      \n");
+    //for (int i = 0; i < (15 - gstr_len(cur_pattern_name)); i++) {
+    //    helloworld(" ");
+    //}
+    helloworld("\n");
     // ----------------------------------------------------
 
     // row 2: led patterns + heartbeat period -------------

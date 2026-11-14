@@ -296,9 +296,9 @@ char *uint_to_dec(unsigned int num)
  */
 void bcd_to_uint(unsigned int *num, unsigned char *bcd)
 {
-    //*num =  ((bcd[0] & 0x0F) * 10000);
-    //*num += (((bcd[1] & 0xF0) >> 4) * 1000);
-    //*num += ((bcd[1] & 0x0F) * 100);
+    *num =  ((bcd[0] & 0x0F) * 10000);
+    *num += (((bcd[1] & 0xF0) >> 4) * 1000);
+    *num += ((bcd[1] & 0x0F) * 100);
     *num += (((bcd[2] & 0xF0) >> 4) * 10);
     *num += (bcd[2] & 0x0F);
 }
@@ -309,12 +309,8 @@ void bcd_to_uint(unsigned int *num, unsigned char *bcd)
 unsigned int dec_to_uint(char *str)
 {
     unsigned int dec;
-    char print[] = "000000";
     unsigned char bcd[] = {0x00, 0x00, 0x00};
     str_to_hex(bcd, str);
-    //hex_to_str(print + 2, bcd, 3);
-    //helloworld(print);
-    //helloworld("\n");
     bcd_to_uint(&dec, bcd);
     return dec;
 }

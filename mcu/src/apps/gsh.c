@@ -25,29 +25,22 @@
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-#define MAX_ARGS    10
 #define CMD_LEN     64
+#define ARG_LEN     8
+#define MAX_ARGS    8
 
 char gsh_cmd[CMD_LEN];
+
+unsigned char argc;
 char *args[MAX_ARGS];
 
 char cur_user[] = "gort";
-char cur_path[] = "/home/gort";
+char cur_path[] = "/";
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTIONS
 //-----------------------------------------------------------------------------
-
-/**
- * 
- */
-unsigned int strstr_len(char **strstr)
-{
-    unsigned int i;
-    for (i = 0; strstr[i] != (char *) 0; i++) {}
-    return i;
-}
 
 /**
  * @brief The Gort Shell
@@ -67,42 +60,58 @@ int main_gsh(void)
         helloworld("$ ");
 
         // ------------------------------------------------
-        // read in next command, but update system while waiting
+        // clear buffer contents
+        for (unsigned int i = 0; i < CMD_LEN; i++) {
+            gsh_cmd[i] = '\0';
+        }
+        // read in next command
         hellogort(gsh_cmd);
-        //while (*wait_flag != 0)
-        //{
-        //    gsys_update(1);
-        //}
+        helloworld("\n");
         // ------------------------------------------------
         
-        // split command by spaces
-        gstr_split(args, gsh_cmd, ' ');
+        argc = 0;
+        unsigned int i = 0;
+        unsigned int cmd_len = gstr_len(gsh_cmd);
+        //helloworld("cmd len: ");
+        //helloworld(uint_to_dec(cmd_len));
+        //helloworld("\n");
 
-        // time command
-        if (gstr_cmp(args[0], "time"))
+        while (i < cmd_len)
         {
-            // print rtc time
-            helloworld("\n\n");
-            print_systime();
-            helloworld("\n");
-        
-            if (gstr_cmp(args[1], "set"))
+            args[argc] = gsh_cmd + i;
+            
+            //helloworld(args[argc]);
+            //helloworld("\n");
+
+            while ((gsh_cmd[i] != ' ')
+                && (gsh_cmd[i] != '\r'))
             {
-                helloworld("arguments given: ");
-                helloworld(hex(strstr_len(args)));
-                helloworld("\n");
+                //helloworld(hex(i));
+                //helloworld(":  ");
+                //arf(gsh_cmd[i]);
+                //helloworld("\n");
+                i++; 
             }
-        }
+            
+            argc++;
+            //helloworld("end of arg ");
+            //helloworld(hex(argc));
+            //helloworld(": ");
+            //helloworld(hex(gsh_cmd[i]));
+            //helloworld("\n");
 
-        // exit command
-        else if (gstr_cmp(args[0], "exit"))
-        {
-            helloworld("\nexiting gsh...\n");
-            helloworld("\n");
-            return 0;
+            gsh_cmd[i++] = '\0';
         }
-
+        
         helloworld("\n");
+        helloworld(uint_to_dec(argc));
+        helloworld(" args:\n");
+        for (i = 0; i < argc; i++)
+        {
+            helloworld(args[i]);
+            helloworld("\n");
+        }
+
         // ------------------------------------------------
     }
     

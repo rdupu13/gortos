@@ -27,12 +27,7 @@ volatile unsigned char *uart_tx_buf_ptr;
 volatile unsigned char *uart_rx_buf_ptr;
 volatile unsigned int uart_cnt;
 volatile unsigned char uart_busy;
-
-volatile unsigned char uart_rxmode;
-volatile unsigned char uart_stop;
 volatile unsigned char uart_echo;
-
-volatile unsigned char uart_rx_bg;
 
 
 //-----------------------------------------------------------------------------
@@ -70,7 +65,6 @@ void uart_init(
             UCA1MCTLW |= 0xD600;        // modulation = 0xD608 (115200 baud)
             break;
         default:
-            // TODO: return error
             UCA1CTLW0 |= UCSSEL__SMCLK; // clock source = smclk (1 MHz)
             UCA1BRW = 8;                // divide brclk by 8
             UCA1MCTLW |= 0xD600;        // modulation = 0xD608 (115200 baud)
@@ -87,10 +81,7 @@ void uart_init(
     uart_rx_buf_ptr = (volatile unsigned char *) 0;
     uart_cnt = 0;
     uart_busy = 0;
-    uart_rxmode = 0;
-    uart_stop = '\r';
     uart_echo = echo;
-    uart_rx_bg = 0;
 }
 
 /**
@@ -120,7 +111,6 @@ int uart_tx(
     
     uart_busy = 1;
     UCA1TXBUF = *uart_tx_buf_ptr++; // tx first byte, triggering TXCPTIFG
-    
     while(uart_busy) {} // wait until tx done
 
     UCA1IE &= ~UCTXCPTIE; // disable tx complete interrupts
@@ -134,38 +124,29 @@ int uart_tx(
  * @param arr   pointer to array to store received data
  * @param len   number of bytes to read (> 0)
  * @param stop  if len = 0, read until this character received
- * @param bg    receive in background
  * 
  * @return status of receive:
  *               0: ok
  *              -1: uart busy
+ *              >0: # of bytes read
  */
 int uart_rx(
-    unsigned char *arr,
-    unsigned int len,
-    unsigned char stop,
-    unsigned char bg
+    unsigned char *arr
 ) {
     if (uart_busy) { return -1; }
 
     uart_rx_buf_ptr = (volatile unsigned char *) arr;
-    uart_cnt = len;
-    uart_stop = stop;
-
-    uart_rxmode = (len == 0) ? 1 : 0;
+    uart_cnt = 0;
     
     UCA1IFG = 0; // clear interrupt flags
     UCA1IE |= UCRXIE; // enable rx buffer full interrupts
     
     uart_busy = 1;
-    if (bg) {
-        uart_rx_bg = 1; // begin receiving in background
-    } else {
-        while(uart_busy) {} // wait until rx done
-        UCA1IE &= ~UCRXIE;
-    }
+    while(uart_busy) {} // wait until rx done
 
-    return 0;
+    UCA1IE &= ~UCRXIE;
+
+    return uart_cnt;
 }
 
 
@@ -181,24 +162,19 @@ void __attribute__((interrupt(UART_VECTOR))) isr_uart(void)
         case 0x00: break; // no interrupts
         case 0x02:
             // UCRXIFG (rx buffer full)
-            UCA1IFG &= ~UCRXIFG; // clear rx buffer full interrupt flag
             *uart_rx_buf_ptr = UCA1RXBUF; // store received byte
-            uart_cnt--; // decrement counter
+            uart_cnt++; // increment bytes received counter
             
             // echo char if enabled
-            if (uart_echo)
-            {
+            if (uart_echo) {
                 UCA1TXBUF = *uart_rx_buf_ptr;
             }
             
             // check stop criteria
-            if ((!uart_rxmode && (uart_cnt == 0))
-                || (uart_rxmode && (*uart_rx_buf_ptr == uart_stop))
-            ) {
+            if (*uart_rx_buf_ptr == '\r') {
                 uart_busy = 0; // not busy
-                uart_rx_bg = 0; // stop receiving in background
             }
-                        
+            
             uart_rx_buf_ptr++; // increment pointer
             break;
         
