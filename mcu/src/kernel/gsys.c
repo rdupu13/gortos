@@ -56,7 +56,6 @@ volatile unsigned char gblks_data[BLK_ALLOC_NUM][BLK_SIZE];
 unsigned int cur_fcnt;
 int cur_temp;
 unsigned int cur_speed;
-unsigned char cur_contrast;
 
 char period_str[] = "0.0 s";
 char temp_str[] = "00.0\xDF";
@@ -131,8 +130,8 @@ void gsys_init(void)
     } else {
         gsys_log("gsys: lcd init successful :)");
     }
-    // must be banned from lcd_init for some reason:
-    cur_contrast = 0;
+    // TODO: banned from lcd_init for some reason:
+    lcd_contrast = 0;
     lcd_contrast_set(0);
     
     //dial_init(); // led, switch
@@ -183,9 +182,6 @@ void gsys_update(void)
     cur_fcnt = timer_fcnt;
 
     // do every 0.125 s:
-    //helloworld();
-    //helloworld("\n");
-    
     cur_temp = temp_analog_avg(0);
     pot_set_speed(1);
     
@@ -389,7 +385,7 @@ void pot_set_speed(unsigned char adc_ch)
  */
 void update_lcd(void)
 {
-    lcd_contrast_set(cur_contrast);
+    lcd_contrast_set(lcd_contrast);
 
     gout = 1; // --------------------------------------------------------------
     ghome();
@@ -397,9 +393,12 @@ void update_lcd(void)
     // row 1: current pattern name ------------------------
     helloworld("\x01\x02\x03 ");
     helloworld(cur_pattern_name);
+
+    // TODO: fix how this renders:
     //for (int i = 0; i < (15 - gstr_len(cur_pattern_name)); i++) {
     //    helloworld(" ");
     //}
+    
     helloworld("\n");
     // ----------------------------------------------------
 

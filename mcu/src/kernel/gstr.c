@@ -277,12 +277,18 @@ void uint_to_bcd(unsigned char *bcd, unsigned int num)
  */
 char *uint_to_dec(unsigned int num)
 {
-    // TODO: handle 0 case
     unsigned char bcd[] = {0x00, 0x00, 0x00};
+    unsigned int i;
+
+    if (num == 0) {
+        return dec_str + gstr_len(dec_str) - 1;
+    }
+
     uint_to_bcd(bcd, num);
     hex_to_str(dec_str, bcd, 3);
-    unsigned int i;
+
     for (i = 0; dec_str[i] == '0'; i++) {}
+    
     return dec_str + i;
 }
 
@@ -304,13 +310,13 @@ unsigned int bcd_to_uint(void)
     
     unsigned int hund = ((to_hex[1] & 0xF0) >> 4);
     hund = (hund << 3) + (hund << 1); // x10
-    thou = (ten_thou << 3) + (thou << 1); // x100
+    thou = (thou << 3) + (thou << 1); // x100
     ten_thou = (ten_thou << 3) + (ten_thou << 1); // x1000
 
     unsigned int ten = (to_hex[0] & 0x0F);
     ten = (ten << 3) + (ten << 1); // x10
     hund = (hund << 3) + (hund << 1); // x100
-    thou = (ten_thou << 3) + (thou << 1); // x1000
+    thou = (thou << 3) + (thou << 1); // x1000
     ten_thou = (ten_thou << 3) + (ten_thou << 1); // x10000
     
     num = ten_thou + thou + hund + ten + ((to_hex[0] & 0xF0) >> 4);
@@ -323,23 +329,9 @@ unsigned int bcd_to_uint(void)
  */
 unsigned int dec_to_uint(char *str)
 {
-    unsigned int new_uint;
-
     str_to_hex(str); // writes to_hex
 
-    helloworld(hex(to_hex[0]));
-    helloworld(" ");
-    helloworld(hex(to_hex[1]));
-    helloworld(" ");
-    helloworld(hex(to_hex[2]));
-    helloworld("\n");
-    
-    new_uint = bcd_to_uint(); // reads to_hex
-
-    helloworld(uint_to_dec(new_uint));
-    helloworld("\n");
-
-    return 0;
+    return bcd_to_uint(); // reads to_hex
 }
 
 /**
