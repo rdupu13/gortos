@@ -58,15 +58,13 @@ void uart_init(
 
 // transmit an array over uart
 int uart_tx(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len
 );
 
 // receive an array over uart
 int uart_rx(
-    volatile unsigned char *arr,
-    unsigned int len,
-    unsigned char stop
+    unsigned char *arr
 );
 
 

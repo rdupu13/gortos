@@ -15,13 +15,19 @@
 
 #include "kernel/gstr.h"
 
+#include "kernel/gio.h" // debugging only
+
 
 //-----------------------------------------------------------------------------
 //  GLOBAL VARIABLES
 //-----------------------------------------------------------------------------
 
-char hex_str[5];
-char dec_str[] = "00000";
+char hex_str[5]; // chars from 16-bit hex
+unsigned char to_hex[3]; // to 16-bit hex
+
+char dec_str[] = "000000";
+
+
 
 
 //-----------------------------------------------------------------------------
@@ -60,30 +66,6 @@ unsigned int gstr_len(char *arr)
     return i;
 }
 
-/* need malloc, array changes in size:
-void insc(char *arr, char c, unsigned int x)
-{
-    int i;
-    char nc;
-    unsigned int len = girth(arr);
-    char oc = arr[x];
-
-    arr[x] = c;
-    for (i = x + 1; i < len + 1; i++)
-    {
-        if (i == len)
-        {
-            arr[]
-            break;
-        }
-
-        nc = arr[i];
-        arr[i] = oc;
-        oc = nc;
-    }
-}
-*/
-
 /**
  * @brief split a string
  * 
@@ -95,6 +77,7 @@ void insc(char *arr, char c, unsigned int x)
  */
 void gstr_split(char **strptr_arr, char *arr, char delim)
 {
+    // TODO: improve using gsh version
     unsigned int i;
     unsigned int j = 1;
     strptr_arr[0] = arr;
@@ -128,7 +111,7 @@ unsigned char gstr_cmp(char *dst, char *src)
 /**
  * @brief convert hexadecimal to string representation
  * 
- * @param str string representation of hexadecimal
+ * @param str string representation of hexadecimal (len x2)
  * @param hex hexadecimal to be converted
  * @param len length of hexadecimal array
  * 
@@ -173,47 +156,65 @@ void hex_to_str(char *str, unsigned char *hex, unsigned int len)
 /**
  * @brief convert string representation to hexadecimal
  * 
- * @param hex hexadecimal array from string
  * @param str string representation to be converted
  * 
  * @return none
  */
-void str_to_hex(unsigned char *hex, char *str)
+unsigned char *str_to_hex(char *str)
 {
-    unsigned int i = 0;
-    unsigned int j;
-    unsigned char hex_h;
-    unsigned char hex_l;
-    for (j = 0; str[j] != '\0'; j += 2)
-    {
-        switch(str[j])
-        {
-            case 'A': hex_h = 0xA0; break;
-            case 'B': hex_h = 0xB0; break;
-            case 'C': hex_h = 0xC0; break;
-            case 'D': hex_h = 0xD0; break;
-            case 'E': hex_h = 0xE0; break;
-            case 'F': hex_h = 0xF0; break;
-            default: hex_h = (str[j] << 4) & 0xF0; break;
-        }
-        hex[i] = hex_h;
-        
-        if (str[j + 1] == '\0') { i++; break; }
-        
-        switch(str[j + 1])
-        {
-            case 'A': hex_l = 0x0A; break;
-            case 'B': hex_l = 0x0B; break;
-            case 'C': hex_l = 0x0C; break;
-            case 'D': hex_l = 0x0D; break;
-            case 'E': hex_l = 0x0E; break;
-            case 'F': hex_l = 0x0F; break;
-            default: hex_l = str[j + 1] & 0x0F; break;
-        }
-        hex[i] |= hex_l;
-
-        i++;
+    int j;
+    unsigned int strlen = gstr_len(str);
+    unsigned int i;
+    
+    // clear hex bytes
+    for (i = 0; i < 3; i++) {
+        to_hex[i] = 0;
     }
+    i = 0;
+
+    unsigned char pol;
+    if ((strlen & 1) == 0)
+    {
+        pol = 1; // even lengths start on odd index
+    }
+    else
+    {
+        pol = 0; // odd lengths start on even index
+    }
+
+    // decrement through string (hex bytes end up reversed)
+    for (j = (strlen - 1); j != -1; j--)
+    {
+        if ((j & 1) == pol)
+        {
+            switch(str[j]) // left nibble
+            {
+                case 'A': to_hex[i] |= 0xA0; break;
+                case 'B': to_hex[i] |= 0xB0; break;
+                case 'C': to_hex[i] |= 0xC0; break;
+                case 'D': to_hex[i] |= 0xD0; break;
+                case 'E': to_hex[i] |= 0xE0; break;
+                case 'F': to_hex[i] |= 0xF0; break;
+                default: to_hex[i] |= ((str[j] & 0x0F) << 4); break;
+            }
+        }
+        else
+        {
+            switch(str[j]) // right nibble
+            {
+                case 'A': to_hex[i] |= 0x0A; break;
+                case 'B': to_hex[i] |= 0x0B; break;
+                case 'C': to_hex[i] |= 0x0C; break;
+                case 'D': to_hex[i] |= 0x0D; break;
+                case 'E': to_hex[i] |= 0x0E; break;
+                case 'F': to_hex[i] |= 0x0F; break;
+                default: to_hex[i] |= (str[j] & 0x0F); break;
+            }
+            i++; // increment hex index after writing to right nibble
+        }
+    }
+
+    return to_hex;
 }
 
 /**
@@ -239,41 +240,99 @@ char *hex(unsigned int n)
 
 /**
  * @brief convert an unsigned integer to binary-coded decimal
- *
+ * DOUBLE DABBLE ALGORITHM!!!!!!!!!!!!
+ * 
+ * @param bcd 3 BYTES LONG BCD
+ * @param num 16-bit unsigned integer
+ * 
+ * @return none
+ */
 void uint_to_bcd(unsigned char *bcd, unsigned int num)
 {
-    // 16-bit unsigned int -> 5 x 4-bit BCD (char[3])
-    // 8-bit unsigned int -> 3 x 4-bit BCD (char[2])
+    unsigned char i;
+    for (i = 0; i < 16; i++)
+    {
+        if ((bcd[2] & 0x0F) >= 0x05) { bcd[2] += 0x03; }
+        if (bcd[1] >= 0x50)          { bcd[1] += 0x30; }
+        if ((bcd[1] & 0x0F) >= 0x05) { bcd[1] += 0x03; }
+        if (bcd[0] >= 0x50)          { bcd[0] += 0x30; }
+        if ((bcd[0] & 0x0F) >= 0x05) { bcd[0] += 0x03; }
+
+        bcd[2] = (bcd[2] << 1) | ((bcd[1] & 0x80) ? 1 : 0);
+        bcd[1] = (bcd[1] << 1) | ((bcd[0] & 0x80) ? 1 : 0);
+        bcd[0] = (bcd[0] << 1) | ((num & 0x8000) ? 1 : 0);
+        num = (num << 1);
+    }
+    unsigned char tmp = bcd[2];
+    bcd[2] = bcd[0];
+    bcd[0] = tmp;
 }
-*/
 
 /**
  * @brief convert unsigned integer to string representation
- *
+ * 
+ * @param num
+ * 
+ * @return 
+ */
 char *uint_to_dec(unsigned int num)
 {
-    // 5 x 4-bit BCD (char[3]) -> char[5]
+    unsigned char bcd[] = {0x00, 0x00, 0x00};
+    unsigned int i;
+
+    if (num == 0) {
+        return dec_str + gstr_len(dec_str) - 1;
+    }
+
+    uint_to_bcd(bcd, num);
+    hex_to_str(dec_str, bcd, 3);
+
+    for (i = 0; dec_str[i] == '0'; i++) {}
+    
+    return dec_str + i;
 }
-*/
 
 /**
  * @brief convert binary-coded decimal to an unsigned integer
- *
-void bcd_to_uint(unsigned int num, unsigned char *bcd, unsigned int len)
+ * 
+ * @return none
+ */
+unsigned int bcd_to_uint(void)
 {
-    // 5 x 4-bit BCD (char[3]) -> 16-bit unsigned int
-    // 3 x 4-bit BCD (char[2]) -> 8-bit unsigned int
+    unsigned int num = 0;
+    
+    unsigned int ten_thou = ((to_hex[2] & 0xF0) >> 4);
+    ten_thou = (ten_thou << 3) + (ten_thou << 1); // x10
+    
+    unsigned int thou = (to_hex[1] & 0x0F);
+    thou = (thou << 3) + (thou << 1); // x10
+    ten_thou = (ten_thou << 3) + (ten_thou << 1); // x100
+    
+    unsigned int hund = ((to_hex[1] & 0xF0) >> 4);
+    hund = (hund << 3) + (hund << 1); // x10
+    thou = (thou << 3) + (thou << 1); // x100
+    ten_thou = (ten_thou << 3) + (ten_thou << 1); // x1000
+
+    unsigned int ten = (to_hex[0] & 0x0F);
+    ten = (ten << 3) + (ten << 1); // x10
+    hund = (hund << 3) + (hund << 1); // x100
+    thou = (thou << 3) + (thou << 1); // x1000
+    ten_thou = (ten_thou << 3) + (ten_thou << 1); // x10000
+    
+    num = ten_thou + thou + hund + ten + ((to_hex[0] & 0xF0) >> 4);
+    
+    return num;
 }
-*/
 
 /**
  * @brief convert decimal string representation to unsigned integer
- *
+ */
 unsigned int dec_to_uint(char *str)
 {
-    // char[5] -> 5 x 4-bit BCD (char[3])
+    str_to_hex(str); // writes to_hex
+
+    return bcd_to_uint(); // reads to_hex
 }
-*/
 
 /**
  * @brief absolute value

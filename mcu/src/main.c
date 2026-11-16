@@ -14,17 +14,16 @@
 //-----------------------------------------------------------------------------
 
 // drivers
-#include "drivers/adc.h" // testing
-#include "drivers/led.h" // testing
+#include "drivers/switch.h"
 
 // devices
-#include "devices/mmm.h" // testing
-#include "devices/rtc.h" // testing
+
 
 // kernel
-#include "kernel/gsys.h"
-#include "kernel/gio.h" // testing
-#include "kernel/gstr.h" // testing
+#include "kernel/gstr.h"
+#include "kernel/gio.h"
+#include "kernel/gsys.h" // initialization
+
 
 // applications
 #include "apps/gsh.h"
@@ -46,31 +45,33 @@
  */
 int main(void)
 {
-    gsys_init(); // initialize gort system
+    // initialize gort system
+    gsys_init();
 
-    int gsh = main_gsh(); // launch gort shell
-    gsys_log("gsh: exited with code:");
-    gsys_log(hex(gabs(gsh)));
+    int gsh_code;
+    // if switch 0 is pressed after system init, go to gsh
+    if (switch_poll(0) != 0)
+    {
+        // launch gort shell
+        gsh_code = main_gsh();
+        
+        gsys_log("gsh: exited with code:");
+        gsys_log(uint_to_dec(gabs(gsh_code)));
+    }
 
+    // if switch 1 is pressed after system init, display lcd test
+    if (switch_poll(1) != 0)
+    {
+        lcd_test();
+        gout = 1;
+        glear();
+        gout = 0;
+    }
+    
+    // begin default execution loop
     while (1)
     {
-        //helloworld(hex(adc_read(0)));
-        //helloworld("\n");
-
-        //print_systime();
-        //helloworld("\n");
-        //eep(610);
-
-        //int stat = rtc_get();
-        //if (stat) {
-        //    gsys_log("rtc: error");
-        //    helloworld(hex(gabs(stat)));
-        //}
-        //eep(610);
-
-        //eep(610);
-        //mmm_init();
-        
+        gsys_update();
     } // halt / loop forever
     return 0;
 }

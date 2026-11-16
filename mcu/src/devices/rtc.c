@@ -55,28 +55,32 @@ int rtc_init(void)
 {
     rtc_display_num = 0;
 
-    rtc_second = 0x18;
-    rtc_minute = 0x24;
-    rtc_hour = 0x12;
-    rtc_weekday = 0x06;
-    rtc_date = 0x23;
-    rtc_month = 0x12;
-    rtc_year = 0x05;
+    rtc_second = 0x00;
+    rtc_minute = 0x37;
+    rtc_hour = 0x16;
+    rtc_weekday = 0x03;
+    rtc_date = 0x12;
+    rtc_month = 0x11;
+    rtc_year = 0x26;
 
-    gstr_copy(rtc_dt_str, RTC_INIT_DT_STR, gstr_len(RTC_INIT_DT_STR) + 1);
-
+    gstr_copy(
+        rtc_dt_str,
+        RTC_INIT_DT_STR,
+        gstr_len(RTC_INIT_DT_STR) + 1
+    );
+    
     rtc_display_sel(0);
     
-    //rtc_set(); // TODO: python gui to set system time?
+    //rtc_set();
 
-    // sets fake init time TODO: maybe get time from internet (AFTER this init function?)
     int stat;
-    stat = rtc_stop();
+    
+    //stat = rtc_set();
+    //if (stat) { return stat; }
+
+    stat = rtc_vbaten();
     if (stat) { return stat; }
-    stat = rtc_set();
-    if (stat) { return stat; }
-    stat = rtc_start();
-    if (stat) { return stat; }
+
     stat = rtc_get();
     if (stat) { return stat; }
 
@@ -90,23 +94,23 @@ int rtc_init(void)
  */
 int rtc_start(void)
 {
-    unsigned char ctl_reg;
+    unsigned char oscen_reg;
 
     int stat = i2c_read(
-        (volatile unsigned char *) &ctl_reg,
+        &oscen_reg,
         1,
         RTC_SLAVE_ADDR,
-        RTC_REG_CTL
+        RTC_OSCEN_REG
     );
     if (stat) { return stat; }
     
-    ctl_reg |= RTC_OSC_EN_BIT; // enable oscillator
+    oscen_reg |= RTC_OSCEN_BIT; // enable oscillator
     
     stat = i2c_write(
-        (volatile unsigned char *) &ctl_reg,
+        &oscen_reg,
         1,
         RTC_SLAVE_ADDR,
-        RTC_REG_CTL
+        RTC_OSCEN_REG
     );
     return stat;
 }
@@ -118,23 +122,49 @@ int rtc_start(void)
  */
 int rtc_stop(void)
 {
-    unsigned char ctl_reg;
+    unsigned char oscen_reg;
 
     int stat = i2c_read(
-        (volatile unsigned char *) &ctl_reg,
+        &oscen_reg,
         1,
         RTC_SLAVE_ADDR,
-        RTC_REG_CTL
+        RTC_OSCEN_REG
     );
     if (stat) { return stat; }
 
-    ctl_reg &= ~RTC_OSC_EN_BIT; // disable oscillator
+    oscen_reg &= ~RTC_OSCEN_BIT; // disable oscillator
     
     stat = i2c_write(
-        &ctl_reg,
+        &oscen_reg,
         1,
         RTC_SLAVE_ADDR,
-        RTC_REG_CTL
+        RTC_OSCEN_REG
+    );
+    return stat;
+}
+
+/**
+ * 
+ */
+int rtc_vbaten(void)
+{
+    unsigned char vbaten_reg;
+    
+    int stat = i2c_read(
+        &vbaten_reg,
+        1,
+        RTC_SLAVE_ADDR,
+        RTC_VBATEN_REG
+    );
+    if (stat) { return stat; }
+    
+    vbaten_reg |= RTC_VBATEN_BIT;
+
+    stat = i2c_write(
+        &vbaten_reg,
+        1,
+        RTC_SLAVE_ADDR,
+        RTC_VBATEN_REG
     );
     return stat;
 }
@@ -149,16 +179,17 @@ int rtc_get(void)
     unsigned char dt[7];
 
     int stat = i2c_read(
-        (volatile unsigned char *) dt,
+        dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
     );
     if (stat) { return stat; }
 
-    if (RTC_REG_CTL == RTC_REG_SEC) {
-        dt[0] &= ~RTC_OSC_EN_BIT;
+    if (RTC_OSCEN_REG == RTC_REG_SEC) {
+        dt[0] &= ~RTC_OSCEN_BIT;
     }
+
     rtc_second = dt[0];
     rtc_minute = dt[1];
     rtc_hour = dt[2];
@@ -176,6 +207,9 @@ int rtc_get(void)
  */
 int rtc_set(void)
 {
+    int stat = rtc_stop();
+    if (stat) { return stat; }
+
     unsigned char dt[7];
     
     dt[0] = rtc_second;
@@ -186,12 +220,16 @@ int rtc_set(void)
     dt[5] = rtc_month;
     dt[6] = rtc_year;
 
-    int stat = i2c_write(
-        (volatile unsigned char *) dt,
+    stat = i2c_write(
+        dt,
         7,
         RTC_SLAVE_ADDR,
         RTC_REG_SEC
     );
+
+    stat = rtc_start();
+    if (stat) { return stat; }
+
     return stat;
 }
 
@@ -219,21 +257,48 @@ char *rtc_getstr(void)
 
 /**
  * 
- *
-void rtc_setdate(int date, int month, int year)
-{
-    // TODO: bin to bcd
+ */
+void rtc_settime(
+    unsigned int hour,
+    unsigned int min,
+    unsigned int sec
+) {
+    unsigned char hour_bcd[3];
+    unsigned char min_bcd[3];
+    unsigned char sec_bcd[3];
+    
+    uint_to_bcd(hour_bcd, hour);
+    uint_to_bcd(min_bcd, min);
+    uint_to_bcd(sec_bcd, sec);
 
+    rtc_get();    
+    rtc_hour = hour_bcd[2];
+    rtc_minute = min_bcd[2];
+    rtc_second = sec_bcd[2];
     rtc_set();
 }
 
 /**
  * 
- *
-void rtc_settime(int date, int month, int year)
-{
-    // TODO: bin to bcd
+ */
+void rtc_setdate(
+    unsigned int month,
+    unsigned int date,
+    unsigned int year
+) {
+    unsigned char month_bcd[3];
+    unsigned char date_bcd[3];
+    unsigned char year_bcd[3];
+    
+    uint_to_bcd(month_bcd, month);
+    uint_to_bcd(date_bcd, date);
+    uint_to_bcd(year_bcd, year);
 
+    rtc_get();
+    //rtc_weekday = 0x01;
+    rtc_month = month_bcd[2];
+    rtc_date = date_bcd[2];
+    rtc_year = year_bcd[2];
     rtc_set();
 }
 

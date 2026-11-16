@@ -21,10 +21,10 @@ From this lab onward, all current port/pin function configurations can be found 
 ![Lab 3 Circuit Diagram](../assets/lab3/lab3_circuit.svg)
 
 
-## [UART Driver](../../mcu/src/drivers/uart.c)
+## UART Driver
 ### Prerequisite for displaying/setting RTC time
 
-A Universal Asynchronous Receiver Transmitter (UART) is a very simple serial protocol. Through only a single wire, streams of bytes can be sent into the abyss without any warning. Thanks to the MCU's eUSCI peripherals, it can be made quite easy.
+I created a driver for the MCU's [Universal Asynchronous Receiver Transmitter (UART)](../../mcu/src/drivers/uart.c), a simple serial protocol. Through only a single wire, streams of bytes can be sent into the abyss without any warning. Thanks to the MCU's eUSCI peripherals, it can be made quite easy.
 
 A pointer and length is passed to `uart_tx` or `uart_rx` to tell the driver exactly which bytes in memory, specified elsewhere, must be read/written. Transmit interrupts are used to continue transmitting bytes automatically. When `uart_busy` is 1, the ISR is currently handling Tx/Rx.
 
@@ -49,10 +49,10 @@ int uart_rx(
 The UART pins (**P4.2 and P4.3**) are connected to a **CP2102N Adafruit USB-to-UART "Friend"**, which converts the signal into USB and facilitates communication between Gort OS and an external serial monitor, shown later in the Gort Shell.
 
 
-## [I2C Driver](../../mcu/src/drivers/i2c.c)
+## I2C Driver
 ### Prereqisite for RTC
 
-Creating the Gort I2C Driver has been a rollercoaster of an endeavor. The peripheral makes you do a lot more work to create a basic, modular interface than for UART. Most of the complex logic is in the ISR.
+Creating the Gort [I2C Driver](../../mcu/src/drivers/i2c.c) has been a rollercoaster of an endeavor. The peripheral makes you do a lot more work to create a basic, modular interface than for UART. Most of the complex logic is in the ISR.
 
 The `i2c_write` and `i2c_read` functions are used to write and read arrays of data from an I2C slave at a specific register. They are nearly identical apart from `i2c_mode`, which is set to 0 for a write and 1 for a read. If in read mode, the ISR will first send the register address, then automatically transition to reading through generation of a repeated start. When `i2c_busy` is 1, the ISR is currently handling Tx/Rx.
 
@@ -92,10 +92,10 @@ According to the screenshot, the jam would occur inside a read transaction after
 There's a strong possibility that I switch to using the bit-banged I2C driver from [Lab 2](lab2_i2c_bb.md), but instead implemented in C. The Gort OS philosophy is indeed to do everything from scratch, but that will be a last resort. Texas Instruments is definitely testing my patience.
 
 
-## [RTC Driver](../../mcu/src/devices/rtc.c)
+## RTC Driver
 ### Requirements met: 5-10, 14, 23-28
 
-Moving one layer up in abstraction, the RTC Driver is responsible for starting, stopping, setting, and getting the date and time from (ideally) almost any RTC. There are functions corresponding to each of these operations, as well as ones for displaying the RTC's raw registers.
+Moving one layer up in abstraction, the [RTC Driver](../../mcu/src/devices/rtc.c) is responsible for starting, stopping, setting, and getting the date and time from (ideally) almost any RTC. There are functions corresponding to each of these operations, as well as ones for displaying the RTC's raw registers.
 
 Over I2C, the driver read 7 bytes in `rtc_get` and writes 7 bytes in `rtc_set`. Start/stop means setting/clearing the "enable oscillator" bit somewhere in the RTC's registers. If this bit is contained within the seconds register (common), then `rtc_get` and `rtc_set` will account for it.
 
@@ -116,9 +116,9 @@ void rtc_display_next(void);
 
 The currently connected RTC is the **MCP7940N**.
 
-### [Integer and String Conversion](../../mcu/src/kernel/gstr.c)
+### Integer and String Conversion
 
-In `rtc_getstr`, there is a reference to `hex_to_str`, called 6 times, which signify when 6 date/time variables get converted from a string of BCD (from RTC) to a string of hex ASCII characters (hexadecimal being just an extension of BCD, supporting 'A'-'F'). This is done at specific indices within `rtc_dt_str`, making it appear in `MM-DD-YY HH:MM:SS` format:
+In `rtc_getstr`, there is a reference to [`hex_to_str`](../../mcu/src/kernel/gstr.c), called 6 times, which signify when 6 date/time variables get converted from a string of BCD (from RTC) to a string of hex ASCII characters (hexadecimal being just an extension of BCD, supporting 'A'-'F'). This is done at specific indices within `rtc_dt_str`, making it appear in `MM-DD-YY HH:MM:SS` format:
 
 ```c
 hex_to_str(rtc_dt_str,      &rtc_month,  1);
@@ -129,10 +129,10 @@ hex_to_str(rtc_dt_str + 14, &rtc_minute, 1);
 hex_to_str(rtc_dt_str + 17, &rtc_second, 1);
 ```
 
-## [Patterns Driver](../../mcu/src/devices/patterns.c)
+## Patterns Generator
 ### Requirements met: 14, 17-22
 
-This module, despite residing in [src/devices/](../../mcu/src/devices), is contained entirely within the MCU. It generates 6 fun 10-bit patterns, accessed through pointers. An update function will advance each pattern by performing some unique operation on each. It's assumed to be called every 1/4th of a second, with a quarter-second number (`qcnt`), by `gsys`. I was wary of using the mod `%` operator on the hardware, so I opted for a bitmask for 1 Hz and 2 Hz patterns. Pattern 4 was the only pattern that required its own qcnt in this framework (1.5 Hz). This still bugs me and I want a better way of doing it.
+The [pattern generator](../../mcu/src/kernel/gstr.c), despite residing in [src/devices/](../../mcu/src/devices), is contained entirely within the MCU. It generates 6 fun 10-bit patterns, accessed through pointers. An update function will advance each pattern by performing some unique operation on each. It's assumed to be called every 1/4th of a second, with a quarter-second number (`qcnt`), by `gsys`. I was wary of using the mod `%` operator on the hardware, so I opted for a bitmask for 1 Hz and 2 Hz patterns. Pattern 4 was the only pattern that required its own qcnt in this framework (1.5 Hz). This still bugs me and I want a better way of doing it.
 
 `cur_pattern` points to one of the 6 patterns, defaulting to `pattern0`. It can be changed to point to any pattern using `patterns_sel`, or to point to the *next* pattern using `patterns_next`. This way, simply dereferencing `cur_pattern` gets the current value of the currently selected pattern.
 
@@ -147,10 +147,10 @@ void patterns_update(unsigned int qcnt);
 ![Patterns Driver Flowcharts](../assets/lab3/lab3_patterns_flowchart.svg)
 
 
-## [Gort System](../../mcu/src/kernel/gsys.c)
+## Gort System
 ### Requirements met: 2, 3, 13
 
-The full system combines the functionalities of each driver discussed so far (UART, I2C, RTC, and patterns), with additional LED, switch, and timer drivers. The main interface is through a primitive shell `gsh`.
+The full [Gort System](../../mcu/src/kernel/gsys.c) combines the functionalities of each driver discussed so far (UART, I2C, RTC, and patterns), with additional LED, switch, and timer drivers. The main interface is through a primitive shell `gsh`.
 
 The first lower-level kernel utils has also been created: `gstr` handles string manipulation and conversions and `gio` acts as a switch to redirect the flow of `helloworld` (write) and `hellogort` (read) calls. Currently, they redirect exclusively to `uart_tx` and `uart_rx`.
 
@@ -168,9 +168,9 @@ Works so far sorta.
 ![Gort Shell on VS Code](../assets/ss/vscode_serial_monitor.png)
 ![Gort Shell Flowcharts](../assets/lab3/lab3_gsh_flowchart.svg)
 
-### [String Manipulation](../../mcu/src/kernel/gstr.c)
+### String Manipulation
 
-This is unfinished :(
+This is [unfinished](../../mcu/src/kernel/gstr.c) :(
 
 
 ## Conclusion

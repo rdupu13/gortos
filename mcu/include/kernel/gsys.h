@@ -28,7 +28,7 @@
 
 #define INIT_EEP_PERIOD_MS 1000
 
-#define DELAY_LOOP_MS 103
+#define DELAY_LOOP_MS 1100
 
 #define BLK_SIZE_P2 8
 #define BLK_SIZE 256 // 2^(BLK_SIZE_P2)
@@ -66,6 +66,7 @@ gtime_t;
 // --------------------------------------------------------
 
 void gsys_init(void); // initialize gort system
+void gsys_update(void); // update gort system
 
 void gsys_log(char *entry); // add an entry to gort's diary
 void eep(unsigned int delay); // take a gort nap
@@ -76,6 +77,9 @@ void print_systime(void); // write current gort system time to gout
 // led
 void blinky(unsigned char led, unsigned int delay); // blink a test led
 void ledbar_sel(unsigned char sel);                 // select current thing displayed on ledbar
+
+// lcd
+void update_lcd(void);
 
 // interrupt service routines (for drivers only): ---------
 // timer

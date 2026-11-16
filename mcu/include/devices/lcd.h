@@ -21,6 +21,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+#include "hw/pfc.h"
+
 
 //-----------------------------------------------------------------------------
 //  MACROS
@@ -30,21 +32,49 @@
 // nhd-0420az-fl-ybw-33v3 -------------
 #ifdef LCD_NHD_0420AZ_FL_YBW_33V3
 
-// stuff
+#define NUM_COLS    20
+#define NUM_LINES   4
 
 #endif
 // ------------------------------------
 // --------------------------------------------------------
 
+#define MAX_CONTRAST 7
+#define MIN_CONTRAST 0
 
+extern unsigned char lcd_contrast;
+
+extern unsigned char smiley_char[8];
+extern unsigned char gort_char[8];
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void lcd_init(void); // initialize lcd
+int lcd_init(void); // initialize lcd
 
+int lcd_write(unsigned char *arr);
+
+int lcd_cursor_show(unsigned char state);
+
+int lcd_cursor_blink(unsigned char state);
+
+int lcd_cursor_goto(
+    unsigned char row,
+    unsigned char col
+);
+
+int lcd_clear(void);
+
+int lcd_test(void);
+
+int lcd_contrast_set(unsigned char val);
+
+int lcd_char_set(
+    unsigned char addr,
+    unsigned char *char_data
+);
 
 #endif
 //-----------------------------------------------------------------------------

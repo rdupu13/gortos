@@ -28,14 +28,14 @@ ASM_SRCDIR = mcu/asm
 
 EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
+			mcu/src/kernel/menu.c \
+			mcu/include/kernel/menu.h \
 			mcu/src/devices/dial.c \
 			mcu/include/devices/dial.h \
-			mcu/src/devices/lcd.c \
-			mcu/include/devices/lcd.h \
-			mcu/src/devices/lora.c \
-			mcu/include/devices/lora.h \
-			mcu/src/devices/pwm.c \
-			mcu/include/devices/pwm.h
+			mcu/src/devices/mmm.c \
+			mcu/include/devices/mmm.h \
+			mcu/src/devices/rot.c \
+			mcu/include/devices/rot.h
 # -------------------------------------
 
 # WARNING OPTIONS ---------------------
@@ -44,6 +44,7 @@ WARNFLAGS = -Wall \
 			-Wno-unknown-pragmas \
 			-Wno-implicit-function-declaration \
 			-Wno-missing-braces \
+			-Wno-discarded-qualifiers \
 			-Wno-comment
 # -------------------------------------
 

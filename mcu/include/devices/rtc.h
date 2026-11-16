@@ -45,8 +45,10 @@
 #ifdef RTC_MCP7940N
 #define RTC_SLAVE_ADDR      0x006F
 #define RTC_REG_SEC         0x00
-#define RTC_REG_CTL         0x00
-#define RTC_OSC_EN_BIT      BIT7
+#define RTC_OSCEN_REG       0x00
+#define RTC_OSCEN_BIT       BIT7
+#define RTC_VBATEN_REG      0x03
+#define RTC_VBATEN_BIT      BIT3
 #define RTC_WEEKDAY_0       1
 #define RTC_SWAP_WEEKDAY    0
 #endif
@@ -63,17 +65,28 @@
 //-----------------------------------------------------------------------------
 
 extern volatile unsigned char *rtc_display; // register currently being displayed
+extern unsigned char rtc_display_num;
 
-int rtc_init(void);    // initialize rtc
+int rtc_init(void);     // initialize rtc
 
-int rtc_start(void);   // start rtc
-int rtc_stop(void);    // stop rtc
-int rtc_get(void);     // get current rtc date and time
-int rtc_set(void);     // set current date and time
+int rtc_start(void);    // start rtc
+int rtc_stop(void);     // stop rtc
+int rtc_get(void);      // get current rtc date and time
+int rtc_set(void);      // set current date and time
+
+int rtc_vbaten(void);   // enbable battery power
 
 char *rtc_getstr(void); // get current rtc date and time and convert to string
-//void rtc_setdate(int month, int day, int year);
-//void rtc_settime(int hour, int minute, int second);
+void rtc_settime(
+    unsigned int hour,
+    unsigned int min,
+    unsigned int sec
+);
+void rtc_setdate(
+    unsigned int month,
+    unsigned int date,
+    unsigned int year
+);
 
 void rtc_display_sel(unsigned char sel);    // select which register to display
 void rtc_display_next(void);                // select next register to display

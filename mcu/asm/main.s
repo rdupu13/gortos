@@ -185,7 +185,7 @@ end_tx_byte:
 i2c_rx_byte:
         ; if nack previously received, don't do anything
         tst.b   &i2c_nack
-        jnz     end_tx_byte
+        jnz     end_rx_byte
 
         sda_input
 
@@ -207,10 +207,10 @@ rx_byte_loop:
         jz      rx_0
 rx_1:
         bis.w   #BIT0, SR       ; set carry flag
-        jmp     rs_byte
+        jmp     rx_byte
 rx_0:
         bic.w   #BIT0, SR       ; clear carry flag
-rs_byte:
+rx_byte:
         ; shift carry into byte
         rlc.b   &i2c_byte
 
@@ -236,6 +236,8 @@ clk_ack:
         scl_high_delay
         clear_scl
         i2c_delay
+
+end_rx_byte:
         ret
 ; ---------------------------------------------------------
 

@@ -21,6 +21,8 @@
 //  LIBRARIES
 //-----------------------------------------------------------------------------
 
+#include "drivers/led.h"
+
 
 //-----------------------------------------------------------------------------
 //  MACROS
@@ -44,43 +46,41 @@
 #define SPI_TXIE // tx complete interrupt enable
 #define SPI_RXIFG // rx buffer full interrupt flag
 #define SPI_RXIE // rx buffer full interrupt enable
-
-#define SPI_CS1_PORT // chip select 1 port
-#define SPI_CS1_PIN // chip select 1 port
-
-#define SPI_CS2_PORT // chip select 2 port
-#define SPI_CS2_PIN // chip select 2 port
-
-#define SPI_CS3_PORT // chip select 3 port
-#define SPI_CS3_PIN // chip select 3 port
 */
 
+#define SPI_BUSY_PORT   LED_TEST2_PORT
+#define SPI_BUSY_PIN    LED_TEST2_PIN
+
+#define SPI_DELAY_MS    15
 
 
 //-----------------------------------------------------------------------------
 //  FUNCTION PROTOTYPES
 //-----------------------------------------------------------------------------
 
-void spi_init(unsigned int timeout); // initialize spi
+// initialize spi
+void spi_init(
+    unsigned int timeout,
+    unsigned int clock_div
+);
 
 // write an array to a spi slave
 int spi_write(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
-    unsigned char slave
+    unsigned char slave,
+    unsigned char *addr,
+    unsigned int addr_len
 );
 
 // read an array from a spi slave
 int spi_read(
-    volatile unsigned char *arr,
+    unsigned char *arr,
     unsigned int len,
     unsigned char slave,
-    volatile unsigned char *addr,
+    unsigned char *addr,
     unsigned int addr_len
 );
-
-void spi_start(void);   // set gpio chip select for specific slave
-void spi_stop(void);    // clear gpio chip select for specific slave
 
 
 #endif

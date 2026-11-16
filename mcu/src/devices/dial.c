@@ -16,8 +16,6 @@
 #include "devices/dial.h"
 
 // drivers
-#include "drivers/led.h"
-#include "drivers/switch.h"
 
 
 //-----------------------------------------------------------------------------

@@ -41,9 +41,13 @@ void adc_sel(unsigned char ch);
  */
 void adc_init(void)
 {
-    // configure pins
+    // configure pins -----------------
     ADC_CH0_SEL0 |= ADC_CH0_PIN;
     ADC_CH0_SEL1 |= ADC_CH0_PIN;
+
+    ADC_CH1_SEL0 |= ADC_CH1_PIN;
+    ADC_CH1_SEL1 |= ADC_CH1_PIN;
+    // --------------------------------
     
     // configure peripheral
     ADCCTL1 &= ~ADCSHS; ADCCTL1 |= ADCSHP;      // sample signal source = sampling timer
@@ -79,6 +83,7 @@ void adc_sel(unsigned char ch)
     switch(ch)
     {
         case 0: ADCMCTL0 |= ADC_CH0_INCH; break;
+        case 1: ADCMCTL0 |= ADC_CH1_INCH; break;
         default: ADCMCTL0 |= ADC_CH0_INCH; break;
     }
 }
@@ -93,7 +98,6 @@ void adc_sel(unsigned char ch)
 unsigned int adc_read(unsigned char ch)
 {
     while (adc_busy) {} // wait until previous conversion done
-    adc_busy = 1;
 
     adc_sel(ch); // select channel
     
@@ -102,6 +106,7 @@ unsigned int adc_read(unsigned char ch)
     ADCIE |= ADCIE0; // enable conversion complete interrupts
     ADCIFG &= ~ADCIFG0; // clear conversion complete interrupt flag
     
+    adc_busy = 1;
     ADCCTL0 |= ADCSC; // start sample and conversion (triggers ISR)
     while(adc_busy) {} // wait until done converting
 

@@ -37,11 +37,13 @@ void led_init(void)
 {
     LED_HEARTBEAT_PORT &= ~LED_HEARTBEAT_PIN; // turn off heartbeat led
     
-    led_test_off(0);
-    led_test_off(1);
-    led_test_off(2);
+    led_off(0);
+    led_off(1);
+    led_off(2);
     
     ledbar_setpins(LEDBAR_INIT);
+
+    LEDSTICK_PORT |= LEDSTICK_PIN;
 }
 
 /**
@@ -65,13 +67,14 @@ void led_heartbeat_update(unsigned int qcnt)
  * 
  * @return none
  */
-void led_test_on(unsigned char n)
+void led_on(unsigned char n)
 {
     switch(n)
     {
         case 0: LED_TEST0_PORT |= LED_TEST0_PIN; break;
         case 1: LED_TEST1_PORT |= LED_TEST1_PIN; break;
         case 2: LED_TEST2_PORT |= LED_TEST2_PIN; break;
+        case 3: LED_TEST3_PORT |= LED_TEST3_PIN; break;
         default: break;
     }
 }
@@ -83,13 +86,14 @@ void led_test_on(unsigned char n)
  * 
  * @return none
  */
-void led_test_off(unsigned char n)
+void led_off(unsigned char n)
 {
     switch(n)
     {
         case 0: LED_TEST0_PORT &= ~LED_TEST0_PIN; break;
         case 1: LED_TEST1_PORT &= ~LED_TEST1_PIN; break;
         case 2: LED_TEST2_PORT &= ~LED_TEST2_PIN; break;
+        case 3: LED_TEST3_PORT &= ~LED_TEST3_PIN; break;
         default: break;
     }
 }
@@ -101,7 +105,7 @@ void led_test_off(unsigned char n)
  * 
  * @return none
  */
-void led_test_toggle(unsigned char n)
+void led_toggle(unsigned char n)
 {
     switch(n)
     {
