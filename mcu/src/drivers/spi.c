@@ -66,12 +66,11 @@ void spi_init(
     UCA0BRW = clock_div;        // number to divide clock by
     UCA0CTLW0 |= UCSYNC;        // synchronous mode
     UCA0CTLW0 |= UCMST;         // master mode
-    UCA0CTLW0 |= UCMODE_0;      // 3-pin spi mode
+    UCA0CTLW0 |= UCMODE_0;      // 3-pin spi mode (4-pin is done manually)
     UCA0CTLW0 |= UCMSB;         // MSB first
-
-    UCA0CTLW0 &= ~UCCKPH;
-    UCA0CTLW0 |= UCCKPL;
-    
+    UCA0CTLW0 &= ~UCCKPH;       // Data is changed on the first edge,
+                                // captured on following edge
+    UCA0CTLW0 |= UCCKPL;        // Inactive state is high
     UCA0CTLW0 &= ~UCSWRST;      // take peripheral out of software reset
 
     // setup interrupts

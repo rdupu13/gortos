@@ -77,7 +77,8 @@ int temp_analog_avg(unsigned char adc_ch)
     {
         temp_avg += temp_window[i];
     }
-
+    
+    // divide by window size to get average
     temp_avg /= window_size;
 
     return temp_avg;

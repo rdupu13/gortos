@@ -59,6 +59,7 @@
 
 int ioexp_init(void); // initialize io expander
 
+int ioexp_write(unsigned char gpio);
 
 #endif
 //-----------------------------------------------------------------------------

@@ -17,20 +17,27 @@ behold, GORTOS!
 ## [Features](docs/planning/gortos.md)
 Gort OS is fully functional with driver support for the following peripherals:
 
-* 4 timer modules (TIMER)
-* universal asynchronous receiver-transmitter (UART)
-* inter-integrated circuit (I2C)
-* serial peripheral protocol (SPI)
-* analog-to-digital converter (ADC)
-* 26 reconfigurable general-purpose I/O pins (SWITCH, LED)
-* general-purpose pattern generator (PATTERNS)
-* pulse-width modulation (PWM, coming soon)
+* 4 Timer Modules (TIMER)
+* Universal Asynchronous Receiver-Transmitter (UART)
+* Inter-Integrated Circuit (I2C, I2CBB)
+* Serial Peripheral Protocol (SPI)
+* Analog-to-Digital Converter (ADC)
+* 26 General-Purpose I/O pins (SWITCH, LED)
+* General-Purpose Pattern Generator (PATTERNS)
 
 Gort OS supports a variety of breadboard modules, suitable for nearly any embedded project:
 
+* Reset switch
+* 2 General-Purpose Switches
+* Heartbeat and Mode LED
+* 10-LED bar
+* 1 Potentiometer
 * CP2102N USB-to-UART
-* MCP7940N real-time clock module (RTC)
-* 23LC1024 128KB serial mini memory manager (MMM)
+* Battery-Powered MCP7940N Real-Time Clock Module (RTC)
+* LMT87 Temperature Analog Sensor (TEMP)
+* MCP23008 I/O Expander (IOEXP)
+* NHD-0420AZ-FL-YBW Liquid Crystal Display Module (LCD)
+* MCP4801 Digital-to-Analog Converter (DAC)
 * more soon...
 
 
@@ -46,10 +53,10 @@ This project was created in part to fulfill the requirements of the MSU course [
 * Lab 1: GitHub and Markdown (circa. 2025)
 * Lab 2: [I2C Bit-Banging](docs/labs/lab2_i2c_bb.md) (8/24/2026)
 * Lab 3: [RTC and LED Patterns](docs/labs/lab3_rtc_patterns.md) (~7/12/2026 - 7/26/2026)
-* Lab 4: [ADC and SPI](docs/labs/lab4_adc_spi.md) (8/9/2026 - ~8/30/2026)
-* Lab 5: [LCD and DAC](docs/labs/lab5_lcd_dac.md) (~9/1/2026 - 11//2026)
-* Lab 6: [Dial and Menu](docs/labs/lab6_dial_menu.md) (11//2026)
-* Final Project: [Serial RAM and File System Interface](docs/planning/final_project_proposal.md) (p. 11/9/2026)
+* Lab 4: [ADC and SPI](docs/labs/lab4_adc_spi.md) (9/14/2026, 11/16/2026)
+* Lab 5: [LCD and DAC](docs/labs/lab5_lcd_dac.md) (11/16/2026)
+* Lab 6: [Dial, Menu, Gort System, and Gort Shell](docs/labs/lab6_dial_menu.md) (11/30/2026)
+* Final Project: [Serial RAM and File System Interface](docs/planning/final_project_proposal.md) (p. 11/9/2026, 12/14/2026)
 
 [Course BOM](docs/planning/eele465_bom.md)
 
@@ -57,10 +64,10 @@ This project was created in part to fulfill the requirements of the MSU course [
 ![Gort OS Breadboard](docs/assets/photo/board10.jpg)
 
 ## Circuit Diagram
-![Gort OS Circuit Diagram](docs/assets/gortos_circuit.svg)
+![Gort OS Circuit Diagram](docs/assets/lab5/lab5_circuit.svg)
 
 ## Software Architecture
-![Gort OS Software Architecture](docs/assets/gortos_softarch.svg)
+![Gort OS Software Architecture](docs/assets/lab5/lab5_softarch.svg)
 
 ---
 P.S. gorb is my bb <3

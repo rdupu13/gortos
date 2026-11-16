@@ -151,6 +151,17 @@ int main_gsh(void)
             else { print_systime(); helloworld("\n"); }
             // --------------------------------------------
         }
+        else if (gstr_cmp(args[0], "temp"))
+        {
+            // temp ---------------------------------------
+            helloworld("temperature = ");
+            helloworld(uint_to_dec(window_size));
+            helloworld("\n");
+            helloworld("averaging window size = ");
+            helloworld(uint_to_dec(window_size));
+            helloworld("\n");
+            // --------------------------------------------
+        }
         else if (gstr_cmp(args[0], "twin"))
         {
             // twin ---------------------------------------
@@ -163,7 +174,7 @@ int main_gsh(void)
                 if (twin < MIN_WINDOW_SIZE) { twin = MIN_WINDOW_SIZE; }
                 temp_window_set_size(twin);
                 
-                helloworld("new temperature window size = ");
+                helloworld("new temperature averaging window size = ");
                 helloworld(uint_to_dec(window_size));
                 helloworld("\n");
             }
