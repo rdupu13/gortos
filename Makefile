@@ -25,6 +25,7 @@ SRCDIR = mcu/src
 SRCEXT = c
 TEST_SRCDIR = mcu/test
 ASM_SRCDIR = mcu/asm
+COPROC_SRCDIR = mcu/coproc
 
 EXCLUDE = 	mcu/src/kernel/gfs.c \
 			mcu/include/kernel/gfs.h \
@@ -112,6 +113,11 @@ test:
 # ASM -------------------------------------------------------------------------
 asm:
 	@$(MAKE) SRCDIR=$(ASM_SRCDIR) TARGET=asm SRCEXT=s CCFLAGS="$(CCFLAGS) -x assembler-with-cpp"
+# -----------------------------------------------------------------------------
+
+# COPROCESSOR FLASH -----------------------------------------------------------
+co-flash:
+	@$(MAKE) flash SRCDIR=$(COPROC_SRCDIR) TARGET=gortjr MCU=msp430fr2310
 # -----------------------------------------------------------------------------
 
 # FLASH -----------------------------------------------------------------------

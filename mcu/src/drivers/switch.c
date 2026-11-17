@@ -54,7 +54,7 @@ void switch_init(
     SWITCH0_DIR &= ~SWITCH0_PIN; // set as input
     SWITCH0_REN |=  SWITCH0_PIN; // enable resistor
     if (pol0) {
-        SWITCH0_OUT &= ~SWITCH0_PIN; // pull-down resistor // TODO: should these even be with IES? maybe hardcoded bc hardware
+        SWITCH0_OUT &= ~SWITCH0_PIN; // pull-down resistor
         SWITCH0_IES &= ~SWITCH0_PIN; // rising-edge interrupts
     } else {
         SWITCH0_OUT |= SWITCH0_PIN; // pull-up resistor
@@ -117,7 +117,7 @@ void switch_wait(unsigned char n, unsigned char lvl)
     while (
         switch_poll(n) // irl high/low value of input
         != 
-        (((switch_pol >> n) & 1) // value of switch polarity TODO: boolean byte = bb?
+        (((switch_pol >> n) & 1)
             ^ lvl) // 
     ) {}
 }
@@ -132,17 +132,6 @@ void __attribute__((interrupt(SWITCH_VECTOR))) isr_port(void)
     {
         case SWITCH0_IV_VAL: switch_0_pressed(); break;
         case SWITCH1_IV_VAL: switch_1_pressed(); break;
-        
-        /* TODO: attempt to alleviate stupid switch debounce
-        case SWITCH0_IV_VAL:
-            SWITCH0_IE  &=  ~SWITCH0_PIN; // disable interrupts
-            break;
-        
-        case SWITCH1_IV_VAL:
-            SWITCH0_IE  &=  ~SWITCH0_PIN; // disable interrupts
-            break;
-        */
-
         default: break;
     }
 }
